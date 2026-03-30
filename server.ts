@@ -81,6 +81,115 @@ async function startServer() {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // --- ADMIN API ROUTES (Registered Early) ---
+
+  app.get("/api/admin/metrics", authenticateToken, requireAdmin, async (req: any, res: any) => {
+    if (!db) return res.status(500).json({ error: "DB not initialized" });
+    try {
+      // Fetch all users and predictions
+      const [usersSnap, predsSnap] = await Promise.all([
+        db.collection("users").get(),
+        db.collectionGroup("predictions").get()
+      ]);
+
+      const users = usersSnap.docs.map(d => d.data());
+      const preds = predsSnap.docs.map(d => d.data());
+
+      const groupByDate = (data: any[], dateField: string) => {
+        const groups: Record<string, number> = {};
+        data.forEach(item => {
+          const date = item[dateField]?.split('T')[0];
+          if (date) groups[date] = (groups[date] || 0) + 1;
+        });
+        return Object.entries(groups).map(([date, count]) => ({ date, count })).sort((a, b) => a.date.localeCompare(b.date));
+      };
+
+      const groupByHour = (data: any[], dateField: string) => {
+        const groups: Record<string, number> = {};
+        data.forEach(item => {
+           const timestamp = item[dateField];
+           if (timestamp) {
+             const hour = new Date(timestamp).getHours();
+             groups[hour] = (groups[hour] || 0) + 1;
+           }
+        });
+        return Array.from({ length: 24 }, (_, i) => ({ hour: `${i}:00`, count: groups[i] || 0 }));
+      };
+
+      res.json({
+        totalUsers: users.length,
+        totalPredictions: preds.length,
+        votesPerDay: groupByDate(preds, 'timestamp'),
+        votesPerHour: groupByHour(preds, 'timestamp'),
+        usersPerDay: groupByDate(users, 'createdAt')
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/nodes", authenticateToken, requireAdmin, async (req: any, res: any) => {
+    if (!db) return res.status(500).json({ error: "DB not initialized" });
+    try {
+      const usersSnap = await db.collection("users").get();
+      const users: any[] = [];
+      
+      for (const doc of usersSnap.docs) {
+        const userData = doc.data();
+        const predsSnap = await doc.ref.collection("predictions").get();
+        users.push({
+          ...userData,
+          predictionCount: predsSnap.size
+        });
+      }
+      
+      res.json(users);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/export", authenticateToken, requireAdmin, async (req: any, res: any) => {
+    if (!db) return res.status(500).json({ error: "DB not initialized" });
+    try {
+      const predsSnap = await db.collectionGroup("predictions").get();
+      const userCache: Record<string, any> = {};
+      
+      const csvRows = [
+        "User_ID,Phone_Number,Constituency_ID,Predicted_Party,Confidence,Timestamp,Phase"
+      ];
+
+      for (const doc of predsSnap.docs) {
+        const pred = doc.data();
+        const userId = doc.ref.parent.parent?.id;
+        
+        if (userId && !userCache[userId]) {
+          const userDoc = await db.collection("users").doc(userId).get();
+          userCache[userId] = userDoc.data() || { phoneNumber: "Unknown" };
+        }
+        
+        const user = userCache[userId || ""] || { phoneNumber: "Unknown" };
+        
+        csvRows.push([
+          userId,
+          user.phoneNumber,
+          pred.constituencyId,
+          pred.predictedParty,
+          pred.confidence,
+          pred.timestamp,
+          pred.phase
+        ].join(','));
+      }
+
+      const csvContent = csvRows.join('\n');
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=crowdvote_predictions_export.csv');
+      res.send(csvContent);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   app.get("/api/constituencies", (req, res) => {
     res.json(CONSTITUENCIES);
   });
@@ -92,30 +201,54 @@ async function startServer() {
   // Middleware to authenticate
   async function authenticateToken(req: any, res: any, next: any) {
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ error: 'Unauthorized' });
+    if (!authHeader?.startsWith('Bearer ')) {
+      console.log("[DEBUG] Auth failed: No Bearer token");
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
     try {
       const token = authHeader.split('Bearer ')[1];
       const decoded = await admin.auth().verifyIdToken(token);
       req.user = decoded;
       next();
     } catch (error) {
+      console.error("[DEBUG] Token verification failed:", error);
       res.status(401).json({ error: 'Invalid token' });
     }
   }
 
   // Middleware to require admin privileges
   async function requireAdmin(req: any, res: any, next: any) {
-    if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+    if (!req.user) {
+      console.log("[DEBUG] Admin check failed: No user in request");
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
     try {
       const adminDoc = await db.collection("admins").doc(req.user.uid).get();
       if (!adminDoc.exists) {
+        console.log(`[DEBUG] Admin check failed: UID ${req.user.uid} not in admins collection`);
         return res.status(403).json({ error: 'Forbidden: Admin access required' });
       }
       next();
     } catch (error) {
+      console.error("[DEBUG] Admin check error:", error);
       res.status(500).json({ error: 'Internal Server Error during admin check' });
     }
   }
+
+  app.post("/api/admin/config", authenticateToken, requireAdmin, async (req: any, res: any) => {
+    if (!db) return res.status(500).json({ error: "DB not initialized" });
+    try {
+      const updates = req.body;
+      await db.collection("config").doc("global").update({
+        ...updates,
+        lastUpdated: new Date().toISOString(),
+        updatedBy: req.user.uid
+      });
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 
   app.get("/api/user/check", authenticateToken, async (req: any, res: any) => {
     const uid = req.user.uid;
@@ -290,114 +423,7 @@ async function startServer() {
     }
   });
 
-  // --- ADMIN API ROUTES ---
 
-  app.get("/api/admin/metrics", authenticateToken, requireAdmin, async (req: any, res: any) => {
-    if (!db) return res.status(500).json({ error: "DB not initialized" });
-    try {
-      // Fetch all users and predictions (could be optimized with aggregation if data grows large)
-      const [usersSnap, predsSnap] = await Promise.all([
-        db.collection("users").get(),
-        db.collectionGroup("predictions").get()
-      ]);
-
-      const users = usersSnap.docs.map(d => d.data());
-      const preds = predsSnap.docs.map(d => d.data());
-
-      // Helper to group by date
-      const groupByDate = (data: any[], dateField: string) => {
-        const groups: Record<string, number> = {};
-        data.forEach(item => {
-          const date = item[dateField]?.split('T')[0];
-          if (date) groups[date] = (groups[date] || 0) + 1;
-        });
-        return Object.entries(groups).map(([date, count]) => ({ date, count })).sort((a, b) => a.date.localeCompare(b.date));
-      };
-
-      // Helper to group by hour
-      const groupByHour = (data: any[], dateField: string) => {
-        const groups: Record<string, number> = {};
-        data.forEach(item => {
-           const timestamp = item[dateField];
-           if (timestamp) {
-             const hour = new Date(timestamp).getHours();
-             groups[hour] = (groups[hour] || 0) + 1;
-           }
-        });
-        return Array.from({ length: 24 }, (_, i) => ({ hour: `${i}:00`, count: groups[i] || 0 }));
-      };
-
-      res.json({
-        votesPerDay: groupByDate(preds, 'timestamp'),
-        votesPerHour: groupByHour(preds, 'timestamp'),
-        usersPerDay: groupByDate(users, 'createdAt')
-      });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.get("/api/admin/nodes", authenticateToken, requireAdmin, async (req: any, res: any) => {
-    if (!db) return res.status(500).json({ error: "DB not initialized" });
-    try {
-      const usersSnap = await db.collection("users").get();
-      const users: any[] = [];
-      
-      for (const doc of usersSnap.docs) {
-        const userData = doc.data();
-        const predsSnap = await doc.ref.collection("predictions").get();
-        users.push({
-          ...userData,
-          predictionCount: predsSnap.size
-        });
-      }
-      
-      res.json(users);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  app.get("/api/admin/export", authenticateToken, requireAdmin, async (req: any, res: any) => {
-    if (!db) return res.status(500).json({ error: "DB not initialized" });
-    try {
-      const predsSnap = await db.collectionGroup("predictions").get();
-      const userCache: Record<string, any> = {};
-      
-      const csvRows = [
-        "User_ID,Phone_Number,Constituency_ID,Predicted_Party,Confidence,Timestamp,Phase"
-      ];
-
-      for (const doc of predsSnap.docs) {
-        const pred = doc.data();
-        const userId = doc.ref.parent.parent?.id;
-        
-        if (userId && !userCache[userId]) {
-          const userDoc = await db.collection("users").doc(userId).get();
-          userCache[userId] = userDoc.data() || { phoneNumber: "Unknown" };
-        }
-        
-        const user = userCache[userId || ""] || { phoneNumber: "Unknown" };
-        
-        csvRows.push([
-          userId,
-          user.phoneNumber,
-          pred.constituencyId,
-          pred.predictedParty,
-          pred.confidence,
-          pred.timestamp,
-          pred.phase
-        ].join(','));
-      }
-
-      const csvContent = csvRows.join('\n');
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename=crowdvote_predictions_export.csv');
-      res.send(csvContent);
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
 
   // --- VITE MIDDLEWARE ---
   if (process.env.NODE_ENV !== "production") {

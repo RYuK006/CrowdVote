@@ -51,8 +51,11 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-          (request.auth.token.email == "aaronalexmathew48@gmail.com" && request.auth.token.email_verified == true)); // Default admin
+        (
+          exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "aaronalexmathew48@gmail.com" && request.auth.token.email_verified == true)
+        );
     }
 
     function hasRequiredFields(fields) {
@@ -113,7 +116,8 @@ service cloud.firestore {
     match /users/{userId} {
       // Users can read their own profile. Public profiles are allowed for leaderboard,
       // but we must exclude sensitive fields like phoneNumber from public view.
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
       
       // Data validation for users
       function isValidUserUpdate(data) {
@@ -135,7 +139,7 @@ service cloud.firestore {
     }
 
     match /predictions/{predictionId} {
-      allow read: if isAuthenticated();
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
       
       allow create: if isAuthenticated() && 
                       isValidPrediction(request.resource.data) && 
