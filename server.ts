@@ -239,12 +239,30 @@ async function startServer() {
     if (!db) return res.status(500).json({ error: "DB not initialized" });
     try {
       const updates = req.body;
-      await db.collection("config").doc("global").update({
+      await db.collection("config").doc("global").set({
         ...updates,
         lastUpdated: new Date().toISOString(),
         updatedBy: req.user.uid
-      });
+      }, { merge: true });
       res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/predictions/recent", authenticateToken, requireAdmin, async (req: any, res: any) => {
+    if (!db) return res.status(500).json({ error: "DB not initialized" });
+    try {
+      const predictionsSnap = await db.collectionGroup("predictions")
+        .orderBy("timestamp", "desc")
+        .limit(15)
+        .get();
+      
+      const predictions = predictionsSnap.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      res.json(predictions);
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }

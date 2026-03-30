@@ -76,9 +76,10 @@ export function Admin() {
     const fetchAdminData = async () => {
       try {
         const token = await auth.currentUser!.getIdToken();
-        const [metricsRes, nodesRes] = await Promise.all([
+        const [metricsRes, nodesRes, predictionsRes] = await Promise.all([
           fetch("/api/admin/metrics", { headers: { Authorization: `Bearer ${token}` } }),
-          fetch("/api/admin/nodes", { headers: { Authorization: `Bearer ${token}` } })
+          fetch("/api/admin/nodes", { headers: { Authorization: `Bearer ${token}` } }),
+          fetch("/api/admin/predictions/recent", { headers: { Authorization: `Bearer ${token}` } })
         ]);
         
         if (metricsRes.ok) {
@@ -90,12 +91,16 @@ export function Admin() {
           });
         }
         if (nodesRes.ok) setAdminNodes(await nodesRes.json());
+        if (predictionsRes.ok) setRecentPredictions(await predictionsRes.json());
       } catch (error) {
         console.error("Failed to fetch admin API data:", error);
       }
     };
 
     fetchAdminData();
+    // Poll for live updates every 30 seconds
+    const interval = setInterval(fetchAdminData, 30000);
+    return () => clearInterval(interval);
   }, [isAdmin, auth.currentUser]);
 
   const handlePhaseChange = async (newPhase: string) => {
@@ -219,7 +224,7 @@ export function Admin() {
         </div>
 
         {tab === "overview" && (
-          <div className="space-y-8">
+          <div className="space-y-12">
             <div className="grid lg:grid-cols-1 gap-8">
               {/* Phase Control */}
               <div className="glass p-10 rounded-[40px] border border-white/5 space-y-10">
@@ -275,21 +280,62 @@ export function Admin() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </div>
 
-                <div className="p-6 rounded-3xl bg-red-500/5 border border-red-500/20 flex items-start gap-4">
-                  <AlertTriangle className="text-red-500 w-6 h-6 shrink-0" />
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-bold text-red-500 uppercase tracking-widest">Warning: Global State Change</h4>
-                    <p className="text-xs text-white/40 leading-relaxed">
-                      Changing the election phase affects all predictive agents simultaneously. Neural sync vectors will be recalculated based on the new temporal context.
-                    </p>
-                  </div>
+            {/* Live Data Monitor */}
+            <div className="glass rounded-[40px] border border-white/5 p-10 space-y-8">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Database className="text-red-500 w-5 h-5" />
+                  <h3 className="text-xl font-bold tracking-tight">Recent Prediction Monitor</h3>
                 </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Live Stream</span>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/5">
+                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Agent ID</th>
+                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Constituency</th>
+                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Prediction</th>
+                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Confidence</th>
+                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Timestamp</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentPredictions.length > 0 ? (
+                      recentPredictions.map((pred) => (
+                        <tr key={pred.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
+                          <td className="py-4 text-xs font-mono text-white/40 group-hover:text-white transition-colors">{pred.userId?.slice(0, 8)}...</td>
+                          <td className="py-4 text-xs font-bold">{pred.constituencyId}</td>
+                          <td className="py-4">
+                            <span className="px-2 py-1 rounded bg-red-500/10 text-red-500 text-[10px] font-mono uppercase font-bold">
+                              {pred.predictedParty}
+                            </span>
+                          </td>
+                          <td className="py-4 text-xs font-mono">{pred.confidence}%</td>
+                          <td className="py-4 text-xs text-white/20">{new Date(pred.timestamp).toLocaleTimeString()}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={5} className="py-12 text-center text-white/10 font-mono text-xs uppercase tracking-widest">
+                          No live activity detected in the current temporal frame.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
 
             {adminMetrics && (
-              <div className="grid md:grid-cols-2 gap-8 mt-12">
+              <div className="grid md:grid-cols-2 gap-8">
                 <div className="glass p-10 rounded-[40px] border border-white/5 space-y-6">
                   <h3 className="text-lg font-bold font-mono uppercase tracking-widest text-white/40">Votes Per Day</h3>
                   <div className="h-64 w-full">
@@ -331,23 +377,6 @@ export function Admin() {
                     </ResponsiveContainer>
                   </div>
                 </div>
-
-                <div className="md:col-span-2 glass p-10 rounded-[40px] border border-white/5 space-y-6">
-                  <h3 className="text-lg font-bold font-mono uppercase tracking-widest text-white/40">Peak Voting Hours</h3>
-                  <div className="h-64 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={adminMetrics.votesPerHour}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                        <XAxis dataKey="hour" stroke="#ffffff20" fontSize={10} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#ffffff20" fontSize={10} tickLine={false} axisLine={false} />
-                        <Tooltip 
-                          contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #ffffff10', borderRadius: '12px' }}
-                        />
-                        <Line type="monotone" dataKey="count" stroke="#ef4444" strokeWidth={3} dot={{ r: 4, fill: '#ef4444' }} activeDot={{ r: 6 }} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
               </div>
             )}
           </div>
@@ -365,44 +394,12 @@ export function Admin() {
                 EXPORT COMPLETE DATA STREAM (.CSV)
               </button>
             </div>
-
-            <div className="glass rounded-[40px] border border-white/5 p-10 space-y-8">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <RefreshCw className="text-red-500 w-5 h-5" />
-                  <h3 className="text-xl font-bold tracking-tight">Recent Prediction Monitor</h3>
-                </div>
-                <span className="text-xs font-mono text-white/20 uppercase tracking-widest">Real-time Stream</span>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-white/5">
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Agent ID</th>
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Constituency</th>
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Prediction</th>
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Confidence</th>
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Timestamp</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentPredictions.map((pred) => (
-                      <tr key={pred.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
-                        <td className="py-4 text-xs font-mono text-white/40 group-hover:text-white transition-colors">{pred.userId?.slice(0, 8)}...</td>
-                        <td className="py-4 text-xs font-bold">{pred.constituencyId}</td>
-                        <td className="py-4">
-                          <span className="px-2 py-1 rounded bg-red-500/10 text-red-500 text-[10px] font-mono uppercase">
-                            {pred.predictedParty}
-                          </span>
-                        </td>
-                        <td className="py-4 text-xs font-mono">{pred.confidence}%</td>
-                        <td className="py-4 text-xs text-white/20">{new Date(pred.timestamp).toLocaleTimeString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <div className="glass p-12 rounded-[40px] border border-white/5 text-center flex flex-col items-center justify-center space-y-4">
+              <Database className="w-12 h-12 text-white/20 mb-4" />
+              <h3 className="text-xl font-bold tracking-tight">Data Stream Analytics</h3>
+              <p className="text-white/40 text-sm font-mono max-w-md mx-auto leading-relaxed">
+                Raw data telemetry redirected to COMMAND overview for real-time monitoring.
+              </p>
             </div>
           </div>
         )}

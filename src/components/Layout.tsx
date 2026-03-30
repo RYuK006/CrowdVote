@@ -160,16 +160,8 @@ export function Layout({ children, user }: LayoutProps) {
             >
               <Menu className="w-5 h-5 text-white/40" />
             </button>
-            <div className="flex items-center gap-4">
-              <div className={cn("h-2 w-2 rounded-full animate-pulse", isAdminRoute ? "bg-red-500" : "bg-emerald-500")} />
-              <span className="text-[10px] font-mono text-white/40 tracking-[0.2em] uppercase hidden sm:inline">Network Status: Optimal</span>
-            </div>
           </div>
-          <div className="flex items-center gap-3 sm:gap-6">
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
-              <span className={cn("text-[10px] font-mono uppercase", isAdminRoute ? "text-red-500" : "text-emerald-500")}>Phase:</span>
-              <span className="text-[10px] font-mono text-white uppercase tracking-wider">Pre-Election</span>
-            </div>
+          <div className="flex items-center gap-4">
             <Settings className="w-5 h-5 text-white/20 hover:text-white cursor-pointer transition-colors" />
           </div>
         </header>
