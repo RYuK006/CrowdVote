@@ -1,0 +1,164 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId} (matches request.auth.uid)
+    // Fields:
+    //   - uid: string (required, immutable) - Unique identifier
+    //   - displayName: string (required, max 50 chars) - Public name
+    //   - phoneNumber: string (optional) - Verified phone
+    //   - influencePoints: number (required) - Current IP
+    //   - predictabilityScore: number (optional) - Neural sync
+    //   - accuracy: number (optional) - Historical accuracy
+    //   - rank: number (optional) - Global rank
+    //   - role: string (required, enum: ['user', 'admin']) - System access
+    //   - createdAt: string (optional, immutable) - Initialization time
+    //
+    // Collection: predictions
+    // Document ID: {userId}_{constituencyId}
+    // Fields:
+    //   - userId: string (required, immutable) - User UID
+    //   - constituencyId: string (required, immutable) - Target node
+    //   - predictedParty: string (required, enum: ['LDF', 'UDF', 'NDA', 'OTH']) - Predicted winner
+    //   - confidence: number (required, 10-100) - Conviction level
+    //   - margin: number (optional) - Predicted margin
+    //   - timestamp: string (required) - Lock-in time
+    //   - phase: string (required) - Election phase
+    //
+    // Collection: config
+    // Document ID: global
+    // Fields:
+    //   - phase: string (required, enum: ['Pre-Campaign', 'Campaign', 'Polling', 'Counting']) - Current phase
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "aaronalexmathew48@gmail.com" && request.auth.token.email_verified == true)); // Default admin
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasRequiredFields(['uid', 'displayName', 'influencePoints', 'role']) &&
+             hasOnlyAllowedFields(['uid', 'displayName', 'phoneNumber', 'influencePoints', 'predictabilityScore', 'accuracy', 'rank', 'role', 'createdAt']) &&
+             data.uid is string && data.uid.size() > 0 &&
+             data.displayName is string && data.displayName.size() > 0 && data.displayName.size() <= 50 &&
+             data.influencePoints is number &&
+             data.role in ['user', 'admin'] &&
+             (!('predictabilityScore' in data) || data.predictabilityScore is number) &&
+             (!('accuracy' in data) || data.accuracy is number) &&
+             (!('rank' in data) || data.rank is number) &&
+             (!('createdAt' in data) || isValidDateString(data.createdAt));
+    }
+
+    function isValidPrediction(data) {
+      return hasRequiredFields(['userId', 'constituencyId', 'predictedParty', 'confidence', 'timestamp', 'phase']) &&
+             hasOnlyAllowedFields(['userId', 'constituencyId', 'predictedParty', 'confidence', 'margin', 'timestamp', 'phase']) &&
+             data.userId is string && data.userId == request.auth.uid &&
+             data.constituencyId is string && data.constituencyId.size() > 0 &&
+             data.predictedParty in ['LDF', 'UDF', 'NDA', 'OTH'] &&
+             data.confidence is number && data.confidence >= 10 && data.confidence <= 100 &&
+             (!('margin' in data) || data.margin is number) &&
+             isValidDateString(data.timestamp) &&
+             data.phase is string;
+    }
+
+    function isValidConfig(data) {
+      return hasRequiredFields(['phase']) &&
+             hasOnlyAllowedFields(['phase']) &&
+             data.phase in ['Pre-Campaign', 'Campaign', 'Polling', 'Counting'];
+    }
+
+    // ===============================================================
+    // Match Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      // Users can read their own profile. Public profiles are allowed for leaderboard,
+      // but we must exclude sensitive fields like phoneNumber from public view.
+      allow read: if isAuthenticated();
+      
+      // Data validation for users
+      function isValidUserUpdate(data) {
+        return isValidUser(data) && 
+               (isOwner(userId) ? true : data.phoneNumber == resource.data.phoneNumber);
+      }
+
+      allow create: if isOwner(userId) && 
+                      isValidUser(request.resource.data) && 
+                      request.resource.data.role == 'user';
+      
+      allow update: if isAuthenticated() && 
+                      (
+                        (isOwner(userId) && isValidUser(request.resource.data) && request.resource.data.role == resource.data.role && request.resource.data.uid == resource.data.uid) || 
+                        (isAdmin() && isValidUser(request.resource.data))
+                      );
+      
+      allow delete: if isAdmin();
+    }
+
+    match /predictions/{predictionId} {
+      allow read: if isAuthenticated();
+      
+      allow create: if isAuthenticated() && 
+                      isValidPrediction(request.resource.data) && 
+                      predictionId == request.auth.uid + "_" + request.resource.data.constituencyId;
+      
+      allow update: if isAuthenticated() && 
+                      isValidPrediction(request.resource.data) && 
+                      (
+                        (request.auth.uid == resource.data.userId && request.resource.data.userId == resource.data.userId) || 
+                        isAdmin()
+                      );
+      
+      allow delete: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+    }
+
+    match /config/global {
+      allow read: if true; // Everyone can see the current phase
+      allow write: if isAdmin() && isValidConfig(request.resource.data);
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

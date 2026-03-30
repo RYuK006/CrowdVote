@@ -1,0 +1,9 @@
+{
+  "name": "CrowdVote AI",
+  "description": "A swarm intelligence election prediction engine for Kerala 2026.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
