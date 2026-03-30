@@ -1,10 +1,9 @@
 {
-  "projectId": "gen-lang-client-0470249281",
-  "appId": "1:480928781772:web:5fb35e3ed7efaad9d3f969",
-  "apiKey": "AIzaSyCQZ6vim8IrZyMuxmz3UjI1QpKAtQh2dc8",
-  "authDomain": "gen-lang-client-0470249281.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-4457bf8b-d988-41f9-b0ba-b18de7b99bc4",
-  "storageBucket": "gen-lang-client-0470249281.firebasestorage.app",
-  "messagingSenderId": "480928781772",
-  "measurementId": ""
+  "apiKey": "AIzaSyCOLIou_yoLCBbau7tXOmxB7KOw8Hlz8CM",
+  "authDomain": "crowdyvote.firebaseapp.com",
+  "projectId": "crowdyvote",
+  "storageBucket": "crowdyvote.firebasestorage.app",
+  "messagingSenderId": "434213742801",
+  "appId": "1:434213742801:web:9af9b144379e4136d53df0",
+  "measurementId": "G-M9BWVS2KC7"
 }
