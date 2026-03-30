@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Vote, CheckCircle2, AlertCircle, Info, BarChart3, Users } from "lucide-react";
+import { Vote, CheckCircle2, AlertCircle, Info, BarChart3, Users, Search, Swords } from "lucide-react";
 import { Layout } from "./Layout";
 import { auth, db } from "../firebase";
 import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
 import { handleFirestoreError, OperationType } from "../lib/firebase-utils";
 import { cn } from "../lib/utils";
 
+import { CONSTITUENCIES, PARTIES } from "../data";
+
 export function Voting() {
   const [loading, setLoading] = useState(true);
+  const [predictions, setPredictions] = useState<Record<string, any>>({});
+  const [search, setSearch] = useState("");
   const [stats, setStats] = useState({
     totalPredictions: 0,
     userPredictions: 0,
@@ -16,32 +20,47 @@ export function Voting() {
   });
 
   useEffect(() => {
-    if (!auth.currentUser) return;
-
-    const q = query(collection(db, "predictions"), where("userId", "==", auth.currentUser.uid));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const userCount = snapshot.size;
-      setStats(prev => ({
-        ...prev,
-        userPredictions: userCount,
-        completionRate: Math.round((userCount / 140) * 100),
-      }));
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, "predictions");
-    });
-
-    // Fetch total predictions (simplified for demo)
-    const totalQ = query(collection(db, "predictions"));
-    const unsubscribeTotal = onSnapshot(totalQ, (snapshot) => {
-      setStats(prev => ({ ...prev, totalPredictions: snapshot.size }));
-    });
-
-    return () => {
-      unsubscribe();
-      unsubscribeTotal();
+    const fetchData = async () => {
+      if (!auth.currentUser) return;
+      try {
+        const token = await auth.currentUser.getIdToken();
+        
+        // Fetch user predictions
+        const res = await fetch('/api/user/predictions', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        setPredictions(data);
+        
+        const userCount = Object.keys(data).length;
+        
+        // Fetch global stats (optional but keep for UI)
+        const globalRes = await fetch('/api/analytics');
+        const globalData = await globalRes.json();
+        
+        setStats({
+          userPredictions: userCount,
+          totalPredictions: globalData.totalSignals || 0,
+          completionRate: Math.round((userCount / 140) * 100),
+        });
+      } catch (error) {
+        console.error("Error fetching voting data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
+
+    fetchData();
   }, []);
+
+  const predictedList = Object.entries(predictions).map(([id, data]) => {
+    const constituency = CONSTITUENCIES.find(c => c.id === id);
+    const party = PARTIES.find(p => p.id === data.predictedParty);
+    return { ...data, constituency, party };
+  }).filter(p => 
+    p.constituency?.name.toLowerCase().includes(search.toLowerCase()) ||
+    p.party?.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <Layout user={auth.currentUser}>
@@ -75,82 +94,135 @@ export function Voting() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="glass p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-6 sm:p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
               <BarChart3 className="w-24 h-24" />
             </div>
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
               <CheckCircle2 className="text-emerald-500 w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-bold mb-2">Neural Sync Status</h3>
+              <h3 className="text-xl font-bold mb-2">Neural Nodes Locked</h3>
               <p className="text-white/40 text-sm leading-relaxed">
-                Your predictive signals are currently synchronized with the main swarm vector.
+                You have synchronized {stats.userPredictions} out of 140 electoral nodes.
               </p>
             </div>
             <div className="pt-4 flex items-center gap-2 text-[10px] font-mono text-emerald-500 uppercase tracking-widest">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Active Connection
+              Sync Priority: {stats.completionRate > 50 ? "High" : "Standard"}
             </div>
           </div>
 
-          <div className="glass p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-6 sm:p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+          <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
               <Users className="w-24 h-24" />
             </div>
             <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
               <Vote className="text-blue-500 w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-bold mb-2">Aggregate Signals</h3>
+              <h3 className="text-xl font-bold mb-2">Swarm Pulse</h3>
               <p className="text-white/40 text-sm leading-relaxed">
-                Total predictive signals processed across all nodes in the Kerala 2026 network.
+                Total predictive signals processed across the Kerala 2026 intelligence mesh.
               </p>
             </div>
             <div className="pt-4 text-2xl font-bold font-mono text-blue-500">
-              {stats.totalPredictions.toLocaleString()}
+              {stats.totalPredictions.toLocaleString()} Signals
             </div>
           </div>
 
-          <div className="glass p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-6 sm:p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Info className="w-24 h-24" />
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
-              <AlertCircle className="text-purple-500 w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-2">Protocol Integrity</h3>
-              <p className="text-white/40 text-sm leading-relaxed">
-                All votes are cryptographically verified and weighted by agent predictability scores.
-              </p>
-            </div>
-            <div className="pt-4 text-[10px] font-mono text-purple-500 uppercase tracking-widest">
-              Verified by Swarm_OS
-            </div>
+          <div className="glass p-8 rounded-[40px] border border-white/5 flex flex-col justify-center items-center text-center gap-4 group hover:border-emerald-500/30 transition-all cursor-pointer" onClick={() => window.location.href = "/arena"}>
+             <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition-transform">
+               <Swords className="text-emerald-500 w-8 h-8" />
+             </div>
+             <div>
+               <h3 className="text-lg font-bold">Arena Deployment</h3>
+               <p className="text-xs text-white/40">Calibrate new nodes in real-time</p>
+             </div>
           </div>
         </div>
 
-        <div className="glass p-8 sm:p-12 rounded-[32px] sm:rounded-[40px] border border-white/5 text-center space-y-8">
-          <div className="max-w-2xl mx-auto space-y-4">
-            <h2 className="text-3xl font-bold tracking-tight">Ready to update your <span className="text-emerald-500">Predictions</span>?</h2>
-            <p className="text-white/40 leading-relaxed">
-              The electoral landscape is fluid. Re-calibrate your signals in the Arena to maintain high neural sync and maximize your Influence Points.
-            </p>
+        {/* Prediction Review Section */}
+        <div className="space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h2 className="text-2xl font-bold tracking-tight">Predictive <span className="text-emerald-500">Node Review</span></h2>
+            <div className="relative group w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-emerald-500 transition-colors" />
+              <input
+                type="text"
+                placeholder="Search nodes..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all"
+              />
+            </div>
           </div>
-          <div className="flex justify-center">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = "/arena"}
-              className="px-12 py-5 rounded-full bg-emerald-500 text-black font-bold text-lg emerald-glow hover:bg-emerald-400 transition-all"
-            >
-              ENTER THE ARENA
-            </motion.button>
-          </div>
+
+          {loading ? (
+             <div className="py-20 text-center font-mono text-white/20 uppercase tracking-[0.5em] animate-pulse">Scanning Neural Mesh...</div>
+          ) : predictedList.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {predictedList.map((item) => (
+                <div 
+                  key={item.constituencyId}
+                  className="glass p-5 rounded-[28px] border border-white/5 hover:border-emerald-500/30 transition-all group"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="space-y-0.5">
+                      <h4 className="font-bold tracking-tight text-lg group-hover:text-emerald-500 transition-colors">{item.constituency?.name}</h4>
+                      <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">{item.constituency?.district}</p>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center p-2">
+                       <img src={item.party?.symbol} alt={item.party?.id} className="w-full h-full object-contain" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-white/40 uppercase">Selected Vector</span>
+                      <span className="text-xs font-bold text-white uppercase px-2 py-1 bg-white/5 rounded-lg border border-white/5" style={{ color: item.party?.color }}>{item.party?.id}</span>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono text-white/40 uppercase">Confidence</span>
+                        <span className="text-sm font-bold text-emerald-500">{item.confidence}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${item.confidence}%` }}
+                          className="h-full bg-emerald-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="glass p-12 rounded-[40px] border border-white/5 text-center space-y-6">
+              <div className="w-20 h-20 rounded-full bg-white/5 border border-white/5 flex items-center justify-center mx-auto opacity-20">
+                <AlertCircle className="w-10 h-10" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold">No Neural Nodes Synced</h3>
+                <p className="text-white/40 text-sm max-w-sm mx-auto leading-relaxed">
+                  You haven't locked any predictions yet. Head to the Arena to start synchronizing with the swarm.
+                </p>
+              </div>
+              <button 
+                onClick={() => window.location.href = "/arena"}
+                className="px-8 py-3 rounded-2xl bg-emerald-500 text-black font-bold text-sm emerald-glow hover:bg-emerald-400 transition-all"
+              >
+                GOTO ARENA
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </Layout>
   );
 }
+
