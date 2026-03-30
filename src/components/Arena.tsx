@@ -108,6 +108,7 @@ export function Arena() {
   });
 
   const selectedConstituency = constituencies.find(c => c.id === selectedId);
+  const isLocked = !!(selectedId && predictions[selectedId]);
 
   const handlePredict = (partyId: string) => {
     if (!selectedId) return;
@@ -324,7 +325,8 @@ export function Arena() {
                             delete next[selectedId];
                             return next;
                           })}
-                          className="p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-red-500/10 hover:border-red-500/30 transition-all group"
+                          disabled={isLocked}
+                          className="p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-red-500/10 hover:border-red-500/30 transition-all group disabled:opacity-20 disabled:cursor-not-allowed"
                         >
                           <RotateCcw className="w-5 h-5 text-white/40 group-hover:text-red-400" />
                         </button>
@@ -487,12 +489,14 @@ export function Arena() {
                                 hidden: { opacity: 0, y: 10 },
                                 visible: { opacity: 1, y: 0 }
                               }}
-                              onClick={() => handlePredict(party.id)}
+                              onClick={() => !isLocked && handlePredict(party.id)}
+                              disabled={isLocked}
                               className={cn(
                                 "p-4 rounded-[24px] border transition-all duration-300 text-left relative overflow-hidden group flex items-center gap-4",
                                 predictions[selectedId]?.predictedParty === party.id
                                   ? "bg-white/10 border-emerald-500/50 emerald-glow"
-                                  : "bg-white/5 border-white/5 hover:border-white/20"
+                                  : "bg-white/5 border-white/5 hover:border-white/20",
+                                isLocked && "cursor-not-allowed opacity-80"
                               )}
                             >
                               <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: party.color }} />
@@ -565,8 +569,9 @@ export function Arena() {
                          max="100"
                          step="5"
                          value={predictions[selectedId]?.confidence || 50}
-                         onChange={(e) => handleConfidence(parseInt(e.target.value))}
-                         className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                         onChange={(e) => !isLocked && handleConfidence(parseInt(e.target.value))}
+                         disabled={isLocked}
+                         className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-500 disabled:opacity-30 disabled:cursor-not-allowed"
                        />
                        <div className="flex justify-between text-[8px] font-mono text-white/20 uppercase tracking-widest">
                          <span>Low Conviction</span>
@@ -576,20 +581,27 @@ export function Arena() {
                     </div>
 
                     <div className="pt-2 pb-10">
-                      <button
-                        onClick={handleSave}
-                        disabled={saving || !predictions[selectedId]?.predictedParty}
-                        className="w-full py-5 rounded-[24px] bg-emerald-500 text-black font-bold text-lg emerald-glow hover:bg-emerald-400 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
-                      >
-                        {saving ? (
-                          "SYNCING TO BACKEND..."
-                        ) : (
-                          <>
-                            <Lock className="w-5 h-5" />
-                            LOCK PREDICTION
-                          </>
-                        )}
-                      </button>
+                      {isLocked ? (
+                        <div className="w-full py-5 rounded-[24px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 font-bold text-lg flex items-center justify-center gap-3">
+                           <Lock className="w-5 h-5" />
+                           SIGNAL PERMANENTLY LOCKED
+                        </div>
+                      ) : (
+                        <button
+                          onClick={handleSave}
+                          disabled={saving || !predictions[selectedId]?.predictedParty}
+                          className="w-full py-5 rounded-[24px] bg-emerald-500 text-black font-bold text-lg emerald-glow hover:bg-emerald-400 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale"
+                        >
+                          {saving ? (
+                            "SYNCING TO BACKEND..."
+                          ) : (
+                            <>
+                              <Lock className="w-5 h-5" />
+                              LOCK PREDICTION
+                            </>
+                          )}
+                        </button>
+                      )}
                       {message && (
                         <p className={cn("mt-4 text-center text-xs font-mono uppercase tracking-widest", message.type === "success" ? "text-emerald-500" : "text-red-400")}>
                           {message.text}

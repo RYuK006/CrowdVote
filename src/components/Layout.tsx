@@ -147,7 +147,7 @@ export function Layout({ children, user }: LayoutProps) {
           <div className="flex items-center gap-3 sm:gap-6">
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
               <span className="text-[10px] font-mono text-emerald-500 uppercase">Phase:</span>
-              <span className="text-[10px] font-mono text-white uppercase tracking-wider">Campaign</span>
+              <span className="text-[10px] font-mono text-white uppercase tracking-wider">Pre-Election</span>
             </div>
             <Settings className="w-5 h-5 text-white/20 hover:text-white cursor-pointer transition-colors" />
           </div>

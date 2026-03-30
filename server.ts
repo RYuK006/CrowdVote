@@ -24,6 +24,10 @@ try {
   console.error("Failed to init Firebase Admin:", error);
 }
 
+const CURRENT_PHASE = "pre_election";
+const ADMIN_PHONES = ["+919874563210"];
+
+
 // In-Memory Data Structures
 let CONSTITUENCIES: any[] = [];
 let CONSTITUENCY_DETAILS: Record<string, any> = {};
@@ -103,9 +107,19 @@ async function startServer() {
 
   app.get("/api/user/check", authenticateToken, async (req: any, res: any) => {
     const uid = req.user.uid;
+    const phoneNumber = req.user.phone_number || "";
     try {
       const userDoc = await db.collection('users').doc(uid).get();
-      res.json({ exists: userDoc.exists, user: userDoc.exists ? userDoc.data() : null });
+      const exists = userDoc.exists;
+      const userData = userDoc.data();
+      const isAdmin = ADMIN_PHONES.includes(phoneNumber);
+      
+      res.json({ 
+        exists, 
+        uid, 
+        isAdmin,
+        user: exists ? userData : null 
+      });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
@@ -132,22 +146,27 @@ async function startServer() {
   });
 
   app.post("/api/predict", authenticateToken, async (req: any, res: any) => {
-    const { constituencyId, predictedParty, confidence, phase = "CAMPAIGN" } = req.body;
+    if (!db) return res.status(500).json({ error: "DB not initialized" });
+    const { constituencyId, predictedParty, confidence } = req.body;
     const uid = req.user.uid;
 
     try {
-      // Predictions are stored in subcollection
-      const predId = `${phase}_${constituencyId}`;
-      await db.collection("users").doc(uid).collection("predictions").doc(predId).set({
-        phase,
+      const docId = `${CURRENT_PHASE}_${constituencyId}`;
+      const docRef = db.collection("users").doc(uid).collection("predictions").doc(docId);
+      const existingDoc = await docRef.get();
+      
+      if (existingDoc.exists) {
+        return res.status(400).json({ error: "Prediction already locked for this phase and constituency." });
+      }
+
+      await docRef.set({
         constituencyId,
         predictedParty,
         confidence,
         timestamp: new Date().toISOString(),
-        weight: confidence / 100
+        phase: CURRENT_PHASE
       });
-
-      res.json({ success: true, message: "Prediction locked in user profile subcollection" });
+      res.json({ success: true });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }

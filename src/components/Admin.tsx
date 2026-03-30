@@ -8,10 +8,12 @@ import { cn } from "../lib/utils";
 import { handleFirestoreError, OperationType } from "../lib/firebase-utils";
 
 export function Admin() {
-  const [phase, setPhase] = useState("Campaign");
+  const [phase, setPhase] = useState("Pre-Election");
   const [stats, setStats] = useState({ users: 0, predictions: 0 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  
+  const isAdmin = auth.currentUser?.phoneNumber === "+919874563210";
 
   const [recentPredictions, setRecentPredictions] = useState<any[]>([]);
 
@@ -72,6 +74,32 @@ export function Admin() {
     }
   };
 
+  if (!isAdmin) {
+    return (
+      <Layout user={auth.currentUser}>
+        <div className="h-full flex items-center justify-center">
+          <div className="glass p-12 rounded-[40px] border border-red-500/20 text-center space-y-6 max-w-md">
+            <div className="w-20 h-20 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
+              <Shield className="text-red-500 w-10 h-10" />
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold tracking-tight">Access Denied</h1>
+              <p className="text-white/40 text-sm leading-relaxed font-mono">
+                Unauthorized node detected. Only verified administrative agents can access the central command node.
+              </p>
+            </div>
+            <button 
+              onClick={() => window.location.href = "/"}
+              className="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/60 font-bold transition-all uppercase tracking-widest text-xs"
+            >
+              RETURN TO PERIMETER
+            </button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout user={auth.currentUser}>
       <div className="space-y-12">
@@ -107,8 +135,8 @@ export function Admin() {
               <h3 className="text-xl font-bold tracking-tight">Election Lifecycle Phase</h3>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {["Pre-Campaign", "Campaign", "Polling", "Counting"].map((p) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {["Pre-Election", "Campaign", "After Polling"].map((p) => (
                 <button
                   key={p}
                   onClick={() => handlePhaseChange(p)}

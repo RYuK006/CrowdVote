@@ -76,7 +76,7 @@ export function Voting() {
             </h1>
             <p className="text-white/40 max-w-xl text-lg leading-relaxed">
               Your predictions are being aggregated into the global swarm intelligence model. 
-              The current phase is <span className="text-white font-bold">CAMPAIGN</span>.
+              The current phase is <span className="text-white font-bold uppercase tracking-widest">Pre-Election</span>.
             </p>
           </div>
 
