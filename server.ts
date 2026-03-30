@@ -101,35 +101,53 @@ async function startServer() {
     }
   }
 
-  app.post("/api/predict", authenticateToken, async (req: any, res: any) => {
-    const { constituencyId, predictedParty, confidence } = req.body;
+  app.get("/api/user/check", authenticateToken, async (req: any, res: any) => {
     const uid = req.user.uid;
-    const name = req.user.name || req.user.phone_number || req.user.email || 'User';
+    try {
+      const userDoc = await db.collection('users').doc(uid).get();
+      res.json({ exists: userDoc.exists, user: userDoc.exists ? userDoc.data() : null });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post("/api/user/register", authenticateToken, async (req: any, res: any) => {
+    const { displayName } = req.body;
+    const uid = req.user.uid;
+    const phoneNumber = req.user.phone_number || "";
 
     try {
-      // Create user if not exists
-      const userRef = db.collection('users').doc(uid);
-      const userDoc = await userRef.get();
-      if (!userDoc.exists) {
-        await userRef.set({
-          uid,
-          displayName: name,
-          predictabilityScore: 0,
-          influencePoints: 0
-        });
-      }
+      await db.collection('users').doc(uid).set({
+        uid,
+        displayName,
+        phoneNumber,
+        predictabilityScore: 0,
+        influencePoints: 100,
+        createdAt: new Date().toISOString()
+      });
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
 
-      const predId = `${uid}_${constituencyId}`;
-      await db.collection("predictions").doc(predId).set({
-        userId: uid,
+  app.post("/api/predict", authenticateToken, async (req: any, res: any) => {
+    const { constituencyId, predictedParty, confidence, phase = "CAMPAIGN" } = req.body;
+    const uid = req.user.uid;
+
+    try {
+      // Predictions are stored in subcollection
+      const predId = `${phase}_${constituencyId}`;
+      await db.collection("users").doc(uid).collection("predictions").doc(predId).set({
+        phase,
         constituencyId,
         predictedParty,
         confidence,
         timestamp: new Date().toISOString(),
-        weight: confidence / 100 // Normalized weight factor
+        weight: confidence / 100
       });
 
-      res.json({ success: true, message: "Prediction locked via backend" });
+      res.json({ success: true, message: "Prediction locked in user profile subcollection" });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
@@ -139,13 +157,24 @@ async function startServer() {
     if (!db) return res.json([]);
     const id = req.params.id;
     try {
-      const predsSnap = await db.collection("predictions").where("constituencyId", "==", id).limit(10).get();
-      const userIds = predsSnap.docs.map(i => i.data().userId);
-      if (userIds.length === 0) return res.json([]);
+      // Use collectionGroup to find predictions for this constituency across all users
+      const predsSnap = await db.collectionGroup("predictions")
+        .where("constituencyId", "==", id)
+        .orderBy("timestamp", "desc")
+        .limit(20)
+        .get();
       
-      const usersSnap = await db.collection("users").where("uid", "in", userIds.slice(0, 10)).get();
+      const userIds = new Set<string>();
+      predsSnap.docs.forEach(doc => {
+        // Parent of 'predictions' doc is 'users/{uid}'
+        const userId = doc.ref.parent.parent?.id;
+        if (userId) userIds.add(userId);
+      });
+
+      if (userIds.size === 0) return res.json([]);
+      
+      const usersSnap = await db.collection("users").where("uid", "in", Array.from(userIds).slice(0, 10)).get();
       const users = usersSnap.docs.map(doc => doc.data());
-      // Sort by points (leaderboard logic)
       users.sort((a, b) => b.predictabilityScore - a.predictabilityScore);
       res.json(users);
     } catch (err: any) {
@@ -156,8 +185,8 @@ async function startServer() {
   app.get("/api/activity/global", async (req: any, res: any) => {
     if (!db) return res.json([]);
     try {
-      const snap = await db.collection("predictions").orderBy("timestamp", "desc").limit(10).get();
-      res.json(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const snap = await db.collectionGroup("predictions").orderBy("timestamp", "desc").limit(15).get();
+      res.json(snap.docs.map(doc => ({ id: doc.id, ...doc.data(), userId: doc.ref.parent.parent?.id })));
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }
@@ -167,7 +196,7 @@ async function startServer() {
     if (!db) return res.json({});
     const uid = req.user.uid;
     try {
-      const snap = await db.collection("predictions").where("userId", "==", uid).get();
+      const snap = await db.collection("users").doc(uid).collection("predictions").get();
       const preds: Record<string, any> = {};
       snap.forEach(doc => {
         const d = doc.data();
@@ -182,7 +211,7 @@ async function startServer() {
   app.get("/api/analytics", async (req: any, res: any) => {
     if (!db) return res.json({ partyShare: [], districtStats: [] });
     try {
-      const snap = await db.collection("predictions").get();
+      const snap = await db.collectionGroup("predictions").get();
       const predictions = snap.docs.map(d => d.data());
       
       const partyWeights: Record<string, number> = {};

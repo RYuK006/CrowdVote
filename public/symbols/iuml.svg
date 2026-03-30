@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.0"
+   width="900"
+   height="600"
+   viewBox="-75 -40 120 80"
+   id="svg2">
+  <defs
+     id="defs28" />
+  <rect
+     width="120"
+     height="80"
+     x="-75"
+     y="-40"
+     style="fill:#006600"
+     id="rect6" />
+  <comment
+     id="comment12">rotation angles = -arctan(8/9)</comment>
+  <circle
+     cx="0"
+     cy="0"
+     r="24"
+     transform="matrix(-0.6090051,0,0,0.6090051,-48.476303,-15.807969)"
+     style="fill:#ffffff"
+     id="circle8" />
+  <circle
+     cx="-7"
+     cy="-40"
+     r="22"
+     transform="matrix(-0.4551761,-0.4046009,-0.4046009,0.4551761,-71.582647,-3.7540864)"
+     style="fill:#006600"
+     id="circle10" />
+  <g
+     transform="matrix(0.7474093,-0.6643638,0.6643638,0.7474093,-56.761834,-23.930541)"
+     style="fill:#ffffff"
+     id="cone">
+    <polygon
+       points="0,0 -8,0 -8,4 0,0 "
+       transform="matrix(0.9510565,0.309017,-0.309017,0.9510565,8,0)"
+       id="triangle" />
+    <use
+       transform="scale(1,-1)"
+       id="use17"
+       x="0"
+       y="0"
+       width="120"
+       height="80"
+       xlink:href="#triangle" />
+  </g>
+  <use
+     transform="matrix(0.309017,0.9510565,-0.9510565,0.309017,-61.980759,37.448114)"
+     style="fill:#ffffff"
+     id="use19"
+     x="0"
+     y="0"
+     width="120"
+     height="80"
+     xlink:href="#cone" />
+  <use
+     transform="matrix(0.309017,-0.9510565,0.9510565,0.309017,-16.462166,-70.519308)"
+     style="fill:#ffffff"
+     id="use21"
+     x="0"
+     y="0"
+     width="120"
+     height="80"
+     xlink:href="#cone" />
+  <use
+     transform="matrix(-0.809017,0.5877853,-0.5877853,-0.809017,-116.74914,-9.9269839)"
+     style="fill:#ffffff"
+     id="use23"
+     x="0"
+     y="0"
+     width="120"
+     height="80"
+     xlink:href="#cone" />
+  <use
+     transform="matrix(-0.809017,-0.5877853,0.5877853,-0.809017,-88.617102,-76.654527)"
+     style="fill:#ffffff"
+     id="use25"
+     x="0"
+     y="0"
+     width="120"
+     height="80"
+     xlink:href="#cone" />
+</svg>

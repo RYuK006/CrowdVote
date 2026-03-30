@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShieldCheck, Phone, ArrowRight, Lock, User, CheckCircle2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, db } from "../firebase";
+import { auth } from "../firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { handleFirestoreError, OperationType } from "../lib/firebase-utils";
 
 export function Signup() {
   const [step, setStep] = useState(1);
@@ -57,21 +55,20 @@ export function Signup() {
       const result = await confirmationResult.confirm(otp);
       const user = result.user;
 
-      // Create user in Firestore
-      try {
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          displayName: name,
-          phoneNumber: phone,
-          influencePoints: 100,
-          predictabilityScore: 0,
-          accuracy: 0,
-          rank: 0,
-          role: "user",
-          createdAt: new Date().toISOString(),
-        });
-      } catch (dbErr) {
-        handleFirestoreError(dbErr, OperationType.CREATE, `users/${user.uid}`);
+      // Register user via backend
+      const idToken = await user.getIdToken();
+      const regRes = await fetch("/api/user/register", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({ displayName: name })
+      });
+      
+      if (!regRes.ok) {
+        const errorData = await regRes.json();
+        throw new Error(errorData.error || "Failed to register profile.");
       }
 
       setStep(3);

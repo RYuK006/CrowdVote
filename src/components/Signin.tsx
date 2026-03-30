@@ -51,9 +51,26 @@ export function Signin() {
     setError("");
     try {
       if (!confirmationResult) throw new Error("No confirmation result found.");
-      await confirmationResult.confirm(otp);
-      setStep(3);
-      setTimeout(() => navigate("/arena"), 2000);
+      const result = await confirmationResult.confirm(otp);
+      const user = result.user;
+      const idToken = await user.getIdToken();
+
+      // Check if user exists in backend
+      const checkRes = await fetch("/api/user/check", {
+        headers: {
+          'Authorization': `Bearer ${idToken}`
+        }
+      });
+      const checkData = await checkRes.json();
+
+      if (checkData.exists) {
+        setStep(3);
+        setTimeout(() => navigate("/arena"), 1500);
+      } else {
+        // User doesn't exist, redirect to signup
+        setError("Account not found. Redirecting to registration...");
+        setTimeout(() => navigate("/signup"), 1500);
+      }
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Invalid OTP. Please try again.");

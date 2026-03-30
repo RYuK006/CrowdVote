@@ -144,8 +144,8 @@ export const CONSTITUENCIES = [
 export const DISTRICTS = Array.from(new Set(CONSTITUENCIES.map(c => c.district)));
 
 export const PARTIES = [
-  { id: "LDF", name: "Left Democratic Front", color: "#ef4444", symbol: "https://kerala26.com/symbols/ldf.png" },
-  { id: "UDF", name: "United Democratic Front", color: "#3b82f6", symbol: "https://kerala26.com/symbols/udf.png" },
-  { id: "NDA", name: "National Democratic Alliance", color: "#f97316", symbol: "https://kerala26.com/symbols/nda.png" },
-  { id: "OTH", name: "Others", color: "#6b7280", symbol: "https://kerala26.com/symbols/others.png" }
+  { id: "LDF", name: "Left Democratic Front", color: "#ef4444", symbol: "/symbols/cpim.png" },
+  { id: "UDF", name: "United Democratic Front", color: "#3b82f6", symbol: "/symbols/inc.svg" },
+  { id: "NDA", name: "National Democratic Alliance", color: "#f97316", symbol: "/symbols/bjp.svg" },
+  { id: "OTH", name: "Others", color: "#6b7280", symbol: "/symbols/others.png" }
 ];
