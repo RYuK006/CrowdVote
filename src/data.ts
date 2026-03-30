@@ -147,5 +147,5 @@ export const PARTIES = [
   { id: "LDF", name: "Left Democratic Front", color: "#ef4444", symbol: "/symbols/cpim.png" },
   { id: "UDF", name: "United Democratic Front", color: "#3b82f6", symbol: "/symbols/inc.svg" },
   { id: "NDA", name: "National Democratic Alliance", color: "#f97316", symbol: "/symbols/bjp.svg" },
-  { id: "OTH", name: "Others", color: "#6b7280", symbol: "/symbols/others.png" }
+  { id: "OTH", name: "Others", color: "#6b7280", symbol: "/symbols/inl.png" }
 ];

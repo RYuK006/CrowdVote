@@ -164,7 +164,7 @@ export function Arena() {
       <div className="relative h-full flex overflow-hidden">
         {/* Constituency List View (Left Panel on Desktop, Full on Mobile when nothing selected) */}
         <div className={cn(
-          "flex flex-col gap-6 overflow-hidden h-full transition-all duration-300",
+          "flex flex-col gap-6 h-full transition-all duration-300",
           selectedId ? "w-full lg:w-[450px] xl:w-[500px] lg:flex-none lg:pr-6 hidden lg:flex" : "w-full flex-1"
         )}>
           <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 shrink-0">
@@ -264,7 +264,7 @@ export function Arena() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "100%", opacity: 0 }}
               transition={{ type: "spring", damping: 30, stiffness: 200 }}
-              className="absolute inset-0 z-50 bg-neutral-950 lg:relative lg:flex-1 lg:bg-transparent lg:z-auto"
+              className="absolute inset-0 z-50 bg-neutral-950 lg:relative lg:flex-1 lg:bg-transparent lg:z-auto h-full"
             >
               <div className="glass w-full h-full lg:rounded-[40px] border border-white/5 relative overflow-hidden flex flex-col bg-neutral-950 shadow-2xl">
                 {/* Overlay Header */}
