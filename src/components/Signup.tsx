@@ -85,13 +85,13 @@ export function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-8">
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 sm:p-8">
       <div id="recaptcha-container"></div>
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md glass p-10 rounded-[40px] border border-white/5 emerald-glow relative overflow-hidden"
+        className="w-full max-w-md glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 emerald-glow relative overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500/20">
           <motion.div

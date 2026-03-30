@@ -86,14 +86,15 @@ export function Leaderboard() {
               transition={{ delay: idx * 0.1 }}
               className={cn(
                 "glass p-8 rounded-[40px] border border-white/5 relative group overflow-hidden",
-                idx === 0 ? "h-[420px] border-emerald-500/30 emerald-glow" : "h-[360px]"
+                idx === 0 ? "md:h-[420px] border-emerald-500/30 emerald-glow" : "md:h-[360px]",
+                "h-auto py-10 md:py-8 flex flex-col items-center justify-between gap-8 md:gap-0"
               )}
             >
               {idx === 0 && (
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent" />
               )}
               
-              <div className="flex flex-col items-center text-center h-full justify-between">
+              <div className="flex flex-col items-center text-center h-full justify-between w-full">
                 <div className="space-y-6">
                   <div className="relative">
                     <div className={cn(
@@ -134,16 +135,17 @@ export function Leaderboard() {
         </div>
 
         {/* List */}
-        <div className="glass rounded-[40px] border border-white/5 overflow-hidden">
-          <div className="grid grid-cols-[80px_1fr_120px_120px_80px] p-6 border-b border-white/5 text-[10px] font-mono text-white/20 uppercase tracking-widest">
-            <span>Rank</span>
-            <span>Agent</span>
-            <span className="text-center">Influence</span>
-            <span className="text-center">Predictability</span>
-            <span className="text-right">Action</span>
-          </div>
+        <div className="glass rounded-[40px] border border-white/5 overflow-x-auto custom-scrollbar">
+          <div className="min-w-[600px] md:min-w-0">
+            <div className="grid grid-cols-[80px_1fr_120px_120px_80px] p-6 border-b border-white/5 text-[10px] font-mono text-white/20 uppercase tracking-widest">
+              <span>Rank</span>
+              <span>Agent</span>
+              <span className="text-center">Influence</span>
+              <span className="text-center">Predictability</span>
+              <span className="text-right">Action</span>
+            </div>
 
-          <div className="divide-y divide-white/5">
+            <div className="divide-y divide-white/5">
             {others.map((user) => (
               <div key={user.id} className="grid grid-cols-[80px_1fr_120px_120px_80px] p-6 items-center hover:bg-white/5 transition-colors group">
                 <span className="text-xl font-bold text-white/20 group-hover:text-emerald-500 transition-colors">#{user.rank}</span>
@@ -165,6 +167,7 @@ export function Leaderboard() {
                 </div>
               </div>
             ))}
+            </div>
           </div>
         </div>
       </div>

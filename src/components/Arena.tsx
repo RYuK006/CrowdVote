@@ -355,19 +355,19 @@ export function Arena() {
                           <div className="glass p-8 rounded-[32px] border border-white/5 space-y-5 bg-white/[0.02] relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-[60px] rounded-full -mr-16 -mt-16 group-hover:bg-emerald-500/10 transition-all duration-700" />
                             
-                            <div className="flex items-center justify-between group/item relative z-10">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between group/item relative z-10 gap-1 sm:gap-0">
                               <span className="text-xs text-white/40 group-hover/item:text-white/60 transition-colors">Population (Est.)</span>
                               <span className="text-sm font-mono text-white font-bold">{CONSTITUENCY_DETAILS[selectedId]?.population || "N/A"}</span>
                             </div>
-                            <div className="flex items-center justify-between group/item relative z-10">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between group/item relative z-10 gap-1 sm:gap-0">
                               <span className="text-xs text-white/40 group-hover/item:text-white/60 transition-colors">Electors (2021)</span>
                               <span className="text-sm font-mono text-white font-bold">{CONSTITUENCY_DETAILS[selectedId]?.results2021.electors || "N/A"}</span>
                             </div>
-                            <div className="flex items-center justify-between group/item relative z-10">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between group/item relative z-10 gap-1 sm:gap-0">
                               <span className="text-xs text-white/40 group-hover/item:text-white/60 transition-colors">Turnout (2021)</span>
                               <span className="text-sm font-mono text-emerald-500 font-bold">{CONSTITUENCY_DETAILS[selectedId]?.results2021.turnout || "N/A"}%</span>
                             </div>
-                            <div className="flex items-center justify-between group/item relative z-10">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between group/item relative z-10 gap-1 sm:gap-0">
                               <span className="text-xs text-white/40 group-hover/item:text-white/60 transition-colors">Victory Margin (2021)</span>
                               <span className="text-sm font-mono text-white font-bold">{CONSTITUENCY_DETAILS[selectedId]?.results2021.margin || "N/A"}</span>
                             </div>
@@ -410,24 +410,24 @@ export function Arena() {
                             <label className="text-[11px] font-mono text-emerald-500 uppercase tracking-[0.3em] font-bold">Historical Data (2021)</label>
                           </div>
                           <div className="grid gap-4">
-                            <div className="glass p-6 rounded-[32px] border border-white/5 flex items-center justify-between relative overflow-hidden group hover:bg-white/5 transition-all">
+                            <div className="glass p-5 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between relative overflow-hidden group hover:bg-white/5 transition-all gap-4">
                               <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500" />
-                              <div>
+                              <div className="pl-2 sm:pl-0">
                                 <span className="text-[8px] font-mono text-emerald-500 uppercase block mb-1 font-bold">Winner</span>
-                                <span className="text-base font-bold tracking-tight">{CONSTITUENCY_DETAILS[selectedId]?.results2021.winner.name || "N/A"}</span>
+                                <span className="text-base font-bold tracking-tight block max-w-full truncate">{CONSTITUENCY_DETAILS[selectedId]?.results2021.winner.name || "N/A"}</span>
                               </div>
-                              <div className="text-right">
+                              <div className="sm:text-right pl-2 sm:pl-0">
                                 <span className="text-[8px] font-mono text-white/20 uppercase block mb-1 font-bold">Front</span>
                                 <span className="text-xs font-bold text-emerald-500">{CONSTITUENCY_DETAILS[selectedId]?.results2021.winner.front || "N/A"}</span>
                               </div>
                             </div>
-                            <div className="glass p-6 rounded-[32px] border border-white/5 flex items-center justify-between opacity-60 relative overflow-hidden group hover:opacity-100 transition-all">
+                            <div className="glass p-5 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between opacity-60 relative overflow-hidden group hover:opacity-100 transition-all gap-4">
                               <div className="absolute top-0 left-0 w-1.5 h-full bg-white/20" />
-                              <div>
+                              <div className="pl-2 sm:pl-0">
                                 <span className="text-[8px] font-mono text-white/40 uppercase block mb-1 font-bold">Runner Up</span>
-                                <span className="text-base font-bold tracking-tight">{CONSTITUENCY_DETAILS[selectedId]?.results2021.runnerUp.name || "N/A"}</span>
+                                <span className="text-base font-bold tracking-tight block max-w-full truncate">{CONSTITUENCY_DETAILS[selectedId]?.results2021.runnerUp.name || "N/A"}</span>
                               </div>
-                              <div className="text-right">
+                              <div className="sm:text-right pl-2 sm:pl-0">
                                 <span className="text-[8px] font-mono text-white/20 uppercase block mb-1 font-bold">Votes</span>
                                 <span className="text-xs font-mono">{CONSTITUENCY_DETAILS[selectedId]?.results2021.runnerUp.votes || "N/A"}</span>
                               </div>
@@ -660,7 +660,7 @@ export function Arena() {
                   </div>
 
                   <div className="space-y-10">
-                    <div className="glass p-8 rounded-[32px] border border-white/5 space-y-6">
+                    <div className="glass p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] border border-white/5 space-y-6">
                       <div className="flex items-center gap-3">
                         <History className="text-emerald-500 w-5 h-5" />
                         <h4 className="text-sm font-bold tracking-widest uppercase">Global Swarm Activity</h4>
@@ -687,7 +687,7 @@ export function Arena() {
                       </div>
                     </div>
 
-                    <div className="glass p-8 rounded-[32px] border border-white/5 space-y-6">
+                    <div className="glass p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] border border-white/5 space-y-6">
                       <div className="flex items-center gap-3">
                         <BarChart3 className="text-emerald-500 w-5 h-5" />
                         <h4 className="text-sm font-bold tracking-widest uppercase">Swarm Telemetry</h4>

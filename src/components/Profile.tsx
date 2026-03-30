@@ -68,13 +68,13 @@ export function Profile() {
 
           <div className="flex-1 space-y-6 text-center md:text-left">
             <div className="space-y-2">
-              <div className="flex items-center justify-center md:justify-start gap-4">
-                <h1 className="text-5xl font-bold tracking-tighter">{userData?.displayName || "Anonymous Agent"}</h1>
-                <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-500 uppercase tracking-widest">
+              <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+                <h1 className="text-4xl sm:text-5xl font-bold tracking-tighter text-center sm:text-left truncate w-full max-w-[300px] sm:max-w-none">{userData?.displayName || "Anonymous Agent"}</h1>
+                <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-500 uppercase tracking-widest shrink-0">
                   Level 12
                 </div>
               </div>
-              <p className="text-white/40 font-mono text-sm uppercase tracking-[0.3em]">Predictive Agent ID: {auth.currentUser?.uid.slice(0, 12)}</p>
+              <p className="text-white/40 font-mono text-[10px] sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em]">Predictive Agent ID: {auth.currentUser?.uid.slice(0, 12)}</p>
             </div>
 
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
@@ -109,8 +109,8 @@ export function Profile() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6">
+        <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+          <div className="glass p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6">
             <div className="flex items-center gap-3">
               <MapPin className="text-emerald-500 w-5 h-5" />
               <h3 className="text-sm font-bold tracking-widest uppercase">Geographic Range</h3>
@@ -224,15 +224,15 @@ export function Profile() {
             <h2 className="text-3xl font-bold tracking-tighter">Neural <span className="text-emerald-500">Achievements</span></h2>
             <button className="text-xs font-mono text-emerald-500 uppercase tracking-widest hover:underline">View All</button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {[
               { name: "Early Adopter", desc: "Joined during Alpha phase", icon: Zap },
               { name: "Swarm Leader", desc: "Top 1% in predictability", icon: Trophy },
               { name: "District Expert", desc: "Predicted all seats in one district", icon: MapPin },
               { name: "High Conviction", desc: "10 predictions with 90%+ confidence", icon: Target },
             ].map((a, i) => (
-              <div key={i} className="glass p-6 rounded-[32px] border border-white/5 flex flex-col items-center text-center space-y-4 group hover:border-emerald-500/30 transition-all">
-                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:emerald-glow transition-all">
+              <div key={i} className="glass p-4 sm:p-6 rounded-[24px] sm:rounded-[32px] border border-white/5 flex flex-row sm:flex-col items-center sm:text-center space-x-4 sm:space-x-0 sm:space-y-4 group hover:border-emerald-500/30 transition-all text-left">
+                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex shrink-0 items-center justify-center group-hover:emerald-glow transition-all">
                   <a.icon className="w-6 h-6 text-white/20 group-hover:text-emerald-500 transition-colors" />
                 </div>
                 <div className="space-y-1">

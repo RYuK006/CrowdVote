@@ -52,7 +52,7 @@ export function Voting() {
               <Vote className="w-6 h-6" />
               <span className="text-[10px] font-mono uppercase tracking-[0.4em]">Voting Protocol Alpha</span>
             </div>
-            <h1 className="text-6xl font-bold tracking-tighter">
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter">
               Predictive <span className="text-emerald-500">Consensus</span>
             </h1>
             <p className="text-white/40 max-w-xl text-lg leading-relaxed">
@@ -76,8 +76,8 @@ export function Voting() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+          <div className="glass p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-6 sm:p-8 opacity-5 group-hover:opacity-10 transition-opacity">
               <BarChart3 className="w-24 h-24" />
             </div>
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
@@ -95,8 +95,8 @@ export function Voting() {
             </div>
           </div>
 
-          <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+          <div className="glass p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-6 sm:p-8 opacity-5 group-hover:opacity-10 transition-opacity">
               <Users className="w-24 h-24" />
             </div>
             <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
@@ -113,8 +113,8 @@ export function Voting() {
             </div>
           </div>
 
-          <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+          <div className="glass p-6 sm:p-8 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-6 sm:p-8 opacity-5 group-hover:opacity-10 transition-opacity">
               <Info className="w-24 h-24" />
             </div>
             <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
@@ -132,7 +132,7 @@ export function Voting() {
           </div>
         </div>
 
-        <div className="glass p-12 rounded-[40px] border border-white/5 text-center space-y-8">
+        <div className="glass p-8 sm:p-12 rounded-[32px] sm:rounded-[40px] border border-white/5 text-center space-y-8">
           <div className="max-w-2xl mx-auto space-y-4">
             <h2 className="text-3xl font-bold tracking-tight">Ready to update your <span className="text-emerald-500">Predictions</span>?</h2>
             <p className="text-white/40 leading-relaxed">

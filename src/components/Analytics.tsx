@@ -76,18 +76,18 @@ export function Analytics() {
               <Activity className="w-6 h-6" />
               <span className="text-xs font-mono uppercase tracking-[0.4em]">Swarm Intelligence Telemetry</span>
             </div>
-            <h1 className="text-6xl font-bold tracking-tighter">Predictive <span className="text-emerald-500">Analytics</span></h1>
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter">Predictive <span className="text-emerald-500">Analytics</span></h1>
             <p className="text-white/40 max-w-md font-mono text-sm leading-relaxed">
               Real-time visualization of emergent consensus vectors and electoral trends.
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
+            <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center w-full sm:w-auto">
               <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest mb-1">Total Signals</span>
               <span className="text-2xl font-bold">12,482</span>
             </div>
-            <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center">
+            <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center w-full sm:w-auto">
               <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest mb-1">Neural Sync</span>
               <span className="text-2xl font-bold text-emerald-500">94.2%</span>
             </div>
@@ -96,16 +96,16 @@ export function Analytics() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Trend Chart */}
-          <div className="lg:col-span-2 glass p-10 rounded-[40px] border border-white/5 space-y-8">
-            <div className="flex items-center justify-between">
+          <div className="lg:col-span-2 glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
               <div className="flex items-center gap-3">
                 <TrendingUp className="text-emerald-500 w-5 h-5" />
                 <h3 className="text-xl font-bold tracking-tight">Consensus Evolution</h3>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                 {PARTIES.map(p => (
                   <div key={p.id} className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
+                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
                     <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">{p.id}</span>
                   </div>
                 ))}
@@ -156,7 +156,7 @@ export function Analytics() {
           </div>
 
           {/* Party Share Pie */}
-          <div className="glass p-10 rounded-[40px] border border-white/5 flex flex-col">
+          <div className="glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 flex flex-col min-h-[400px]">
             <div className="flex items-center gap-3 mb-10">
               <PieChartIcon className="text-emerald-500 w-5 h-5" />
               <h3 className="text-xl font-bold tracking-tight">Seat Projection</h3>
@@ -207,7 +207,7 @@ export function Analytics() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          <div className="glass p-10 rounded-[40px] border border-white/5 space-y-6">
+          <div className="glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6">
             <div className="flex items-center gap-3">
               <BarChart3 className="text-emerald-500 w-5 h-5" />
               <h3 className="text-xl font-bold tracking-tight">District Dominance</h3>
@@ -235,9 +235,9 @@ export function Analytics() {
             </div>
           </div>
 
-          <div className="glass p-10 rounded-[40px] border border-white/5 space-y-6 bg-emerald-500/5 border-emerald-500/20">
+          <div className="glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6 bg-emerald-500/5 border-emerald-500/20">
             <div className="flex items-center gap-3">
-              <AlertCircle className="text-emerald-500 w-5 h-5" />
+              <AlertCircle className="text-emerald-500 w-5 h-5 shrink-0" />
               <h3 className="text-xl font-bold tracking-tight">Swarm Anomaly Detection</h3>
             </div>
             <p className="text-sm text-white/60 leading-relaxed">
