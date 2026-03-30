@@ -1,20 +1,44 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# CrowdVote AI - Kerala Election Swarm Intelligence (2026)
 
-# Run and deploy your AI Studio app
+**CrowdVote AI** is a real-time predictive analytics and swarm intelligence platform built for the 2026 Kerala Assembly Elections. This repository leverages a production-grade Node.js/Express backend that consumes real constituency datasets (driven by Firebase Admin for predictions) and integrates it with a cutting-edge React frontend dashboard.
 
-This contains everything you need to run your app locally.
+## 🚀 Key Architectural Upgrades
+- **Integrated Express Backend**: A dedicated NodeJS REST API built into Vite (`server.ts`) streams real 2026 candidate matrices, 2021 historical margins, and demographics straight from a curated CSV `master_data.csv`. Mock code has been fully eradicated.
+- **Firebase Admin Integration**: The API seamlessly interacts with Firebase using `firebase-admin`, executing server-side logic for prediction locks, validation, and analytics telemetry to replace arbitrary frontend Firestore calls.
+- **Neural UI & UX**: Retained the high-octane cyberpunk Glassmorphism aesthetics with completely redesigned, independently scrollable Grid & Details panels to enhance user focus during node interaction. No confusing candidate image spaces—streamlined UI relies entirely on precise Party Symbol mapping.
+- **Leaderboard & Weight-based Analytics**: `Analytics` and `Leaderboard` now depend on real aggregated node telemetry pulled directly from backend endpoints reflecting swarm movement and conviction levels.
 
-View your app in AI Studio: https://ai.studio/apps/4457bf8b-d988-41f9-b0ba-b18de7b99bc4
+## 📦 File Layout
+- `server.ts` - Master backend Express module. Parses the CSV data on load and exposes REST APIs (`/api/constituencies`, `/api/predict`, etc.).
+- `server/data/master_data.csv` - The source of truth for all 140 constituencies.
+- `serviceAccountKey.json` - Firebase Admin configuration required to read/write from your datastore securely.
 
-## Run Locally
+## 🛠 Prerequisites
+You need **Node.js (v18+)** installed to run the backend and frontend simultaneously. 
 
-**Prerequisites:**  Node.js
+Ensure you have your Firebase `serviceAccountKey.json` placed at the root of the project dir!
 
+## 🚦 Getting Started
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Verify Configuration**
+   Check that you have a `.env` file containing your valid Firebase credentials, as well as the `serviceAccountKey.json`.
+
+3. **Spin Up the Matrix**
+   ```bash
+   npm run dev
+   ```
+   *This fires up both the Vite client server and the Express backend simultaneously on http://localhost:3000.*
+
+4. **Production Build**
+   ```bash
+   npm run build
+   npm start
+   ```
+
+## 📈 Analytics & Swarm Vectors 
+Points (`predictabilityScore`) govern your ranking inside the Elite Swarm leaderboard. Start at 0, sync your neural vectors with real predictions, and ascend the ranks!

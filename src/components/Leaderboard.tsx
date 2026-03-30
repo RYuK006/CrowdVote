@@ -21,25 +21,21 @@ export function Leaderboard() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const q = query(
-      collection(db, "users"),
-      orderBy("influencePoints", "desc"),
-      limit(50)
-    );
-    
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedUsers = snapshot.docs.map((doc, index) => ({
-        id: doc.id,
-        ...doc.data(),
-        rank: index + 1
-      })) as LeaderboardUser[];
-      setUsers(fetchedUsers);
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, "users");
-    });
-
-    return () => unsubscribe();
+    fetch('/api/leaderboard/global')
+      .then(r => r.json())
+      .then(fetchedUsers => {
+        const withRank = fetchedUsers.map((u: any, index: number) => ({
+          ...u,
+          id: u.uid || u.id,
+          rank: index + 1
+        }));
+        setUsers(withRank);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Leaderboard error:", error);
+        setLoading(false);
+      });
   }, []);
 
   const filteredUsers = users.filter(u => 

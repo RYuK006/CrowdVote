@@ -16,55 +16,35 @@ export function Analytics() {
 
   const [districtStats, setDistrictStats] = useState<any[]>([]);
 
+  const [totalSignals, setTotalSignals] = useState(0);
+
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "predictions"), (snapshot) => {
-      const predictions = snapshot.docs.map(doc => doc.data());
-      
-      // Aggregate by party
-      const partyCounts: Record<string, number> = {};
-      predictions.forEach(p => {
-        partyCounts[p.predictedParty] = (partyCounts[p.predictedParty] || 0) + 1;
-      });
-
-      const share = PARTIES.map(p => ({
-        name: p.id,
-        value: partyCounts[p.id] || 0,
-        color: p.color
-      }));
-      setPartyShare(share);
-
-      // Aggregate by district
-      const districtMap: Record<string, Record<string, number>> = {};
-      predictions.forEach(p => {
-        // We need to find the district for this constituency
-        const constituency = CONSTITUENCIES.find(c => c.id === p.constituencyId);
-        if (constituency) {
-          if (!districtMap[constituency.district]) districtMap[constituency.district] = {};
-          districtMap[constituency.district][p.predictedParty] = (districtMap[constituency.district][p.predictedParty] || 0) + 1;
-        }
-      });
-
-      const districtList = Object.entries(districtMap).map(([name, counts]) => {
-        const winner = Object.entries(counts).reduce((a, b) => b[1] > a[1] ? b : a);
-        return { name, winner: winner[0], count: winner[1] };
-      });
-      setDistrictStats(districtList.sort((a, b) => b.count - a.count));
-
-      // Mock historical data for trend
-      const trend = [
-        { date: "Mar 20", LDF: 45, UDF: 42, NDA: 10, OTH: 3 },
-        { date: "Mar 22", LDF: 46, UDF: 41, NDA: 11, OTH: 2 },
-        { date: "Mar 24", LDF: 44, UDF: 43, NDA: 12, OTH: 1 },
-        { date: "Mar 26", LDF: 47, UDF: 40, NDA: 11, OTH: 2 },
-        { date: "Mar 28", LDF: 48, UDF: 39, NDA: 12, OTH: 1 },
-      ];
-      setData(trend);
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, "predictions");
-    });
-
-    return () => unsubscribe();
+    fetch('/api/analytics')
+      .then(r => r.json())
+      .then(res => {
+        if (!res) return;
+        const weights = res.partyShare || {};
+        const share = PARTIES.map(p => ({
+          name: p.id,
+          value: Math.round(weights[p.id] || 0),
+          color: p.color
+        }));
+        setPartyShare(share);
+        setDistrictStats(res.districtStats || []);
+        setTotalSignals(res.totalSignals || 0);
+        
+        // Mock historical data for trend since timestamp wasn't easily aggregated
+        const trend = [
+          { date: "Mar 20", LDF: 45, UDF: 42, NDA: 10, OTH: 3 },
+          { date: "Mar 22", LDF: 46, UDF: 41, NDA: 11, OTH: 2 },
+          { date: "Mar 24", LDF: 44, UDF: 43, NDA: 12, OTH: 1 },
+          { date: "Mar 26", LDF: 47, UDF: 40, NDA: 11, OTH: 2 },
+          { date: "Mar 28", LDF: 48, UDF: 39, NDA: 12, OTH: 1 },
+        ];
+        setData(trend);
+        setLoading(false);
+      })
+      .catch(console.error);
   }, []);
 
   return (
@@ -85,7 +65,7 @@ export function Analytics() {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
             <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center w-full sm:w-auto">
               <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest mb-1">Total Signals</span>
-              <span className="text-2xl font-bold">12,482</span>
+              <span className="text-2xl font-bold">{totalSignals}</span>
             </div>
             <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center w-full sm:w-auto">
               <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest mb-1">Neural Sync</span>
