@@ -94,54 +94,7 @@ export function Voting() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <BarChart3 className="w-24 h-24" />
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-              <CheckCircle2 className="text-emerald-500 w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-2">Neural Nodes Locked</h3>
-              <p className="text-white/40 text-sm leading-relaxed">
-                You have synchronized {stats.userPredictions} out of 140 electoral nodes.
-              </p>
-            </div>
-            <div className="pt-4 flex items-center gap-2 text-[10px] font-mono text-emerald-500 uppercase tracking-widest">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Sync Priority: {stats.completionRate > 50 ? "High" : "Standard"}
-            </div>
-          </div>
 
-          <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Users className="w-24 h-24" />
-            </div>
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-              <Vote className="text-blue-500 w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-2">Swarm Pulse</h3>
-              <p className="text-white/40 text-sm leading-relaxed">
-                Total predictive signals processed across the Kerala 2026 intelligence mesh.
-              </p>
-            </div>
-            <div className="pt-4 text-2xl font-bold font-mono text-blue-500">
-              {stats.totalPredictions.toLocaleString()} Signals
-            </div>
-          </div>
-
-          <div className="glass p-8 rounded-[40px] border border-white/5 flex flex-col justify-center items-center text-center gap-4 group hover:border-emerald-500/30 transition-all cursor-pointer" onClick={() => window.location.href = "/arena"}>
-             <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition-transform">
-               <Swords className="text-emerald-500 w-8 h-8" />
-             </div>
-             <div>
-               <h3 className="text-lg font-bold">Arena Deployment</h3>
-               <p className="text-xs text-white/40">Calibrate new nodes in real-time</p>
-             </div>
-          </div>
-        </div>
 
         {/* Prediction Review Section */}
         <div className="space-y-8">
