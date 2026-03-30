@@ -115,6 +115,8 @@ async function startServer() {
       const adminDoc = await db.collection("admins").doc(uid).get();
       const isAdmin = adminDoc.exists;
       
+      console.log(`[DEBUG] Check User: ${uid}, isAdmin: ${isAdmin}`);
+      
       res.json({ 
         exists, 
         uid, 

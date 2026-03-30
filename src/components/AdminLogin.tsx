@@ -15,6 +15,9 @@ export function AdminLogin() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Clear any existing session to avoid token confusion
+    signOut(auth);
+
     const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
       size: "invisible",
     });
@@ -56,12 +59,14 @@ export function AdminLogin() {
       const idToken = await user.getIdToken();
 
       // Check if user is admin in backend
+      console.log(`[ADMIN_AUTH] Verifying node with UID: ${user.uid}`);
       const checkRes = await fetch("/api/user/check", {
         headers: {
           'Authorization': `Bearer ${idToken}`
         }
       });
       const checkData = await checkRes.json();
+      console.log(`[ADMIN_AUTH] Response:`, checkData);
 
       if (checkData.isAdmin) {
         setStep(3);

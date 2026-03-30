@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Swords, Trophy, BarChart3, User, Settings, LogOut, ShieldCheck, Menu, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Swords, Trophy, BarChart3, User, Settings, LogOut, ShieldCheck, Menu, X, ChevronLeft, ChevronRight, ShieldAlert, Users, Database } from "lucide-react";
 import { cn } from "../lib/utils";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
@@ -15,13 +15,23 @@ export function Layout({ children, user }: LayoutProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const navItems = [
+  const defaultNavItems = [
     { label: "VOTING", icon: LayoutDashboard, path: "/voting" },
     { label: "ARENA", icon: Swords, path: "/arena" },
     { label: "ELITE", icon: Trophy, path: "/leaderboard" },
     { label: "META", icon: BarChart3, path: "/analytics" },
     { label: "VAULT", icon: ShieldCheck, path: "/profile" },
   ];
+
+  const adminNavItems = [
+    { label: "COMMAND", icon: ShieldAlert, path: "/admin" },
+    { label: "NODES", icon: Users, path: "/admin?tab=nodes" },
+    { label: "STREAM", icon: Database, path: "/admin?tab=data" },
+    { label: "SYSTEM", icon: Settings, path: "/admin?tab=system" },
+  ];
+
+  const isAdminRoute = location.pathname.startsWith("/admin") && location.pathname !== "/admin-login";
+  const navItems = isAdminRoute ? adminNavItems : defaultNavItems;
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#050505]">
@@ -41,11 +51,17 @@ export function Layout({ children, user }: LayoutProps) {
       )}>
         <div className={cn("p-6 flex items-center justify-between", isCollapsed && "px-4")}>
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500 flex shrink-0 items-center justify-center emerald-glow">
-              <ShieldCheck className="text-black w-5 h-5" />
+            <div className={cn("w-8 h-8 rounded-lg flex shrink-0 items-center justify-center", isAdminRoute ? "bg-red-500 red-glow" : "bg-emerald-500 emerald-glow")}>
+              {isAdminRoute ? <ShieldAlert className="text-black w-5 h-5" /> : <ShieldCheck className="text-black w-5 h-5" />}
             </div>
             {!isCollapsed && (
-              <span className="font-bold text-lg tracking-tight whitespace-nowrap">CrowdVote <span className="text-emerald-500">OS</span></span>
+              <span className="font-bold text-lg tracking-tight whitespace-nowrap">
+                {isAdminRoute ? (
+                  <>Admin <span className="text-red-500">Command</span></>
+                ) : (
+                  <>CrowdVote <span className="text-emerald-500">OS</span></>
+                )}
+              </span>
             )}
           </div>
           <button 
@@ -64,18 +80,21 @@ export function Layout({ children, user }: LayoutProps) {
               onClick={() => setIsMobileMenuOpen(false)}
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
-                location.pathname === item.path
-                  ? "bg-emerald-500/10 text-emerald-500 emerald-glow"
+                (item.path.includes("?tab=") ? location.search === item.path.split("?")[1] : location.pathname === item.path && !location.search)
+                  ? (isAdminRoute ? "bg-red-500/10 text-red-500 red-glow" : "bg-emerald-500/10 text-emerald-500 emerald-glow")
                   : "text-white/40 hover:text-white hover:bg-white/5",
                 isCollapsed && "justify-center px-0"
               )}
             >
-              <item.icon className={cn("w-5 h-5 shrink-0", location.pathname === item.path ? "text-emerald-500" : "text-white/20 group-hover:text-white/40")} />
+              <item.icon className={cn("w-5 h-5 shrink-0", 
+                 (item.path.includes("?tab=") ? location.search === item.path.split("?")[1] : location.pathname === item.path && !location.search)
+                 ? (isAdminRoute ? "text-red-500" : "text-emerald-500") 
+                 : "text-white/20 group-hover:text-white/40")} />
               {!isCollapsed && (
                 <span className="text-sm font-medium tracking-widest whitespace-nowrap">{item.label}</span>
               )}
               {isCollapsed && (
-                <div className="absolute left-full ml-4 px-2 py-1 bg-emerald-500 text-black text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap">
+                <div className={cn("absolute left-full ml-4 px-2 py-1 text-black text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap", isAdminRoute ? "bg-red-500" : "bg-emerald-500")}>
                   {item.label}
                 </div>
               )}
@@ -87,13 +106,15 @@ export function Layout({ children, user }: LayoutProps) {
           {user ? (
             <div className={cn("p-4 rounded-2xl bg-white/5 border border-white/5 space-y-4 overflow-hidden", isCollapsed && "p-2")}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex shrink-0 items-center justify-center border border-emerald-500/30">
-                  <User className="text-emerald-500 w-5 h-5" />
+                <div className={cn("w-10 h-10 rounded-full flex shrink-0 items-center justify-center border", isAdminRoute ? "bg-red-500/20 border-red-500/30" : "bg-emerald-500/20 border-emerald-500/30")}>
+                  <User className={cn("w-5 h-5", isAdminRoute ? "text-red-500" : "text-emerald-500")} />
                 </div>
                 {!isCollapsed && (
                   <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-medium truncate">{user.displayName || "Predictor"}</span>
-                    <span className="text-[10px] text-emerald-500/60 font-mono tracking-tighter uppercase">Verified Node</span>
+                    <span className="text-sm font-medium truncate">{user.displayName || (isAdminRoute ? "System Admin" : "Predictor")}</span>
+                    <span className={cn("text-[10px] font-mono tracking-tighter uppercase", isAdminRoute ? "text-red-500/60" : "text-emerald-500/60")}>
+                      {isAdminRoute ? "Admin Node" : "Verified Node"}
+                    </span>
                   </div>
                 )}
               </div>
@@ -140,13 +161,13 @@ export function Layout({ children, user }: LayoutProps) {
               <Menu className="w-5 h-5 text-white/40" />
             </button>
             <div className="flex items-center gap-4">
-              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className={cn("h-2 w-2 rounded-full animate-pulse", isAdminRoute ? "bg-red-500" : "bg-emerald-500")} />
               <span className="text-[10px] font-mono text-white/40 tracking-[0.2em] uppercase hidden sm:inline">Network Status: Optimal</span>
             </div>
           </div>
           <div className="flex items-center gap-3 sm:gap-6">
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
-              <span className="text-[10px] font-mono text-emerald-500 uppercase">Phase:</span>
+              <span className={cn("text-[10px] font-mono uppercase", isAdminRoute ? "text-red-500" : "text-emerald-500")}>Phase:</span>
               <span className="text-[10px] font-mono text-white uppercase tracking-wider">Pre-Election</span>
             </div>
             <Settings className="w-5 h-5 text-white/20 hover:text-white cursor-pointer transition-colors" />

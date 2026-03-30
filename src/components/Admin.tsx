@@ -3,11 +3,16 @@ import { motion } from "framer-motion";
 import { Shield, Settings, Users, Database, AlertTriangle, CheckCircle, Clock, Save, RefreshCw, Lock } from "lucide-react";
 import { db, auth } from "../firebase";
 import { doc, getDoc, updateDoc, collection, getDocs, onSnapshot, setDoc } from "firebase/firestore";
+import { useLocation } from "react-router-dom";
 import { Layout } from "./Layout";
 import { cn } from "../lib/utils";
 import { handleFirestoreError, OperationType } from "../lib/firebase-utils";
 
 export function Admin() {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const tab = searchParams.get("tab") || "overview";
+
   const [phase, setPhase] = useState("Pre-Election");
   const [stats, setStats] = useState({ users: 0, predictions: 0 });
   const [loading, setLoading] = useState(true);
@@ -156,13 +161,14 @@ export function Admin() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Phase Control */}
-          <div className="lg:col-span-2 glass p-10 rounded-[40px] border border-white/5 space-y-10">
-            <div className="flex items-center gap-3">
-              <Clock className="text-emerald-500 w-5 h-5" />
-              <h3 className="text-xl font-bold tracking-tight">Election Lifecycle Phase</h3>
-            </div>
+        {tab === "overview" && (
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Phase Control */}
+            <div className="lg:col-span-2 glass p-10 rounded-[40px] border border-white/5 space-y-10">
+              <div className="flex items-center gap-3">
+                <Clock className="text-emerald-500 w-5 h-5" />
+                <h3 className="text-xl font-bold tracking-tight">Election Lifecycle Phase</h3>
+              </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {["Pre-Election", "Campaign", "After Polling"].map((p) => (
@@ -249,8 +255,9 @@ export function Admin() {
             </div>
           </div>
         </div>
+        )}
 
-        {/* Recent Activity Monitor */}
+        {tab === "data" && (
         <div className="glass rounded-[40px] border border-white/5 p-10 space-y-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -289,8 +296,9 @@ export function Admin() {
             </table>
           </div>
         </div>
+        )}
 
-        {/* User Management */}
+        {tab === "nodes" && (
         <div className="glass rounded-[40px] border border-white/5 p-10 space-y-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -328,6 +336,17 @@ export function Admin() {
             </div>
           </div>
         </div>
+        )}
+
+        {tab === "system" && (
+          <div className="glass p-12 rounded-[40px] border border-white/5 text-center flex flex-col items-center justify-center space-y-4">
+            <Settings className="w-12 h-12 text-white/20 mb-4" />
+            <h3 className="text-xl font-bold tracking-tight">System Configuration</h3>
+            <p className="text-white/40 text-sm font-mono max-w-md mx-auto leading-relaxed">
+              Neural network and swarm intelligence parameters are currently locked to optimal defaults. Subsystem overrides require Level 5 clearance.
+            </p>
+          </div>
+        )}
       </div>
     </Layout>
   );
