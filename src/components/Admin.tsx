@@ -12,8 +12,7 @@ export function Admin() {
   const [stats, setStats] = useState({ users: 0, predictions: 0 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  
-  const isAdmin = auth.currentUser?.phoneNumber === "+919874563210";
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   const [recentPredictions, setRecentPredictions] = useState<any[]>([]);
 
@@ -51,6 +50,24 @@ export function Admin() {
       handleFirestoreError(error, OperationType.GET, "config/global");
     });
 
+    // Verify admin status from backend
+    const verifyAdmin = async () => {
+      if (!auth.currentUser) return;
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const res = await fetch("/api/user/check", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        setIsAdmin(!!data.isAdmin);
+      } catch (error) {
+        console.error("Admin verification failed:", error);
+        setIsAdmin(false);
+      }
+    };
+
+    verifyAdmin();
+
     return () => {
       unsubscribeUsers();
       unsubscribePreds();
@@ -74,7 +91,19 @@ export function Admin() {
     }
   };
 
-  if (!isAdmin) {
+  if (loading || isAdmin === null) {
+    return (
+      <Layout user={auth.currentUser}>
+        <div className="h-full flex items-center justify-center">
+          <div className="text-emerald-500 font-mono animate-pulse uppercase tracking-[0.5em]">
+            Verifying Authority...
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (isAdmin === false) {
     return (
       <Layout user={auth.currentUser}>
         <div className="h-full flex items-center justify-center">

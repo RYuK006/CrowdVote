@@ -146,7 +146,7 @@ export function Landing() {
             <a href="#" className="hover:text-emerald-500">Documentation</a>
             <a href="#" className="hover:text-emerald-500">Methodology</a>
             <a href="#" className="hover:text-emerald-500">Privacy Alpha</a>
-            <Link to="/admin" className="text-white/20 hover:text-emerald-500 border border-white/5 px-2 py-1 rounded">Admin Console</Link>
+            <Link to="/admin-login" className="text-white/20 hover:text-emerald-500 border border-white/5 px-2 py-1 rounded">Admin Console</Link>
           </div>
           <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest text-center">© 2026 Electoral Swarm Lab</span>
         </div>

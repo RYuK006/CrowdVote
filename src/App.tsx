@@ -16,6 +16,7 @@ import { Leaderboard } from "./components/Leaderboard";
 import { Analytics } from "./components/Analytics";
 import { Profile } from "./components/Profile";
 import { Admin } from "./components/Admin";
+import { AdminLogin } from "./components/AdminLogin";
 import { Voting } from "./components/Voting";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
@@ -52,7 +53,8 @@ export default function App() {
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/voting" element={user ? <Voting /> : <Navigate to="/signin" />} />
             <Route path="/profile" element={user ? <Profile /> : <Navigate to="/signin" />} />
-            <Route path="/admin" element={user ? <Admin /> : <Navigate to="/signin" />} />
+            <Route path="/admin" element={user ? <Admin /> : <Navigate to="/admin-login" />} />
+            <Route path="/admin-login" element={<AdminLogin />} />
           </Routes>
         </Router>
       </ErrorBoundary>

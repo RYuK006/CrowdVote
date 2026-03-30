@@ -25,8 +25,6 @@ try {
 }
 
 const CURRENT_PHASE = "pre_election";
-const ADMIN_PHONES = ["+919874563210"];
-
 
 // In-Memory Data Structures
 let CONSTITUENCIES: any[] = [];
@@ -112,7 +110,10 @@ async function startServer() {
       const userDoc = await db.collection('users').doc(uid).get();
       const exists = userDoc.exists;
       const userData = userDoc.data();
-      const isAdmin = ADMIN_PHONES.includes(phoneNumber);
+      
+      // Check admins collection
+      const adminDoc = await db.collection("admins").doc(uid).get();
+      const isAdmin = adminDoc.exists;
       
       res.json({ 
         exists, 
