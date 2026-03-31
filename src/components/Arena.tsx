@@ -494,25 +494,7 @@ export function Arena() {
                                         </div>
                                     </div>
 
-                                    <div className="hidden xl:flex flex-col gap-8">
-                                        <div className="glass p-10 rounded-[40px] border border-white/5 space-y-8">
-                                            <div className="flex items-center gap-3">
-                                                <BarChart3 className="text-emerald-500 w-5 h-5" />
-                                                <h4 className="text-xs font-bold font-mono uppercase tracking-[0.3em]">Live Swarm Data</h4>
-                                            </div>
-                                            <div className="space-y-6">
-                                                {Array.isArray(globalActivity) && globalActivity.slice(0, 8).map((act, i) => (
-                                                    <div key={i} className="flex items-center justify-between pb-4 border-b border-white/[0.03] last:border-0 last:pb-0">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/40" />
-                                                            <span className="text-[10px] font-mono text-white/40">NODE_{act.constituencyId}</span>
-                                                        </div>
-                                                        <span className="text-[10px] font-mono text-emerald-500 font-bold uppercase">{act.predictedParty}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div className="hidden xl:block" />
                                 </>
                             )}
                         </div>
