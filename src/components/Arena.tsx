@@ -55,9 +55,10 @@ export function Arena() {
     try {
       const res = await fetch('/api/activity/global');
       const activity = await res.json();
-      setGlobalActivity(activity);
+      setGlobalActivity(Array.isArray(activity) ? activity : []);
     } catch (error) {
       console.error("Error fetching activity:", error);
+      setGlobalActivity([]);
     } finally {
       setLoadingActivity(false);
     }
@@ -500,7 +501,7 @@ export function Arena() {
                                                 <h4 className="text-xs font-bold font-mono uppercase tracking-[0.3em]">Live Swarm Data</h4>
                                             </div>
                                             <div className="space-y-6">
-                                                {globalActivity.slice(0, 8).map((act, i) => (
+                                                {Array.isArray(globalActivity) && globalActivity.slice(0, 8).map((act, i) => (
                                                     <div key={i} className="flex items-center justify-between pb-4 border-b border-white/[0.03] last:border-0 last:pb-0">
                                                         <div className="flex items-center gap-3">
                                                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/40" />

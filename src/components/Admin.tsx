@@ -90,8 +90,14 @@ export function Admin() {
             predictions: metricsData.totalPredictions || 0
           });
         }
-        if (nodesRes.ok) setAdminNodes(await nodesRes.json());
-        if (predictionsRes.ok) setRecentPredictions(await predictionsRes.json());
+        if (nodesRes.ok) {
+          const nodesData = await nodesRes.json();
+          setAdminNodes(Array.isArray(nodesData) ? nodesData : []);
+        }
+        if (predictionsRes.ok) {
+          const predsData = await predictionsRes.json();
+          setRecentPredictions(Array.isArray(predsData) ? predsData : []);
+        }
       } catch (error) {
         console.error("Failed to fetch admin API data:", error);
       }
