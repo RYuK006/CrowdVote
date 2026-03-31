@@ -15,6 +15,7 @@ export function Arena() {
   const [search, setSearch] = useState("");
   const [filterDistrict, setFilterDistrict] = useState<string>("ALL");
   const [predictions, setPredictions] = useState<Record<string, any>>({});
+  const [lockedIds, setLockedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error", text: string } | null>(null);
@@ -76,6 +77,7 @@ export function Arena() {
       .then(res => res.json())
       .then(data => {
         setPredictions(data);
+        setLockedIds(new Set(Object.keys(data)));
         setLoading(false);
       })
       .catch(console.error);
@@ -108,7 +110,7 @@ export function Arena() {
   });
 
   const selectedConstituency = constituencies.find(c => c.id === selectedId);
-  const isLocked = !!(selectedId && predictions[selectedId]);
+  const isLocked = !!(selectedId && lockedIds.has(selectedId));
 
   const handlePredict = (partyId: string) => {
     if (!selectedId) return;
@@ -151,6 +153,7 @@ export function Arena() {
         })
       });
       if (!res.ok) throw new Error("Failed to save via API");
+      setLockedIds(prev => new Set(prev).add(selectedId));
       setMessage({ type: "success", text: "Prediction locked in swarm via Backend." });
     } catch (err) {
       console.error(err);
@@ -234,14 +237,22 @@ export function Arena() {
                     </div>
                     
                     <div className="flex items-center gap-4 shrink-0">
-                        {predictions[c.id] ? (
+                        {lockedIds.has(c.id) ? (
                         <div className="flex flex-col items-end">
                             <span className="text-[9px] font-mono text-emerald-500/60 uppercase tracking-widest mb-1">State</span>
                             <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider">{predictions[c.id].predictedParty}</span>
+                            <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider">{predictions[c.id]?.predictedParty}</span>
                             <Lock className="w-3 h-3 text-emerald-500" />
                             </div>
                         </div>
+                        ) : predictions[c.id] ? (
+                          <div className="flex flex-col items-end">
+                            <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest mb-1">Draft</span>
+                            <div className="flex items-center gap-1.5 opacity-40">
+                              <span className="text-xs font-bold text-white uppercase tracking-wider">{predictions[c.id]?.predictedParty}</span>
+                              <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                            </div>
+                          </div>
                         ) : (
                         <div className="flex flex-col items-end opacity-20 group-hover:opacity-40 transition-opacity hidden sm:flex">
                             <span className="text-[9px] font-mono uppercase tracking-widest mb-1">Status</span>
