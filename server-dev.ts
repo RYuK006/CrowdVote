@@ -1,4 +1,5 @@
 import express from "express";
+import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
 import admin from 'firebase-admin';
@@ -257,12 +258,20 @@ app.get("/api/admin/metrics", authenticateToken, requireAdmin, async (req: any, 
 });
 
 // --- VITE MIDDLEWARE ---
-// In production on Vercel, static files are handled by vercel.json rewrites.
-const distPath = path.join(process.cwd(), "dist");
-app.use(express.static(distPath));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
-});
+if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+  createViteServer({
+    server: { middlewareMode: true },
+    appType: "spa",
+  }).then(vite => {
+    app.use(vite.middlewares);
+  });
+} else {
+  const distPath = path.join(process.cwd(), "dist");
+  app.use(express.static(distPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
 
 // Only listen locally, Vercel handles the serverless execution
 if (!process.env.VERCEL) {
