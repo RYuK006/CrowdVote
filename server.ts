@@ -14,7 +14,21 @@ const __dirname = path.dirname(__filename);
 // Initialize Firebase Admin
 let db: admin.firestore.Firestore;
 try {
-  const serviceAccount = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'serviceAccountKey.json'), 'utf8'));
+  let serviceAccount: any;
+  
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    console.log("📡 Using Firebase Service Account from environment variables");
+  } else {
+    const serviceAccountPath = path.join(process.cwd(), 'serviceAccountKey.json');
+    if (fs.existsSync(serviceAccountPath)) {
+      serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+      console.log("📂 Using Firebase Service Account from local file");
+    } else {
+      throw new Error("No service account credentials found (.env or file)");
+    }
+  }
+
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
   });
