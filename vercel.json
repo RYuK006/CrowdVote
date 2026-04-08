@@ -6,6 +6,7 @@
   ],
   "functions": {
     "api/index.ts": {
+      "includeFiles": "server/data/**",
       "memory": 1024,
       "maxDuration": 10
     }

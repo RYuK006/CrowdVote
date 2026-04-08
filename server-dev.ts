@@ -18,6 +18,10 @@ try {
   
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    // Robust PEM Formatter
+    if (serviceAccount.private_key) {
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+    }
     console.log("📡 Using Firebase Service Account from environment variables");
   } else {
     const serviceAccountPath = path.join(process.cwd(), 'serviceAccountKey.json');
@@ -29,10 +33,12 @@ try {
     }
   }
 
-  if (serviceAccount) {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    });
+  if (serviceAccount && serviceAccount.private_key) {
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+    }
     db = admin.firestore();
     console.log("🔥 Firebase Admin Initialized");
   }
