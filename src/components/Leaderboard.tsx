@@ -10,8 +10,7 @@ import { handleFirestoreError, OperationType } from "../lib/firebase-utils";
 interface LeaderboardUser {
   id: string;
   displayName: string;
-  influencePoints: number;
-  predictabilityScore: number;
+  predictionCount?: number;
   rank?: number;
 }
 
@@ -56,7 +55,7 @@ export function Leaderboard() {
             </div>
             <h1 className="text-6xl font-bold tracking-tighter">The <span className="text-emerald-500">Elite</span> Swarm</h1>
             <p className="text-white/40 max-w-md font-mono text-sm leading-relaxed">
-              Top predictive agents ranked by influence points and predictability vectors.
+              Top predictive agents ranked by total signals cast across the neural mesh.
             </p>
           </div>
 
@@ -113,16 +112,11 @@ export function Leaderboard() {
                   </div>
                 </div>
 
-                <div className="w-full grid grid-cols-2 gap-4">
-                  <div className="bg-white/5 rounded-3xl p-4 border border-white/5">
-                    <Zap className="w-4 h-4 text-emerald-500 mb-2 mx-auto" />
-                    <span className="block text-xl font-bold">{user.influencePoints || 0}</span>
-                    <span className="text-[8px] font-mono text-white/20 uppercase tracking-widest">IP</span>
-                  </div>
-                  <div className="bg-white/5 rounded-3xl p-4 border border-white/5">
-                    <Target className="w-4 h-4 text-emerald-500 mb-2 mx-auto" />
-                    <span className="block text-xl font-bold">{user.predictabilityScore || 0}%</span>
-                    <span className="text-[8px] font-mono text-white/20 uppercase tracking-widest">Score</span>
+                <div className="w-full flex justify-center">
+                  <div className="bg-white/5 rounded-3xl p-6 border border-white/5 w-full">
+                    <Zap className="w-6 h-6 text-emerald-500 mb-2 mx-auto" />
+                    <span className="block text-2xl font-bold">{user.predictionCount || 0}</span>
+                    <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest text-center block">Signals Cast</span>
                   </div>
                 </div>
               </div>
@@ -136,8 +130,8 @@ export function Leaderboard() {
             <div className="grid grid-cols-[80px_1fr_120px_120px_80px] p-6 border-b border-white/5 text-[10px] font-mono text-white/20 uppercase tracking-widest">
               <span>Rank</span>
               <span>Agent</span>
-              <span className="text-center">Influence</span>
-              <span className="text-center">Predictability</span>
+              <span className="text-center">Signals Cast</span>
+              <span className="text-center">Uptime</span>
               <span className="text-right">Action</span>
             </div>
 
@@ -154,8 +148,8 @@ export function Leaderboard() {
                     <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">ID: {user.id.slice(0, 8)}</p>
                   </div>
                 </div>
-                <div className="text-center font-mono font-bold text-emerald-500">{user.influencePoints || 0} IP</div>
-                <div className="text-center font-mono font-bold">{user.predictabilityScore || 0}%</div>
+                <div className="text-center font-mono font-bold text-emerald-500">{user.predictionCount || 0}</div>
+                <div className="text-center font-mono font-bold">100%</div>
                 <div className="flex justify-end">
                   <button className="p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-emerald-500 hover:text-black transition-all">
                     <ArrowUpRight className="w-4 h-4" />

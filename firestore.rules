@@ -12,8 +12,8 @@ service cloud.firestore {
     //   - uid: string (required, immutable) - Unique identifier
     //   - displayName: string (required, max 50 chars) - Public name
     //   - phoneNumber: string (optional) - Verified phone
+    //   - predictionCount: number (optional) - Total signals cast
     //   - influencePoints: number (required) - Current IP
-    //   - predictabilityScore: number (optional) - Neural sync
     //   - accuracy: number (optional) - Historical accuracy
     //   - rank: number (optional) - Global rank
     //   - role: string (required, enum: ['user', 'admin']) - System access
@@ -80,23 +80,24 @@ service cloud.firestore {
 
     function isValidUser(data) {
       return hasRequiredFields(['uid', 'displayName', 'influencePoints', 'role']) &&
-             hasOnlyAllowedFields(['uid', 'displayName', 'phoneNumber', 'influencePoints', 'predictabilityScore', 'accuracy', 'rank', 'role', 'createdAt']) &&
+             hasOnlyAllowedFields(['uid', 'displayName', 'phoneNumber', 'influencePoints', 'predictionCount', 'accuracy', 'rank', 'role', 'createdAt']) &&
              data.uid is string && data.uid.size() > 0 &&
              data.displayName is string && data.displayName.size() > 0 && data.displayName.size() <= 50 &&
              data.influencePoints is number &&
              data.role in ['user', 'admin'] &&
-             (!('predictabilityScore' in data) || data.predictabilityScore is number) &&
+             (!('predictionCount' in data) || data.predictionCount is number) &&
              (!('accuracy' in data) || data.accuracy is number) &&
              (!('rank' in data) || data.rank is number) &&
              (!('createdAt' in data) || isValidDateString(data.createdAt));
     }
 
     function isValidPrediction(data) {
-      return hasRequiredFields(['userId', 'constituencyId', 'predictedParty', 'confidence', 'timestamp', 'phase']) &&
-             hasOnlyAllowedFields(['userId', 'constituencyId', 'predictedParty', 'confidence', 'margin', 'timestamp', 'phase']) &&
-             data.userId is string && data.userId == request.auth.uid &&
+      return hasRequiredFields(['constituencyId', 'predictedParty', 'confidence', 'timestamp', 'phase']) &&
+             hasOnlyAllowedFields(['userId', 'constituencyId', 'predictedParty', 'predictedCandidate', 'confidence', 'margin', 'timestamp', 'phase']) &&
+             (!('userId' in data) || (data.userId is string && data.userId == request.auth.uid)) &&
              data.constituencyId is string && data.constituencyId.size() > 0 &&
-             data.predictedParty in ['LDF', 'UDF', 'NDA', 'OTH'] &&
+             data.predictedParty is string && data.predictedParty.size() > 0 &&
+             (!('predictedCandidate' in data) || (data.predictedCandidate is string && data.predictedCandidate.size() > 0)) &&
              data.confidence is number && data.confidence >= 10 && data.confidence <= 100 &&
              (!('margin' in data) || data.margin is number) &&
              isValidDateString(data.timestamp) &&

@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Activity, TrendingUp, PieChart as PieChartIcon, BarChart3, Info, AlertCircle } from "lucide-react";
 import { db, auth } from "../firebase";
 import { collection, getDocs, onSnapshot } from "firebase/firestore";
-import { PARTIES, CONSTITUENCIES } from "../data";
+import { CONSTITUENCIES } from "../data";
 import { Layout } from "./Layout";
 import { cn } from "../lib/utils";
 import { handleFirestoreError, OperationType } from "../lib/firebase-utils";
@@ -18,29 +18,55 @@ export function Analytics() {
 
   const [totalSignals, setTotalSignals] = useState(0);
 
+const getPartyColor = (name: string, index: number) => {
+  const partyColors: Record<string, string> = {
+    'CPI(M)': '#ef4444',
+    'CPI': '#dc2626',
+    'INC': '#3b82f6',
+    'BJP': '#f97316',
+    'IUML': '#22c55e',
+    'KEC(M)': '#eab308'
+  };
+  const l = name.toUpperCase();
+  for (const k in partyColors) {
+    if (l.includes(k)) return partyColors[k];
+  }
+  const defaultColors = ['#a855f7', '#ec4899', '#14b8a6', '#facc15', '#6366f1'];
+  return defaultColors[index % defaultColors.length];
+};
+
   useEffect(() => {
     fetch('/api/analytics')
       .then(r => r.json())
       .then(res => {
         if (!res) return;
         const weights = res.partyShare || {};
-        const share = PARTIES.map(p => ({
-          name: p.id,
-          value: Math.round(weights[p.id] || 0),
-          color: p.color
-        }));
+        const share = Object.entries(weights)
+          .map(([name, val], index) => ({
+            name: name,
+            value: Math.round(Number(val) || 0),
+            color: getPartyColor(name, index)
+          }))
+          .filter(s => s.value > 0)
+          .sort((a, b) => b.value - a.value);
+          
         setPartyShare(share);
         setDistrictStats(res.districtStats || []);
         setTotalSignals(res.totalSignals || 0);
         
-        // Mock historical data for trend since timestamp wasn't easily aggregated
-        const trend = [
-          { date: "Mar 20", LDF: 45, UDF: 42, NDA: 10, OTH: 3 },
-          { date: "Mar 22", LDF: 46, UDF: 41, NDA: 11, OTH: 2 },
-          { date: "Mar 24", LDF: 44, UDF: 43, NDA: 12, OTH: 1 },
-          { date: "Mar 26", LDF: 47, UDF: 40, NDA: 11, OTH: 2 },
-          { date: "Mar 28", LDF: 48, UDF: 39, NDA: 12, OTH: 1 },
-        ];
+        // Mock historical data for trend using the dynamic share mapping
+        // Create 5 trend dates
+        const trendDates = ["Mar 20", "Mar 22", "Mar 24", "Mar 26", "Mar 28"];
+        const trend = trendDates.map((date, i) => {
+           const obj: any = { date };
+           share.forEach(p => {
+              // Add a bit of random variation backwards
+              const variation = Math.floor(Math.random() * 5) - (trendDates.length - i - 1);
+              obj[p.name] = Math.max(0, p.value + variation);
+           });
+           return obj;
+        });
+        
         setData(trend);
         setLoading(false);
       })
@@ -83,10 +109,10 @@ export function Analytics() {
                 <h3 className="text-xl font-bold tracking-tight">Consensus Evolution</h3>
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-                {PARTIES.map(p => (
-                  <div key={p.id} className="flex items-center gap-2">
+                {partyShare.map(p => (
+                  <div key={p.name} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
-                    <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">{p.id}</span>
+                    <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">{p.name}</span>
                   </div>
                 ))}
               </div>
@@ -96,8 +122,8 @@ export function Analytics() {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data}>
                   <defs>
-                    {PARTIES.map(p => (
-                      <linearGradient key={p.id} id={`color${p.id}`} x1="0" y1="0" x2="0" y2="1">
+                    {partyShare.map(p => (
+                      <linearGradient key={p.name} id={`color${p.name.replace(/[^a-zA-Z0-9]/g, '')}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor={p.color} stopOpacity={0.3}/>
                         <stop offset="95%" stopColor={p.color} stopOpacity={0}/>
                       </linearGradient>
@@ -119,14 +145,14 @@ export function Analytics() {
                     contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #ffffff10', borderRadius: '16px' }}
                     itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                   />
-                  {PARTIES.map(p => (
+                  {partyShare.map(p => (
                     <Area 
-                      key={p.id}
+                      key={p.name}
                       type="monotone" 
-                      dataKey={p.id} 
+                      dataKey={p.name} 
                       stroke={p.color} 
                       fillOpacity={1} 
-                      fill={`url(#color${p.id})`} 
+                      fill={`url(#color${p.name.replace(/[^a-zA-Z0-9]/g, '')})`} 
                       strokeWidth={3}
                     />
                   ))}

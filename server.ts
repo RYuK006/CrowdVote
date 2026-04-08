@@ -24,7 +24,9 @@ try {
   console.error("Failed to init Firebase Admin:", error);
 }
 
-const CURRENT_PHASE = "pre_election";
+const CURRENT_PHASE: "pre_election" | "campaign" | "final" | "exit" = "pre_election";
+
+
 
 // In-Memory Data Structures
 let CONSTITUENCIES: any[] = [];
@@ -38,9 +40,10 @@ function initData() {
     .on('data', (row) => {
       const id = String(row['Constituency_ID']);
       const name = row['Constituency_Name'];
+      const state = row['State'];
       const district = row['District'];
       
-      CONSTITUENCIES.push({ id, name, district });
+      CONSTITUENCIES.push({ id, name, state, district });
       
       const othersText = row['2026_OTH_Candidates'];
       const othersList = othersText && othersText.trim() !== "" ? othersText.split(' | ') : [];
@@ -156,7 +159,7 @@ async function startServer() {
       const userCache: Record<string, any> = {};
       
       const csvRows = [
-        "User_ID,Phone_Number,Constituency_ID,Predicted_Party,Confidence,Timestamp,Phase"
+        "User_ID,Email,Constituency_ID,Predicted_Party,Confidence,Timestamp,Phase"
       ];
 
       for (const doc of predsSnap.docs) {
@@ -165,14 +168,14 @@ async function startServer() {
         
         if (userId && !userCache[userId]) {
           const userDoc = await db.collection("users").doc(userId).get();
-          userCache[userId] = userDoc.data() || { phoneNumber: "Unknown" };
+          userCache[userId] = userDoc.data() || { email: "Unknown" };
         }
         
-        const user = userCache[userId || ""] || { phoneNumber: "Unknown" };
+        const user = userCache[userId || ""] || { email: "Unknown" };
         
         csvRows.push([
           userId,
-          user.phoneNumber,
+          user.email,
           pred.constituencyId,
           pred.predictedParty,
           pred.confidence,
@@ -222,17 +225,12 @@ async function startServer() {
       console.log("[DEBUG] Admin check failed: No user in request");
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    try {
-      const adminDoc = await db.collection("admins").doc(req.user.uid).get();
-      if (!adminDoc.exists) {
-        console.log(`[DEBUG] Admin check failed: UID ${req.user.uid} not in admins collection`);
-        return res.status(403).json({ error: 'Forbidden: Admin access required' });
-      }
-      next();
-    } catch (error) {
-      console.error("[DEBUG] Admin check error:", error);
-      res.status(500).json({ error: 'Internal Server Error during admin check' });
+    // STRICT ADMIN ENFORCEMENT
+    if (req.user.email !== "aaronalexmathew48@gmail.com") {
+      console.log(`[DEBUG] Admin check failed: Email ${req.user.email} is not authorized.`);
+      return res.status(403).json({ error: 'Forbidden: Admin access required' });
     }
+    next();
   }
 
   app.post("/api/admin/config", authenticateToken, requireAdmin, async (req: any, res: any) => {
@@ -270,15 +268,13 @@ async function startServer() {
 
   app.get("/api/user/check", authenticateToken, async (req: any, res: any) => {
     const uid = req.user.uid;
-    const phoneNumber = req.user.phone_number || "";
+    const email = req.user.email || "";
     try {
       const userDoc = await db.collection('users').doc(uid).get();
       const exists = userDoc.exists;
       const userData = userDoc.data();
       
-      // Check admins collection
-      const adminDoc = await db.collection("admins").doc(uid).get();
-      const isAdmin = adminDoc.exists;
+      const isAdmin = (email === "aaronalexmathew48@gmail.com");
       
       console.log(`[DEBUG] Check User: ${uid}, isAdmin: ${isAdmin}`);
       
@@ -296,15 +292,13 @@ async function startServer() {
   app.post("/api/user/register", authenticateToken, async (req: any, res: any) => {
     const { displayName } = req.body;
     const uid = req.user.uid;
-    const phoneNumber = req.user.phone_number || "";
+    const email = req.user.email || "";
 
     try {
       await db.collection('users').doc(uid).set({
         uid,
         displayName,
-        phoneNumber,
-        predictabilityScore: 0,
-        influencePoints: 100,
+        email,
         createdAt: new Date().toISOString()
       });
       res.json({ success: true });
@@ -315,27 +309,69 @@ async function startServer() {
 
   app.post("/api/predict", authenticateToken, async (req: any, res: any) => {
     if (!db) return res.status(500).json({ error: "DB not initialized" });
-    const { constituencyId, predictedParty, confidence } = req.body;
+    const { constituencyId, predictedParty, predictedCandidate, confidence } = req.body;
     const uid = req.user.uid;
 
+
+
     try {
+      const userRef = db.collection("users").doc(uid);
       const docId = `${CURRENT_PHASE}_${constituencyId}`;
-      const docRef = db.collection("users").doc(uid).collection("predictions").doc(docId);
-      const existingDoc = await docRef.get();
-      
-      if (existingDoc.exists) {
+      const predictionRef = userRef.collection("predictions").doc(docId);
+
+      await db.runTransaction(async (transaction) => {
+        // 1. ALL READS FIRST (Strict Firestore Rule)
+        const userDoc = await transaction.get(userRef);
+        const predictionDoc = await transaction.get(predictionRef);
+
+        // 3. Logic & Validations
+        if (predictionDoc.exists) {
+          throw new Error("ALREADY_LOCKED");
+        }
+
+        // 3. ALL WRITES AFTER ALL READS
+        if (!userDoc.exists) {
+          // Auto-register session user
+          transaction.set(userRef, {
+            uid,
+            displayName: "Neural Predictor",
+            createdAt: new Date().toISOString()
+          });
+        }
+
+        // 4. All WRITES after all reads
+        const predictionData: any = {
+          constituencyId,
+          predictedParty,
+          confidence,
+          timestamp: new Date().toISOString(),
+          phase: CURRENT_PHASE
+        };
+        if (predictedCandidate) {
+          predictionData.predictedCandidate = predictedCandidate;
+        }
+        transaction.set(predictionRef, predictionData);
+
+        const globalPredRef = db.collection("global_predictions").doc();
+        const globalPredictionData: any = {
+          constituencyId,
+          predictedParty,
+          confidence,
+          userId: uid,
+          timestamp: new Date().toISOString()
+        };
+        if (predictedCandidate) {
+          globalPredictionData.predictedCandidate = predictedCandidate;
+        }
+        transaction.set(globalPredRef, globalPredictionData);
+      });
+
+      res.json({ success: true, message: "Prediction synced to neural mesh." });
+    } catch (err: any) {
+      if (err.message === "ALREADY_LOCKED") {
         return res.status(400).json({ error: "Prediction already locked for this phase and constituency." });
       }
-
-      await docRef.set({
-        constituencyId,
-        predictedParty,
-        confidence,
-        timestamp: new Date().toISOString(),
-        phase: CURRENT_PHASE
-      });
-      res.json({ success: true });
-    } catch (err: any) {
+      console.error("Predict logic error:", err);
       res.status(500).json({ error: err.message });
     }
   });
@@ -344,38 +380,48 @@ async function startServer() {
     if (!db) return res.json([]);
     const id = req.params.id;
     try {
-      // Use collectionGroup to find predictions for this constituency across all users
-      const predsSnap = await db.collectionGroup("predictions")
+      const predsSnap = await db.collection("global_predictions")
         .where("constituencyId", "==", id)
-        .orderBy("timestamp", "desc")
         .limit(20)
         .get();
       
-      const userIds = new Set<string>();
-      predsSnap.docs.forEach(doc => {
-        // Parent of 'predictions' doc is 'users/{uid}'
-        const userId = doc.ref.parent.parent?.id;
-        if (userId) userIds.add(userId);
-      });
+      const docs = predsSnap.docs.map(doc => doc.data());
+      docs.sort((a: any, b: any) => (b.timestamp || "").localeCompare(a.timestamp || ""));
 
-      if (userIds.size === 0) return res.json([]);
+      const userIds = Array.from(new Set(docs.map((d: any) => d.userId))).filter(uid => !!uid);
+      if (userIds.length === 0) return res.json([]);
       
-      const usersSnap = await db.collection("users").where("uid", "in", Array.from(userIds).slice(0, 10)).get();
-      const users = usersSnap.docs.map(doc => doc.data());
-      users.sort((a, b) => b.predictabilityScore - a.predictabilityScore);
+      const users: any[] = [];
+      const userRefs = userIds.slice(0, 10).map((uid: string) => db.collection("users").doc(uid));
+      
+      if (userRefs.length > 0) {
+        const userDocs = await db.getAll(...userRefs);
+        userDocs.forEach(uDoc => {
+          if (uDoc.exists) users.push(uDoc.data());
+        });
+      }
+      
+      users.sort((a: any, b: any) => (b.predictionCount || 0) - (a.predictionCount || 0));
       res.json(users);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      console.error("Leaderboard error:", err);
+      res.json([]); // Return empty array on error to prevent frontend crash
     }
   });
 
   app.get("/api/activity/global", async (req: any, res: any) => {
     if (!db) return res.json([]);
     try {
-      const snap = await db.collectionGroup("predictions").orderBy("timestamp", "desc").limit(15).get();
-      res.json(snap.docs.map(doc => ({ id: doc.id, ...doc.data(), userId: doc.ref.parent.parent?.id })));
+      const snap = await db.collection("global_predictions").limit(50).get();
+      const docs = snap.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data()
+      }));
+      docs.sort((a: any, b: any) => (b.timestamp || "").localeCompare(a.timestamp || ""));
+      res.json(docs.slice(0, 15));
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      console.error("Global activity error:", err);
+      res.json([]); // Return empty array on error
     }
   });
 
@@ -398,32 +444,34 @@ async function startServer() {
   app.get("/api/analytics", async (req: any, res: any) => {
     if (!db) return res.json({ partyShare: [], districtStats: [] });
     try {
-      const snap = await db.collectionGroup("predictions").get();
-      const predictions = snap.docs.map(d => d.data());
-      
-      const partyWeights: Record<string, number> = {};
+      const predsSnap = await db.collection("predictions").get();
+      const partyVotes: Record<string, number> = {};
       const districtMap: Record<string, Record<string, number>> = {};
       
-      predictions.forEach(p => {
-        const weight = p.weight || (p.confidence ? p.confidence / 100 : 0.5);
-        partyWeights[p.predictedParty] = (partyWeights[p.predictedParty] || 0) + weight;
+      predsSnap.docs.forEach(doc => {
+        const data = doc.data();
+        const { predictedParty, constituencyId } = data;
         
-        const constituency = CONSTITUENCIES.find(c => c.id === p.constituencyId);
+        partyVotes[predictedParty] = (partyVotes[predictedParty] || 0) + 1;
+        
+        const constituency = CONSTITUENCIES.find(c => c.id === constituencyId);
         if (constituency) {
           if (!districtMap[constituency.district]) districtMap[constituency.district] = {};
-          districtMap[constituency.district][p.predictedParty] = (districtMap[constituency.district][p.predictedParty] || 0) + weight;
+          districtMap[constituency.district][predictedParty] = (districtMap[constituency.district][predictedParty] || 0) + 1;
         }
       });
       
       const districtList = Object.entries(districtMap).map(([name, counts]) => {
         const winner = Object.entries(counts).reduce((a, b) => b[1] > a[1] ? b : a, ["", 0]);
-        return { name, winner: winner[0], count: Math.round(winner[1] * 10) / 10 };
+        return { name, winner: winner[0], count: winner[1] };
       });
+      
+      const totalSignals = predsSnap.size;
 
       res.json({
-        partyShare: partyWeights,
+        partyShare: partyVotes,
         districtStats: districtList.sort((a, b) => b.count - a.count),
-        totalSignals: predictions.length
+        totalSignals
       });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
@@ -433,7 +481,7 @@ async function startServer() {
   app.get("/api/leaderboard/global", async (req: any, res: any) => {
     if (!db) return res.json([]);
     try {
-      const snap = await db.collection("users").orderBy("predictabilityScore", "desc").limit(50).get();
+      const snap = await db.collection("users").orderBy("predictionCount", "desc").limit(50).get();
       const users = snap.docs.map(doc => doc.data());
       res.json(users);
     } catch (err: any) {

@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, MapPin, Info, Lock, RotateCcw, AlertCircle, BarChart3, History, Users2, ExternalLink, ChevronRight, ChevronLeft, Trophy, X, Database } from "lucide-react";
-import { DISTRICTS, PARTIES } from "../data";
+import { Search, Filter, MapPin, Info, Lock, RotateCcw, AlertCircle, BarChart3, History, Users2, ExternalLink, ChevronRight, ChevronLeft, Trophy, X, Database, RefreshCw } from "lucide-react";
+import { DISTRICTS, PARTIES, STATES } from "../data";
+import candidateDataObj from "../candidates.json";
+const candidateData = candidateDataObj as Record<string, any[]>;
 import { cn } from "../lib/utils";
 import { auth } from "../firebase";
 import { Layout } from "./Layout";
 import { User } from "../types";
+import { UnderDevelopmentPopup } from "./UnderDevelopmentPopup";
 
 export function Arena() {
   const [constituencies, setConstituencies] = useState<any[]>([]);
   const [details, setDetails] = useState<any>(null);
-  
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filterDistrict, setFilterDistrict] = useState<string>("ALL");
@@ -22,8 +24,12 @@ export function Arena() {
   const [showInfo, setShowInfo] = useState(false);
   const [constituencyLeaderboard, setConstituencyLeaderboard] = useState<User[]>([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
-  const [globalActivity, setGlobalActivity] = useState<any[]>([]);
-  const [loadingActivity, setLoadingActivity] = useState(false);
+
+  // New State variables for national prediction
+  const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [stateSearch, setStateSearch] = useState("");
+  const [showDevPopup, setShowDevPopup] = useState(false);
+  const [selectedStateForPopup, setSelectedStateForPopup] = useState("");
   
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -32,8 +38,6 @@ export function Arena() {
       .then(r => r.json())
       .then(setConstituencies)
       .catch(console.error);
-      
-    fetchGlobalActivity();
   }, []);
 
   useEffect(() => {
@@ -49,20 +53,6 @@ export function Arena() {
       setDetails(null);
     }
   }, [selectedId]);
-
-  const fetchGlobalActivity = async () => {
-    setLoadingActivity(true);
-    try {
-      const res = await fetch('/api/activity/global');
-      const activity = await res.json();
-      setGlobalActivity(Array.isArray(activity) ? activity : []);
-    } catch (error) {
-      console.error("Error fetching activity:", error);
-      setGlobalActivity([]);
-    } finally {
-      setLoadingActivity(false);
-    }
-  };
 
   useEffect(() => {
     if (!auth.currentUser) {
@@ -104,22 +94,43 @@ export function Arena() {
     }
   };
 
+  const filteredStates = STATES.filter(s => 
+    s.toLowerCase().includes(stateSearch.toLowerCase())
+  );
+
   const filteredConstituencies = constituencies.filter(c => {
+    const matchesState = !selectedState || c.state === selectedState;
     const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());
     const matchesDistrict = filterDistrict === "ALL" || c.district === filterDistrict;
-    return matchesSearch && matchesDistrict;
+    return matchesState && matchesSearch && matchesDistrict;
   });
+
+  const groupedByDistrict = (filterDistrict === "ALL" ? DISTRICTS : [filterDistrict]).reduce((acc, district) => {
+    const group = filteredConstituencies.filter(c => c.district === district);
+    if (group.length > 0) acc[district] = group;
+    return acc;
+  }, {} as Record<string, any[]>);
+
+  const handleStateSelect = (state: string) => {
+    if (state !== "Kerala") {
+      setSelectedStateForPopup(state);
+      setShowDevPopup(true);
+      return;
+    }
+    setSelectedState(state);
+  };
 
   const selectedConstituency = constituencies.find(c => c.id === selectedId);
   const isLocked = !!(selectedId && lockedIds.has(selectedId));
 
-  const handlePredict = (partyId: string) => {
+  const handlePredict = (partyId: string, candidateName: string) => {
     if (!selectedId) return;
     setPredictions(prev => ({
       ...prev,
       [selectedId]: {
         ...(prev[selectedId] || { confidence: 50 }),
         predictedParty: partyId,
+        predictedCandidate: candidateName,
       }
     }));
   };
@@ -150,6 +161,7 @@ export function Arena() {
         body: JSON.stringify({
           constituencyId: selectedId,
           predictedParty: prediction.predictedParty,
+          predictedCandidate: prediction.predictedCandidate,
           confidence: prediction.confidence || 50
         })
       });
@@ -172,93 +184,168 @@ export function Arena() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 shrink-0 px-1">
             <div className="space-y-3">
               <div className="flex items-center gap-2.5 text-emerald-500">
-                <Trophy className="w-5 h-5" />
-                <span className="text-[9px] font-mono uppercase tracking-[0.4em] font-bold">Node Mesh Arena</span>
+                <MapPin className="w-5 h-5" />
+                <span className="text-[9px] font-mono uppercase tracking-[0.4em] font-bold">India Prediction Center</span>
               </div>
-              <h2 className="text-4xl sm:text-6xl font-bold tracking-tighter">Electoral <span className="text-emerald-500">Arena</span></h2>
+              <h2 className="text-4xl sm:text-6xl font-bold tracking-tighter">
+                {selectedState ? (
+                  <>
+                    <span className="text-emerald-500">{selectedState}</span> Prediction
+                  </>
+                ) : (
+                  <>Select <span className="text-emerald-500">State</span></>
+                )}
+              </h2>
               <p className="text-white/40 text-[10px] font-mono uppercase tracking-widest max-w-sm">
-                Target nodes: {Object.keys(predictions).length} of 140 identified
+                {selectedState 
+                  ? `Predicting ${filteredConstituencies.length} areas in ${selectedState}`
+                  : "Choose a state to start your voting prediction"}
               </p>
             </div>
             
-            <div className="flex flex-row items-stretch gap-3 shrink-0">
-              <div className="relative group flex-1 md:w-64">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-emerald-500 transition-colors" />
-                <input
-                  type="text"
-                  placeholder="Search Node..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono"
-                />
-              </div>
-
-              <div className="relative group w-32 sm:w-40 shrink-0">
-                <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-emerald-500 transition-colors" />
-                <select
-                  value={filterDistrict}
-                  onChange={(e) => setFilterDistrict(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-8 text-[11px] focus:outline-none focus:border-emerald-500/50 transition-all appearance-none cursor-pointer font-bold uppercase tracking-tighter"
+            {selectedState ? (
+              <div className="flex flex-row items-stretch gap-3 shrink-0">
+                <button 
+                  onClick={() => {
+                    setSelectedState(null);
+                    setFilterDistrict("ALL");
+                  }}
+                  className="flex items-center gap-2 px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
                 >
-                  <option value="ALL">ALL SECTORS</option>
-                  {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
+                  <ChevronLeft className="w-4 h-4" />
+                  Back to States
+                </button>
+
+                <div className="relative group flex-1 md:w-64">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-emerald-500 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Search Area..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono"
+                  />
+                </div>
+
+                <div className="relative group w-32 sm:w-40 shrink-0">
+                  <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-emerald-500 transition-colors" />
+                  <select
+                    value={filterDistrict}
+                    onChange={(e) => setFilterDistrict(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-8 text-[11px] focus:outline-none focus:border-emerald-500/50 transition-all appearance-none cursor-pointer font-bold uppercase tracking-tighter"
+                  >
+                    <option value="ALL">ALL DISTRICTS</option>
+                    {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
               </div>
-            </div>
+            ) : (
+                <div className="relative group max-w-md w-full px-1">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-emerald-500 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Search State..."
+                    value={stateSearch}
+                    onChange={(e) => setStateSearch(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono"
+                  />
+                </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto custom-scrollbar pr-2 h-full">
-            {constituencies.length === 0 ? (
-                <div className="col-span-full py-20 text-center text-white/20 font-mono text-[10px] uppercase tracking-[0.5em] animate-pulse">Scanning Neural Mesh...</div>
+          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-32">
+            {!selectedState ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {filteredStates.map(state => (
+                  <button
+                    key={state}
+                    onClick={() => handleStateSelect(state)}
+                    className="group relative p-8 rounded-[32px] border border-white/5 bg-white/5 hover:bg-white/[0.07] hover:border-emerald-500/30 transition-all duration-500 text-left flex flex-col justify-between h-[120px] overflow-hidden"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-bold text-xl sm:text-2xl tracking-tight">{state}</h3>
+                      {state === "Kerala" ? (
+                        <div className="px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded text-[8px] font-mono text-emerald-500 font-bold uppercase">Active</div>
+                      ) : (
+                        <Lock className="w-4 h-4 text-white/10" />
+                      )}
+                    </div>
+                    <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">
+                      {state === "Kerala" ? "Predict now" : "Coming Soon"}
+                    </span>
+                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                      <ChevronRight className="w-5 h-5 text-emerald-500" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : constituencies.length === 0 ? (
+                <div className="py-20 text-center text-white/20 font-mono text-[10px] uppercase tracking-[0.5em] animate-pulse">Loading Constituencies...</div>
             ) : (
-                filteredConstituencies.map((c) => (
-                    <button
-                        key={c.id}
-                        onClick={() => setSelectedId(c.id)}
-                        className={cn(
-                            "group relative p-5 rounded-[32px] border transition-all duration-500 text-left overflow-hidden flex flex-col justify-between h-[150px] sm:h-[180px]",
-                            lockedIds.has(c.id)
-                            ? "bg-emerald-500/5 border-emerald-500/30 hover:shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
-                            : predictions[c.id]
-                              ? "bg-white/[0.07] border-white/20 shadow-lg"
-                              : "bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/[0.07]"
-                        )}
-                    >
-                        <div className="flex items-start justify-between w-full">
-                            <div className={cn(
-                                "w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center border transition-all duration-500 shrink-0",
-                                lockedIds.has(c.id) ? "bg-emerald-500 text-black border-emerald-500" : "bg-white/5 border-white/10 group-hover:border-emerald-500/40"
-                            )}>
-                                <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />
-                            </div>
-                            {lockedIds.has(c.id) ? (
-                                <Lock className="w-3.5 h-3.5 text-emerald-500" />
-                            ) : predictions[c.id] ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[8px] font-mono text-emerald-500/60 uppercase font-bold">Draft Locked</span>
-                                  <div className="w-2 h-2 rounded-full bg-emerald-500/40 animate-pulse" />
+                <div className="space-y-12">
+                  {Object.entries(groupedByDistrict).map(([district, items]) => (
+                    <div key={district} className="space-y-6">
+                      <div className="flex items-center gap-4 px-1">
+                        <h4 className="text-sm font-mono text-emerald-500 uppercase tracking-[0.4em] font-bold">{district}</h4>
+                        <div className="h-px flex-1 bg-white/5" />
+                        <span className="text-[10px] font-mono text-white/20 uppercase font-bold">{items.length} Areas</span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {items.map((c) => (
+                          <button
+                            key={c.id}
+                            onClick={() => setSelectedId(c.id)}
+                            className={cn(
+                                "group relative p-5 rounded-[32px] border transition-all duration-500 text-left overflow-hidden flex flex-col justify-between h-[150px] sm:h-[180px]",
+                                lockedIds.has(c.id)
+                                ? "bg-emerald-500/5 border-emerald-500/30 hover:shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
+                                : predictions[c.id]
+                                  ? "bg-white/[0.07] border-white/20 shadow-lg"
+                                  : "bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/[0.07]"
+                            )}
+                        >
+                            <div className="flex items-start justify-between w-full">
+                                <div className={cn(
+                                    "w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center border transition-all duration-500 shrink-0",
+                                    lockedIds.has(c.id) ? "bg-emerald-500 text-black border-emerald-500" : "bg-white/5 border-white/10 group-hover:border-emerald-500/40"
+                                )}>
+                                    <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </div>
-                            ) : null}
-                        </div>
-
-                        <div className="space-y-1">
-                            <h3 className="font-bold tracking-tight text-lg sm:text-xl truncate leading-tight">{c.name}</h3>
-                            <div className="flex items-center gap-2">
-                                <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">{c.district}</span>
-                                {predictions[c.id] && (
-                                    <span className="text-[9px] font-mono text-emerald-500 font-bold uppercase tracking-widest">{predictions[c.id]?.predictedParty}</span>
-                                )}
+                                {lockedIds.has(c.id) ? (
+                                    <Lock className="w-3.5 h-3.5 text-emerald-500" />
+                                ) : predictions[c.id] ? (
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[8px] font-mono text-emerald-500/60 uppercase font-bold">Draft Locked</span>
+                                      <div className="w-2 h-2 rounded-full bg-emerald-500/40 animate-pulse" />
+                                    </div>
+                                ) : null}
                             </div>
-                        </div>
-
-                        <div className="absolute bottom-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 hidden sm:block">
-                            <ChevronRight className="w-5 h-5 text-emerald-500" />
-                        </div>
-                    </button>
-                ))
+                            
+                            <div className="space-y-1">
+                                <h3 className="font-bold tracking-tight text-lg sm:text-xl truncate leading-tight group-hover:text-emerald-500 transition-colors uppercase">{c.name}</h3>
+                                <p className="text-[9px] font-mono text-white/20 uppercase tracking-widest">{c.district}</p>
+                            </div>
+                        
+                            <div className="absolute bottom-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 hidden sm:block">
+                                <ChevronRight className="w-5 h-5 text-emerald-500" />
+                            </div>
+                        </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
             )}
           </div>
         </div>
+
+        {/* Under Development Popup */}
+        <UnderDevelopmentPopup 
+          isOpen={showDevPopup}
+          onClose={() => setShowDevPopup(false)}
+          title="Under Development"
+          message={`Voting prediction for ${selectedStateForPopup} is coming soon. Currently, you can predict results for the upcoming Kerala Elections.`}
+        />
 
         {/* Full-Screen Cinematic Overlay */}
         <AnimatePresence>
@@ -315,57 +402,57 @@ export function Arena() {
                             <div className="space-y-2 max-w-full">
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-[0.4em] font-bold">Node Identity Analysis</span>
+                                    <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-[0.4em] font-bold">Constituency Details</span>
                                 </div>
-                                <h3 className="text-3xl sm:text-6xl font-bold tracking-tighter leading-[0.9] break-words">{selectedConstituency?.name}</h3>
+                                <h3 className="text-2xl sm:text-6xl font-bold tracking-tighter leading-[0.9] break-words">{selectedConstituency?.name}</h3>
                                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
-                                    <span className="text-[10px] sm:text-xs font-mono text-white/40 uppercase tracking-widest">{selectedConstituency?.district} SECTOR</span>
+                                    <span className="text-[10px] sm:text-xs font-mono text-white/40 uppercase tracking-widest">{selectedConstituency?.district} DISTRICT</span>
                                     <div className="w-1 h-1 rounded-full bg-white/20 hidden sm:block" />
-                                    <span className="text-[10px] sm:text-xs font-mono text-emerald-500 uppercase tracking-widest font-bold">NODE: {selectedId}</span>
+                                    <span className="text-[10px] sm:text-xs font-mono text-emerald-500 uppercase tracking-widest font-bold">AREA CODE: {selectedId}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-6 sm:p-12 pt-4 space-y-12">
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
+                    <div className="p-4 sm:p-12 pt-4 space-y-10">
+                        <div className={cn("grid grid-cols-1 gap-12 transition-all duration-700", showInfo ? "xl:grid-cols-2" : "xl:grid-cols-1")}>
                             {showInfo ? (
-                                <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-12">
+                                <div className="col-span-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
                                     {/* Metrics Column */}
                                     <div className="space-y-10">
                                         <div className="space-y-6">
-                                            <h4 className="text-[10px] font-mono text-white/20 uppercase tracking-[0.4em] font-bold">Sector Telemetry</h4>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <h4 className="text-[10px] font-mono text-white/20 uppercase tracking-[0.4em] font-bold">Voting Statistics</h4>
+                                            <div className="grid grid-cols-1 gap-4">
                                                 <div className="glass p-6 rounded-[32px] border border-white/5 space-y-2 bg-white/[0.02]">
-                                                    <span className="text-[9px] font-mono text-white/20 uppercase">Turnout 2021</span>
+                                                    <span className="text-[9px] font-mono text-white/20 uppercase">Voter Turnout (2021)</span>
                                                     <p className="text-3xl font-bold text-emerald-500">{details?.results2021.turnout || "--"}%</p>
                                                 </div>
                                                 <div className="glass p-6 rounded-[32px] border border-white/5 space-y-2 bg-white/[0.02]">
-                                                    <span className="text-[9px] font-mono text-white/20 uppercase">Total Electors</span>
+                                                    <span className="text-[9px] font-mono text-white/20 uppercase">Total Voters</span>
                                                     <p className="text-2xl font-bold font-mono tracking-tighter">{details?.results2021.electors.toLocaleString() || "N/A"}</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        
+                                    </div>
+
+                                    {/* Past Results Column */}
+                                    <div className="space-y-10">
                                         <div className="space-y-6">
-                                            <h4 className="text-[10px] font-mono text-white/20 uppercase tracking-[0.4em] font-bold">Historical Victors</h4>
+                                            <h4 className="text-[10px] font-mono text-white/20 uppercase tracking-[0.4em] font-bold">Historical Data</h4>
                                             <div className="glass p-8 rounded-[40px] border border-white/5 relative overflow-hidden bg-white/[0.01]">
                                                 <div className="absolute -top-4 -right-4 p-8 opacity-[0.03]">
                                                     <Trophy className="w-32 h-32" />
                                                 </div>
                                                 <div className="space-y-8 relative z-10">
                                                     <div>
-                                                        <span className="text-[9px] font-mono text-emerald-500/60 uppercase tracking-widest block mb-2 font-bold">2021 Dominant Signal</span>
-                                                        <h5 className="text-2xl sm:text-3xl font-bold tracking-tight">{details?.results2021.winner.name}</h5>
+                                                        <span className="text-[9px] font-mono text-emerald-500/60 uppercase tracking-widest block mb-2 font-bold">2021 Winner</span>
+                                                        <h5 className="text-2xl font-bold tracking-tight">{details?.results2021.winner.name}</h5>
                                                         <span className="text-[10px] font-mono text-emerald-500 uppercase font-bold mt-2 inline-block px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">{details?.results2021.winner.front}</span>
                                                     </div>
                                                     <div className="pt-8 border-t border-white/5 flex justify-between items-end">
                                                        <div>
-                                                          <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest block mb-2">Primary Challenger</span>
-                                                          <h5 className="text-lg font-bold text-white/60">{details?.results2021.runnerUp.name}</h5>
-                                                       </div>
-                                                       <div className="text-right">
-                                                          <p className="text-xs font-mono text-white/20 uppercase">{details?.results2021.runnerUp.votes.toLocaleString()} Votes</p>
+                                                          <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest block mb-2">Runner Up</span>
+                                                          <h5 className="text-sm font-bold text-white/60">{details?.results2021.runnerUp.name}</h5>
                                                        </div>
                                                     </div>
                                                 </div>
@@ -373,28 +460,42 @@ export function Arena() {
                                         </div>
                                     </div>
 
-                                    {/* Candidates Column */}
-                                    <div className="space-y-8">
-                                        <h4 className="text-[10px] font-mono text-white/20 uppercase tracking-[0.4em] font-bold">Synchronizable Agents (2026)</h4>
-                                        <div className="flex flex-col gap-3">
-                                            {details && Object.entries(details.candidates2026).map(([front, info]: [any, any]) => {
-                                                if (front === 'others') return null;
-                                                const party = PARTIES.find(p => p.id === front.toUpperCase());
-                                                return (
-                                                    <div key={front} className="glass p-5 rounded-[28px] border border-white/5 flex items-center gap-5 sm:gap-6 group hover:bg-white/5 transition-all bg-white/[0.02]">
-                                                        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center p-2.5 shrink-0 shadow-lg">
-                                                            <img src={party?.symbol} alt={front} className="w-full h-full object-contain filter group-hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.2)] transition-all" />
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center gap-2 mb-1">
-                                                                <span className="text-[9px] font-mono font-bold uppercase tracking-widest" style={{ color: party?.color }}>{front} Sector</span>
-                                                            </div>
-                                                            <h5 className="text-base sm:text-lg font-bold group-hover:text-emerald-500 transition-colors truncate">{info.name}</h5>
-                                                            <span className="text-[9px] font-mono text-white/30 uppercase block truncate">{info.party}</span>
-                                                        </div>
+                                    {/* Elite Predictors (Leaderboard) Column */}
+                                    <div className="space-y-10">
+                                        <div className="space-y-6">
+                                            <div className="flex items-center justify-between">
+                                                <h4 className="text-[10px] font-mono text-emerald-500 uppercase tracking-[0.4em] font-bold">Elite Predictors</h4>
+                                                <Trophy className="w-4 h-4 text-emerald-500" />
+                                            </div>
+                                            <div className="flex flex-col gap-3">
+                                                {loadingLeaderboard ? (
+                                                    <div className="py-10 flex flex-col items-center justify-center space-y-3">
+                                                        <RefreshCw className="w-5 h-5 text-emerald-500/40 animate-spin" />
+                                                        <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest">Sycing Signals...</span>
                                                     </div>
-                                                );
-                                            })}
+                                                ) : (!Array.isArray(constituencyLeaderboard) || constituencyLeaderboard.length === 0) ? (
+                                                    <div className="glass p-8 rounded-[32px] border border-white/5 text-center text-white/20 text-[10px] font-mono uppercase tracking-[0.2em] bg-white/[0.01]">
+                                                        Awaiting elite signals...
+                                                    </div>
+                                                ) : (
+                                                    constituencyLeaderboard.map((user: any, idx: number) => (
+                                                        <div key={user.uid || idx} className="glass p-4 rounded-2xl border border-white/5 flex items-center justify-between group hover:bg-white/5 transition-all bg-white/[0.02]">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-[10px] font-bold">
+                                                                    #{idx + 1}
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-sm font-bold truncate max-w-[100px]">{user.displayName || "Predictor"}</p>
+                                                                </div>
+                                                            </div>
+                                                                <div className="text-right">
+                                                                    <p className="text-xs font-mono text-emerald-500 font-bold">{user.predictionCount || 0}</p>
+                                                                    <span className="text-[8px] font-mono text-white/20 uppercase text-center block">Signals</span>
+                                                                </div>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -403,7 +504,7 @@ export function Arena() {
                                     <div className="space-y-12">
                                         <div className="space-y-8">
                                             <div className="flex items-center justify-between">
-                                                <h4 className="text-[10px] font-mono text-emerald-500 uppercase tracking-[0.4em] font-bold">Swarm Vector Selection</h4>
+                                                <h4 className="text-[10px] font-mono text-emerald-500 uppercase tracking-[0.4em] font-bold">Choose Your Candidate</h4>
                                                 <button 
                                                     onClick={() => setPredictions(prev => {
                                                         const next = { ...prev };
@@ -414,37 +515,45 @@ export function Arena() {
                                                     className="flex items-center gap-2 text-[10px] font-mono text-white/30 hover:text-red-500 transition-colors uppercase disabled:opacity-0 active:scale-95"
                                                 >
                                                     <RotateCcw className="w-3.5 h-3.5" />
-                                                    Clear Signal
+                                                    Reset
                                                 </button>
                                             </div>
 
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                {PARTIES.map((party) => (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {(candidateData[selectedId] || []).map((candidate: any, idx: number) => (
                                                     <button
-                                                        key={party.id}
-                                                        onClick={() => !isLocked && handlePredict(party.id)}
+                                                        key={`${candidate.id}-${idx}`}
+                                                        onClick={() => !isLocked && handlePredict(candidate.id, candidate.name)}
                                                         disabled={isLocked}
                                                         className={cn(
-                                                            "p-5 sm:p-6 rounded-[32px] border transition-all duration-500 text-left relative overflow-hidden group flex items-center gap-5 sm:gap-6",
-                                                            predictions[selectedId]?.predictedParty === party.id
-                                                                ? "bg-white/10 border-emerald-500/50 shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]"
+                                                            "p-4 sm:p-5 rounded-[24px] border transition-all duration-500 text-left relative overflow-hidden group flex flex-col gap-4",
+                                                            predictions[selectedId]?.predictedParty === candidate.id && predictions[selectedId]?.predictedCandidate === candidate.name
+                                                                ? "bg-white/10 border-emerald-500/50 shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
                                                                 : "bg-white/5 border-white/5 hover:border-white/10",
                                                             isLocked && "opacity-80 cursor-not-allowed"
                                                         )}
                                                     >
-                                                        <div className="absolute top-0 left-0 w-1.5 h-full transition-transform duration-500 group-hover:scale-y-150" style={{ backgroundColor: party.color }} />
-                                                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center p-3 shrink-0 shadow-inner group-hover:scale-105 transition-transform duration-500">
-                                                            <img src={party.symbol} alt={party.id} className="w-full h-full object-contain filter group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.1)]" />
+                                                        <div className="absolute top-0 left-0 w-1.5 h-full transition-transform duration-500 bg-white/20 group-hover:bg-emerald-500/50" />
+                                                        <div className="flex items-center gap-3 w-full">
+                                                            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center p-2 shrink-0 overflow-hidden bg-white">
+                                                                {candidate.symbol ? (
+                                                                    <img src={`/symbols/${candidate.symbol}`} alt={candidate.id} className="w-full h-full object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement?.classList.add('fallback-icon'); }} />
+                                                                ) : (
+                                                                    <Users2 className="w-5 h-5 text-neutral-400" />
+                                                                )}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0 pb-1">
+                                                                <span className="text-[9px] font-mono text-emerald-500 uppercase tracking-widest block mb-1 font-bold">{candidate.front || "IND"} <span className="text-white/20 px-1">•</span> {candidate.id}</span>
+                                                                <h5 className="text-sm font-bold tracking-tight leading-snug">{candidate.name}</h5>
+                                                            </div>
                                                         </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <span className="text-[9px] font-mono text-white/20 uppercase tracking-widest block mb-0.5">{party.id} NODE</span>
-                                                            <h5 className="text-lg sm:text-xl font-bold tracking-tight truncate leading-tight">{party.name}</h5>
-                                                        </div>
-                                                        {predictions[selectedId]?.predictedParty === party.id && (
-                                                            <motion.div 
-                                                              layoutId="active-dot"
-                                                              className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,1)]" 
-                                                            />
+                                                        {predictions[selectedId]?.predictedParty === candidate.id && predictions[selectedId]?.predictedCandidate === candidate.name && (
+                                                            <div className="absolute top-4 right-4">
+                                                                <motion.div 
+                                                                   layoutId="active-dot"
+                                                                   className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,1)]" 
+                                                                />
+                                                            </div>
                                                         )}
                                                     </button>
                                                 ))}
@@ -453,8 +562,13 @@ export function Arena() {
 
                                         <div className="space-y-8">
                                             <div className="flex items-center justify-between">
-                                                <h4 className="text-[10px] font-mono text-white/20 uppercase tracking-[0.4em] font-bold">Signal Conviction</h4>
-                                                <span className="text-3xl sm:text-4xl font-bold text-emerald-500 font-mono tracking-tighter">{predictions[selectedId]?.confidence || 50}%</span>
+                                                <h4 className="text-[10px] font-mono text-white/20 uppercase tracking-[0.4em] font-bold">Your Confidence</h4>
+                                                <div className="flex items-end gap-3">
+                                                  <span className="text-[10px] font-mono text-emerald-500/60 uppercase font-bold mb-1">
+                                                    { (predictions[selectedId]?.confidence || 50) < 40 ? "LOW" : (predictions[selectedId]?.confidence || 50) < 80 ? "MEDIUM" : "HIGH" }
+                                                  </span>
+                                                  <span className="text-3xl sm:text-4xl font-bold text-emerald-500 font-mono tracking-tighter">{predictions[selectedId]?.confidence || 50}%</span>
+                                                </div>
                                             </div>
                                             <div className="relative group">
                                                 <input 
@@ -479,8 +593,8 @@ export function Arena() {
                                             {isLocked ? (
                                                 <div className="w-full py-8 sm:py-10 rounded-[32px] bg-emerald-500/10 border border-emerald-500/30 flex flex-col items-center justify-center gap-2">
                                                     <Lock className="w-8 h-8 text-emerald-500 mb-2" />
-                                                    <span className="text-xl sm:text-2xl font-bold text-emerald-500 tracking-[0.2em] uppercase">Signal Locked</span>
-                                                    <p className="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em]">Node Synced to Central Hub</p>
+                                                    <span className="text-xl sm:text-2xl font-bold text-emerald-500 tracking-[0.2em] uppercase">Vote Submitted</span>
+                                                    <p className="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em]">Synched to Electoral Hub</p>
                                                 </div>
                                             ) : (
                                                 <button 
@@ -493,7 +607,7 @@ export function Arena() {
                                                     ) : (
                                                         <>
                                                             <Database className="w-6 h-6" />
-                                                            SYNCHRONIZE SIGNAL
+                                                            CONFIRM VOTE
                                                         </>
                                                     )}
                                                 </button>
@@ -507,26 +621,6 @@ export function Arena() {
                                                     {message.text}
                                                 </motion.p>
                                             )}
-                                        </div>
-                                    </div>
-
-                                    {/* Desktop Analytics (XL Only) */}
-                                    <div className="hidden xl:flex flex-col gap-8">
-                                        <div className="glass p-10 rounded-[40px] border border-white/5 space-y-8 bg-white/[0.01]">
-                                            <div className="flex items-center gap-3">
-                                                <BarChart3 className="text-emerald-500 w-5 h-5" />
-                                                <h4 className="text-[10px] font-bold font-mono uppercase tracking-[0.4em]">Node Analytics</h4>
-                                            </div>
-                                            <p className="text-white/30 text-xs font-mono leading-relaxed uppercase tracking-tighter">
-                                                Synchronizing user-defined vectors with global swarm metrics...
-                                            </p>
-                                            <div className="w-full h-1 bg-emerald-500/10 rounded-full overflow-hidden">
-                                                <motion.div 
-                                                  animate={{ x: ["-100%", "100%"] }}
-                                                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                                                  className="w-1/2 h-full bg-emerald-500/40"
-                                                />
-                                            </div>
                                         </div>
                                     </div>
                                 </>

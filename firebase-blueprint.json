@@ -9,7 +9,7 @@
         "displayName": { "type": "string", "description": "Public name of the agent." },
         "phoneNumber": { "type": "string", "description": "Verified phone number." },
         "influencePoints": { "type": "integer", "description": "Current influence points (IP)." },
-        "predictabilityScore": { "type": "number", "description": "Neural sync score percentage." },
+        "predictionCount": { "type": "integer", "description": "Total signals cast by the agent." },
         "accuracy": { "type": "number", "description": "Historical prediction accuracy." },
         "rank": { "type": "integer", "description": "Global swarm rank." },
         "role": { "type": "string", "enum": ["user", "admin"], "description": "System access level." },
@@ -24,7 +24,8 @@
       "properties": {
         "userId": { "type": "string", "description": "UID of the predicting agent." },
         "constituencyId": { "type": "string", "description": "Target constituency node ID." },
-        "predictedParty": { "type": "string", "description": "Predicted winning party (LDF, UDF, NDA, OTH)." },
+        "predictedParty": { "type": "string", "description": "Predicted winning party (specific, e.g. CPI(M), INC, etc.)." },
+        "predictedCandidate": { "type": "string", "description": "Predicted winning candidate name." },
         "confidence": { "type": "integer", "description": "Agent conviction level (10-100)." },
         "margin": { "type": "integer", "description": "Predicted victory margin." },
         "timestamp": { "type": "string", "format": "date-time", "description": "Signal lock-in time." },

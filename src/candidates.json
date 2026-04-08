@@ -1,0 +1,3866 @@
+{
+  "1": [
+    {
+      "id": "CPI(M)",
+      "name": "K. R. Jayanandan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "A. K. M. Ashraf",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "K. Surendran",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "2": [
+    {
+      "id": "Independent (INL Support)",
+      "name": "Shanavas Padhoor",
+      "party": "Independent (INL Support)",
+      "front": "LDF",
+      "symbol": "inl.png"
+    },
+    {
+      "id": "IUML",
+      "name": "Kallatra Mahin Haji",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Ashwini M.L.",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "C.A. Savad",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "3": [
+    {
+      "id": "CPI(M)",
+      "name": "C. H. Kunhambu",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Neelakantan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Manulal Meloth",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "4": [
+    {
+      "id": "CPI",
+      "name": "Govindan Pallikkappil",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "KEC",
+      "name": "Shyji Ottapalli",
+      "party": "KEC",
+      "front": "UDF",
+      "symbol": "kec.png"
+    },
+    {
+      "id": "BJP",
+      "name": "M. Balraj",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "5": [
+    {
+      "id": "CPI(M)",
+      "name": "V. P. P. Mustafa",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Sandeep Varier",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Ravi Kulangara",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    }
+  ],
+  "6": [
+    {
+      "id": "CPI(M)",
+      "name": "T. I. Madhusoodanan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "Independent (RSP support)",
+      "name": "V. Kunjikrishnan",
+      "party": "Independent (RSP support)",
+      "front": "UDF",
+      "symbol": "independent.png"
+    },
+    {
+      "id": "BJP",
+      "name": "A. P. Gangadharan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "7": [
+    {
+      "id": "CPI(M)",
+      "name": "M. Vijin",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Rajeevan Kappacheri",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "A.V. Sanil Kumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "K.K. Abdul Jabbar",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "8": [
+    {
+      "id": "CPI(M)",
+      "name": "P. K. Shyamala",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "Independent (INC Support)",
+      "name": "T. K. Govindan",
+      "party": "Independent (INC Support)",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "N. Haridas",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Anappally Gopalan",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "9": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Mathew Kunnappally",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Sajeev Joseph",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Sreenath Padmanabhan",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Joseph P.V",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "M. J. Mathew",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "10": [
+    {
+      "id": "CPI(M)",
+      "name": "K. V. Sumesh",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "Kareem Cheleri",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "K. K. Vinod Kumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "11": [
+    {
+      "id": "Congress (Secular)",
+      "name": "Kadannappalli Ramachandran",
+      "party": "Congress (Secular)",
+      "front": "LDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Adv. T. O. Mohanan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "C. Raghunath",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "12": [
+    {
+      "id": "CPI(M)",
+      "name": "Pinarayi Vijayan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Abdul Rasheed",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "K. Ranjith",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "13": [
+    {
+      "id": "CPI(M)",
+      "name": "Karayi Rajan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "K. P. Saju",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "O. Nidheesh",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "A.C. Jalaluddin",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "14": [
+    {
+      "id": "RJD",
+      "name": "P. K. Praveen",
+      "party": "RJD",
+      "front": "LDF",
+      "symbol": "rjd.png"
+    },
+    {
+      "id": "IUML",
+      "name": "Jayanthi Rajan",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Adv. Shijilal",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Rafeed AP",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "15": [
+    {
+      "id": "CPI(M)",
+      "name": "V. K. Sanoj",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Chandran Thillankeri",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Biju Elakkuzhi",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "Basheer Punnad",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "16": [
+    {
+      "id": "CPI(M)",
+      "name": "K. K. Shailaja",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Sunny Joseph",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Paily Vathiatt",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Adv. Henstion George",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "17": [
+    {
+      "id": "CPI(M)",
+      "name": "O. R. Kelu",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Usha Vijayan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "P. Shyam Raj",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Vishnu P.G",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "18": [
+    {
+      "id": "CPI(M)",
+      "name": "M. S. Viswanathan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "I. C. Balakrishnan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "A. S. Kavitha",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Prakrithi N V",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "19": [
+    {
+      "id": "RJD",
+      "name": "P. K. Anil Kumar",
+      "party": "RJD",
+      "front": "LDF",
+      "symbol": "rjd.png"
+    },
+    {
+      "id": "INC",
+      "name": "T. Siddique",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Prasanth Malavayal",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Rafeek C A",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "20": [
+    {
+      "id": "RJD",
+      "name": "M. K. Bhaskaran",
+      "party": "RJD",
+      "front": "LDF",
+      "symbol": "rjd.png"
+    },
+    {
+      "id": "RMPI",
+      "name": "K. K. Rema",
+      "party": "RMPI",
+      "front": "UDF",
+      "symbol": "rmpi.jpg"
+    },
+    {
+      "id": "BJP",
+      "name": "K. Dileep",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "21": [
+    {
+      "id": "CPI(M)",
+      "name": "K. P. Kunhammad Kutti Master",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "Parakkal Abdulla",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Ramadas Manaleri",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "22": [
+    {
+      "id": "CPI",
+      "name": "P. Vasantham",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "K. M. Abhijith",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "C. P. Vipin Chandran",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "23": [
+    {
+      "id": "CPI(M)",
+      "name": "K. Dasan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "K. Praveen Kumar",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "C. R. Praphul Krishnan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "Padinjare Kuniyoth",
+      "name": "Musthafa PK",
+      "party": "Padinjare Kuniyoth",
+      "front": "OTH",
+      "symbol": "padinjarekuniyoth.png"
+    }
+  ],
+  "24": [
+    {
+      "id": "CPI(M)",
+      "name": "T. P. Ramakrishnan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "Fathima Thahiliya",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "M. Mohanan Master",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Ranjith Malayil",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "25": [
+    {
+      "id": "CPI(M)",
+      "name": "K. M. Sachindev",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "V. T. Sooraj",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "C. P. Sateeshan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "26": [
+    {
+      "id": "NCP(SP)",
+      "name": "A. K. Saseendran",
+      "party": "NCP(SP)",
+      "front": "LDF",
+      "symbol": "ncp.png"
+    },
+    {
+      "id": "INC",
+      "name": "Vidya Balakrishnan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "T. Devadas",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Abdul Basith Atholi",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "27": [
+    {
+      "id": "CPI(M)",
+      "name": "Thottathil Ravindran",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "K. Jayanth",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Navya Haridas",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Dr. Alphonsa Mathew",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "28": [
+    {
+      "id": "INL",
+      "name": "Ahamed Devarkovil",
+      "party": "INL",
+      "front": "LDF",
+      "symbol": "inl.png"
+    },
+    {
+      "id": "IUML",
+      "name": "Faisal Babu",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "T. Raneesh",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "29": [
+    {
+      "id": "CPI(M)",
+      "name": "Muhammad Riyas",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "AITC",
+      "name": "P. V. Anvar",
+      "party": "AITC",
+      "front": "UDF",
+      "symbol": "aitc.png"
+    },
+    {
+      "id": "BJP",
+      "name": "K. P. Prakash Babu",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "30": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "P. T. A. Rahim",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "M. A. Razak Master",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "V. K. Sajeevan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "31": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "Saleem Madavoor",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "P. K. Firos",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Giri Pambanal",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Bavan Kutty K M",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "32": [
+    {
+      "id": "CPI(M)",
+      "name": "Linto Joseph",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "C. K. Kasim",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Sunny Thomas",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Sunny V Joseph",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "33": [
+    {
+      "id": "CPI(M)",
+      "name": "Dr. P. Jiji",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "T. P. Ashrafali",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "P. Subrahmanian",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "M. Abdul Khader",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "34": [
+    {
+      "id": "CPI",
+      "name": "Shafeer Kizhisseri",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "IUML",
+      "name": "P. K. Basheer",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Adv. N. Sreeprakash",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "Yusuf Chemmala",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "35": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "U. Sharafali",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Aryadan Shoukath",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Gireesh Mekkad",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Jaisal Maliyekkal",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "36": [
+    {
+      "id": "CPI(M)",
+      "name": "K. K. Damodaran",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "A. P. Anil Kumar",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "JRS",
+      "name": "E. P. Kumaradas",
+      "party": "JRS",
+      "front": "NDA",
+      "symbol": "jrs.png"
+    }
+  ],
+  "37": [
+    {
+      "id": "Independent (CPI support)",
+      "name": "M. Mustafa",
+      "party": "Independent (CPI support)",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "IUML",
+      "name": "M. Rahmathulla",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Pathmasree M.",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Adv. PPA Sageer",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "38": [
+    {
+      "id": "CPI(M)",
+      "name": "V. P. Muhammad Haneefa",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "Najeeb Kanthapuram",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Adv. K.P. Baburaj",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "39": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "Kunnath Muhammed",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "Manjalamkuzhi Ali",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Lijoy Paul",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "Dr. C.H. Ashraf",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "40": [
+    {
+      "id": "NCP(SP)",
+      "name": "K. T. Mujeeb",
+      "party": "NCP(SP)",
+      "front": "LDF",
+      "symbol": "ncp.png"
+    },
+    {
+      "id": "IUML",
+      "name": "P. K. Kunhalikutty",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Ashwathy Gupatha Kumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "Kundupuzhakkal",
+      "name": "Aboobacker K.P.",
+      "party": "Kundupuzhakkal",
+      "front": "OTH",
+      "symbol": "kundupuzhakkal.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Adv. Sadiq Naduthodi",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "41": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "Muhammad Sabah Kundukuzhikkal",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "K. M. Shaji",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Jayakrishnan V.N.",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "42": [
+    {
+      "id": "Independent (INL support)",
+      "name": "Adv. C. P. Musthafa",
+      "party": "Independent (INL support)",
+      "front": "LDF",
+      "symbol": "inl.png"
+    },
+    {
+      "id": "IUML",
+      "name": "T. V. Ibrahim",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "M. Preman Master",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Abdul Azeez Kadalundi",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "43": [
+    {
+      "id": "CPI",
+      "name": "Ajit Koladi",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "IUML",
+      "name": "P. M. A. Sameer",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Riju C. Raghav",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Moosa Jarathingal",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "44": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "Muhammed Sameer",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "P. K. Navas",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Deepa Puzhakkal",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "45": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "V. Abdurahman",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "Kurukkoli Moideen",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "K. Narayanan Master",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Kabeer Shameer Kuttoor",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "46": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "K. Preethi",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "K. K. Abid Hussain Thangal",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Subrahmanian Chunkapally",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Adv. Majeed Marakkara",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "47": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "K. T. Jaleel",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "V. S. Joy",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Ravi Thelath",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Abdul Jaleel",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "48": [
+    {
+      "id": "CPI(M)",
+      "name": "M. K. Sakeer",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "K. P. Noushad Ali",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "E. Maneesh",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Anvar Pazhanji",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "49": [
+    {
+      "id": "CPI(M)",
+      "name": "M. B. Rajesh",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "V. T. Balram",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "V. Unnikrishnan Master",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "Shaheer Chalippuram",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "50": [
+    {
+      "id": "CPI",
+      "name": "Muhammed Muhassin P.",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "T. P. Shaji",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Adv. P. Manoj",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "S.P. Ameer Ali",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "51": [
+    {
+      "id": "CPI(M)",
+      "name": "P. Mammikkutty",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "P. Harigovindan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Sanku T. Das",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "52": [
+    {
+      "id": "CPI(M)",
+      "name": "K. Premkumar",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "Independent (INC Support)",
+      "name": "P. K. Sasi",
+      "party": "Independent (INC Support)",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Major Ravi",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "53": [
+    {
+      "id": "CPI(M)",
+      "name": "Santhakumari K.",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "K. A. Thulasi",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Renu Suresh",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "54": [
+    {
+      "id": "CPI",
+      "name": "Manzil Aboobacker",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "IUML",
+      "name": "N. Samsudheen",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Isaac Varghese",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Ashitha Najeeb",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "55": [
+    {
+      "id": "CPI(M)",
+      "name": "E. Prabhakaran",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "A. Suresh",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "C. Krishnakumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Saji P J",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "56": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "N. M. R. Razaq",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Ramesh Pisharody",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Sobha Surendran",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Udayan Sukumaran",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "57": [
+    {
+      "id": "CPI(M)",
+      "name": "P. P. Sumod",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "K. C. Subramanian",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Suresh Babu",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "58": [
+    {
+      "id": "Indian Socialist Janata Dal",
+      "name": "Adv V. Murugadas",
+      "party": "Indian Socialist Janata Dal",
+      "front": "LDF",
+      "symbol": "indiansocialistjanatadal.png"
+    },
+    {
+      "id": "INC",
+      "name": "Sumesh Achuthan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Pranesh Rajendran",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "59": [
+    {
+      "id": "CPI(M)",
+      "name": "K. Preman",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "A. Thankappan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "A. N. Anurag",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Anvar Sadiq",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "60": [
+    {
+      "id": "CPI(M)",
+      "name": "T. M. Sasi",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "K. N. Febin",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "K.V. Prasanna Kumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "61": [
+    {
+      "id": "CPI(M)",
+      "name": "U. R. Pradeep",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "Independent (IUML Support)",
+      "name": "Sivan Veettikkunnu",
+      "party": "Independent (IUML Support)",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "K. Balakrishnan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "K V Subramaniyan",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "Current MLA",
+      "name": "P. R. Vinod Kumar",
+      "party": "Current MLA",
+      "front": "OTH",
+      "symbol": "currentmla.png"
+    }
+  ],
+  "62": [
+    {
+      "id": "CPI(M)",
+      "name": "A. C. Moideen",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "P. T. Ajayamohan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Rijil K. R.",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Rajeev K Sivaraman",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "63": [
+    {
+      "id": "CPI(M)",
+      "name": "N. K. Akbar",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "C. H. Rasheed",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Adv. B. Gopalakrishnan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Pauly Francis Guruvayur",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "K.V. Abdul Nasar Paroor",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "64": [
+    {
+      "id": "CPI(M)",
+      "name": "C. Ravindranath",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "T. N. Prathapan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "K. K. Aneesh Kumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Unnikrishnan C. S.",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Dileef Abdul Khader",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "65": [
+    {
+      "id": "CPI(M)",
+      "name": "Xeviyar Chittilappally",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "P N Vaisakh",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Adv. T.S. Ullas Babu",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Jithin Sadanananthan",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "66": [
+    {
+      "id": "CPI",
+      "name": "K. Rajan",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Shaji Kodankandath",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Bijoy Thomas",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "V P Prinson Avinissery",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "67": [
+    {
+      "id": "CPI",
+      "name": "Alankode Leelakrishnan",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Rajan Pallan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Padmaja Venugopal",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Rani Anto",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "68": [
+    {
+      "id": "CPI",
+      "name": "Geetha Gopi",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Sunil Lalur",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "C. C. Mukundan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Girijan A A",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "69": [
+    {
+      "id": "CPI",
+      "name": "K. K. Valsaraj",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "T. M. Nazar",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Athulya Ghosh",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Jayan Eratt",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "A.M. Muhammed Riyas",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "70": [
+    {
+      "id": "CPI(M)",
+      "name": "R. Bindu",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "KEC",
+      "name": "Thomas Unniyadan",
+      "party": "KEC",
+      "front": "UDF",
+      "symbol": "kec.png"
+    },
+    {
+      "id": "BJP",
+      "name": "Santhosh Cherkalam",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "Kavungal",
+      "name": "Dr. Shaju K Y",
+      "party": "Kavungal",
+      "front": "OTH",
+      "symbol": "kavungal.png"
+    }
+  ],
+  "71": [
+    {
+      "id": "CPI(M)",
+      "name": "K. K. Ramachandran",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "K. M. Babu Raj",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "A. Nagesh",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Jayakrishnan P N",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "72": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Adv Biju Chirayath",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "INC",
+      "name": "T. J. Saneesh Kumar Joseph",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Charly Paul",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Wilson Kallen",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "73": [
+    {
+      "id": "CPI",
+      "name": "V. R. Sunil",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "O. J. Janeesh",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Varghese George",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Dr. K.M Francis Roy",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "74": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Basil Paul",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Manoj Moothedan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Jibi Pathikkal",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    }
+  ],
+  "75": [
+    {
+      "id": "CPI(M)",
+      "name": "Saju Paul",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Roji M. John",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Promy Kuriakose",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Adv. Jose Chiramel Devassy",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "76": [
+    {
+      "id": "CPI(M)",
+      "name": "A. M. Ariff",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Anwar Sadath",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "M.A. Brahmaraj",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Hakhikhath Hameed",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "77": [
+    {
+      "id": "CPI(M)",
+      "name": "P. Rajeev",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "IUML",
+      "name": "V. E. Abdul Gafoor",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "M. P. Binu",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Shamsu T.K",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "78": [
+    {
+      "id": "CPI",
+      "name": "E. T. Taison",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "V. D. Satheesan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Vathsala Prasanna Kumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "V.M. Faisal",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "79": [
+    {
+      "id": "CPI(M)",
+      "name": "M. B. Shyni",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Tony Chammany",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Anitha Thomas",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Mohandas PG",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "80": [
+    {
+      "id": "CPI(M)",
+      "name": "K. J. Maxy",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Mohammed Shiyas",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Adv. Xavier Joolappan",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Shakkerali",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Aneesh Mattancherry",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "81": [
+    {
+      "id": "CPI(M)",
+      "name": "K. N. Unnikrishnan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Deepak Joy",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Anjali Nair",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Thomas Paul",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "82": [
+    {
+      "id": "Indian Socialist Janata Dal",
+      "name": "Sabu George",
+      "party": "Indian Socialist Janata Dal",
+      "front": "LDF",
+      "symbol": "indiansocialistjanatadal.png"
+    },
+    {
+      "id": "INC",
+      "name": "T. J. Vinod",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "P.R. Sivasankar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Moses Henry Motha",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "83": [
+    {
+      "id": "CPI(M)",
+      "name": "Pushpadhas",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Uma Thomas",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Akhil Marar",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Jose George",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Aloysius Kollannur",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "84": [
+    {
+      "id": "CPI(M)",
+      "name": "P. V. Sreenijin",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "V. P. Sajeendran",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Babu Divakaran",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    }
+  ],
+  "85": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Sabu K Jacob",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "KC(J)",
+      "name": "Anoop Jacob",
+      "party": "KC(J)",
+      "front": "UDF",
+      "symbol": "kc.png"
+    },
+    {
+      "id": "TTP",
+      "name": "Jibi Abraham",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Eldho Abraham",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Babu Mathew Vengoor",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "86": [
+    {
+      "id": "CPI",
+      "name": "N. Arun",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Mathew Kuzhalnadan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Sunny Kadoothazhe",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Noushad Kakkaden Randarkara",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Roy Arakkal",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "87": [
+    {
+      "id": "CPI(M)",
+      "name": "Antony John",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "KEC",
+      "name": "Shibu Thekkumpuram",
+      "party": "KEC",
+      "front": "UDF",
+      "symbol": "kec.png"
+    },
+    {
+      "id": "BDJS",
+      "name": "Aji Narayanan",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    }
+  ],
+  "88": [
+    {
+      "id": "CPI(M)",
+      "name": "A. Raj",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "F. Raja",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "S. Rajendran",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "89": [
+    {
+      "id": "CPI(M)",
+      "name": "K. K. Jayachandran",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Adv. Senapathi Venu",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Sangeetha Viswanathan",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    }
+  ],
+  "90": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Cyriac Chazhikadan",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "KEC",
+      "name": "Apu John Joseph",
+      "party": "KEC",
+      "front": "UDF",
+      "symbol": "kec.png"
+    },
+    {
+      "id": "TTP",
+      "name": "Roy A. Varikkad",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Adv. Basil John",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Afsal M. B",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "91": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Roshi Augustine",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Roy K. Paulose",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Pradeesh Prabha",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    }
+  ],
+  "92": [
+    {
+      "id": "CPI",
+      "name": "K. Salim Kumar",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Adv. Syriac Thomas",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "V. Ratheesh",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Joseph Jacob",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "93": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Jose K. Mani",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "DCK",
+      "name": "Mani C. Kappan",
+      "party": "DCK",
+      "front": "UDF",
+      "symbol": "dck.png"
+    },
+    {
+      "id": "BJP",
+      "name": "Shone George",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Rony Jose Nedumpallil",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "94": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Nirmala Jimmy",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "KEC",
+      "name": "Mons Joseph",
+      "party": "KEC",
+      "front": "UDF",
+      "symbol": "kec.png"
+    },
+    {
+      "id": "BDJS",
+      "name": "Suresh Ettikunnel",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Dominic Simon",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "95": [
+    {
+      "id": "CPI",
+      "name": "P. Pradeep",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "K. Binimon",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "K. Ajith",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "96": [
+    {
+      "id": "CPI(M)",
+      "name": "V. N. Vasavan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Nattakam Suresh",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Athira D. Nair",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    }
+  ],
+  "97": [
+    {
+      "id": "CPI(M)",
+      "name": "K. Anilkumar",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Thiruvanchoor Radhakrishnan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "P. Anilkumar",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Dr. Selin Philip",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Johnson Kandachira",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "98": [
+    {
+      "id": "CPI(M)",
+      "name": "K. M. Radhakrishnan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Chandy Oommen",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Raveendranath Vakathanam",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "99": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Job Maichil",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "KEC",
+      "name": "Vinu Job",
+      "party": "KEC",
+      "front": "UDF",
+      "symbol": "kec.png"
+    },
+    {
+      "id": "BJP",
+      "name": "B. Radhakrishna Menon",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "Dr.",
+      "name": "Prof.",
+      "party": "Dr.",
+      "front": "OTH",
+      "symbol": "dr.png"
+    },
+    {
+      "id": "SDPI",
+      "name": "Althaf Hassan",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "100": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "N. Jayaraj",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Prof. Rony K. Baby",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "George Kurian",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Roshni Shinu",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "101": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Sebastian Kulathunkal",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Sebastian M J",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "P. C. George",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "102": [
+    {
+      "id": "CPI(M)",
+      "name": "Daleema",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Shanimol Usman",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "P. S. Jyothis",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    }
+  ],
+  "103": [
+    {
+      "id": "CPI",
+      "name": "P. Prasad",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "K. R. Rajendra Prasad",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Adv. Anandaraj T. P",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Tomy Elacheri",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "104": [
+    {
+      "id": "CPI(M)",
+      "name": "P. P. Chitharanjan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "A. D. Thomas",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "M.J. Job",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "105": [
+    {
+      "id": "CPI(M)",
+      "name": "H. Salam",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "Independent (INC Support)",
+      "name": "G. Sudhakaran",
+      "party": "Independent (INC Support)",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Arun Anirudhan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "106": [
+    {
+      "id": "NCP(SP)",
+      "name": "Thomas K. Thomas",
+      "party": "NCP(SP)",
+      "front": "LDF",
+      "symbol": "ncp.png"
+    },
+    {
+      "id": "KEC",
+      "name": "Reji Cheriyan",
+      "party": "KEC",
+      "front": "UDF",
+      "symbol": "kec.png"
+    },
+    {
+      "id": "BDJS",
+      "name": "Santhosh Santhy",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    },
+    {
+      "id": "AAP",
+      "name": "Joseph Mathew",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "107": [
+    {
+      "id": "CPI",
+      "name": "T. T. Jismon",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Ramesh Chennithala",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Sandeep Vachaspati",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "108": [
+    {
+      "id": "CPI(M)",
+      "name": "U. Prathibha",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "M. Liju",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Thambi Mettuthara",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    }
+  ],
+  "109": [
+    {
+      "id": "CPI(M)",
+      "name": "M. S. Arun Kumar",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Muthara Raj",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Ajimon",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "110": [
+    {
+      "id": "CPI(M)",
+      "name": "Saji Cherian",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Eby Kuriakose",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "M. V. Gopakumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "111": [
+    {
+      "id": "Indian Socialist Janata Dal",
+      "name": "Mathew T. Thomas",
+      "party": "Indian Socialist Janata Dal",
+      "front": "LDF",
+      "symbol": "indiansocialistjanatadal.png"
+    },
+    {
+      "id": "KEC",
+      "name": "Varghese Mammen",
+      "party": "KEC",
+      "front": "UDF",
+      "symbol": "kec.png"
+    },
+    {
+      "id": "BJP",
+      "name": "Anoop Antony",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "112": [
+    {
+      "id": "Kerala Congress (M)",
+      "name": "Pramod Narayan",
+      "party": "Kerala Congress (M)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Pazhakulam Madhu",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Thomas K. Samuel",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    }
+  ],
+  "113": [
+    {
+      "id": "CPI(M)",
+      "name": "Veena George",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Abin Varkey",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Kummanam Rajasekharan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "114": [
+    {
+      "id": "CPI(M)",
+      "name": "K. U. Jenish Kumar",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Satheesh Kochuparambil",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "T. P. Sundareshan",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    }
+  ],
+  "115": [
+    {
+      "id": "CPI",
+      "name": "Priji Sasidharan",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Santhakumar",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Pandalam Prathapan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "116": [
+    {
+      "id": "CPI",
+      "name": "M. S. Thara",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "C. R. Mahesh",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "V. S. Jithin Dev",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "117": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "Sujith Vijayanpillai",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "RSP",
+      "name": "Shibu Baby John",
+      "party": "RSP",
+      "front": "UDF",
+      "symbol": "rsp.png"
+    },
+    {
+      "id": "BJP",
+      "name": "K. R. Rajesh",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "118": [
+    {
+      "id": "RSP(L)",
+      "name": "Kovoor Kunjumon",
+      "party": "RSP(L)",
+      "front": "LDF",
+      "symbol": "rsp.png"
+    },
+    {
+      "id": "RSP",
+      "name": "Ullas Kovoor",
+      "party": "RSP",
+      "front": "UDF",
+      "symbol": "rsp.png"
+    },
+    {
+      "id": "BJP",
+      "name": "Raji Prasad",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "119": [
+    {
+      "id": "CPI(M)",
+      "name": "K. N. Balagopal",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "P. Aisha Potty",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "R. Reshmi",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Mamachan D",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "120": [
+    {
+      "id": "Kerala Congress (B)",
+      "name": "K. B. Ganesh Kumar",
+      "party": "Kerala Congress (B)",
+      "front": "LDF",
+      "symbol": "kcm.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Jyothikumar chamakkala",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "Anil Pilla",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    }
+  ],
+  "121": [
+    {
+      "id": "CPI",
+      "name": "C. Ajaya Prasad",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "IUML",
+      "name": "Noushad Yusuf",
+      "party": "IUML",
+      "front": "UDF",
+      "symbol": "iuml.svg"
+    },
+    {
+      "id": "TTP",
+      "name": "B. Raghunathan Pillai",
+      "party": "TTP",
+      "front": "OTH",
+      "symbol": "ttp.png"
+    }
+  ],
+  "122": [
+    {
+      "id": "CPI",
+      "name": "J. Chinjurani",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "M. M. Naseer",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "R. S. Arun Raj",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "Sharafath Mallam",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "123": [
+    {
+      "id": "CPI(M)",
+      "name": "S. L. Sajikumar",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "P. C. Vishnunadh",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Robin Radhakrishnan (Robin RB)",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "124": [
+    {
+      "id": "CPI(M)",
+      "name": "S. Jayamohan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Bindhu Krishna",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "N. Prathap Kumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Adv. Sinu L R",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "125": [
+    {
+      "id": "CPI(M)",
+      "name": "M. Noushad",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "RSP",
+      "name": "Vishnu Mohan",
+      "party": "RSP",
+      "front": "UDF",
+      "symbol": "rsp.png"
+    },
+    {
+      "id": "BDJS",
+      "name": "Saji D. Anand",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    }
+  ],
+  "126": [
+    {
+      "id": "CPI",
+      "name": "R. Rajendran",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Sooraj Ravi",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "B. B. Gopakumar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Arun A",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "127": [
+    {
+      "id": "CPI(M)",
+      "name": "V. Joy",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Varkala Kahar",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Adv. Sreenivasan Venugopal",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    }
+  ],
+  "128": [
+    {
+      "id": "CPI(M)",
+      "name": "O. S. Ambika",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "RSP",
+      "name": "Santhosh Bhadran",
+      "party": "RSP",
+      "front": "UDF",
+      "symbol": "rsp.png"
+    },
+    {
+      "id": "BJP",
+      "name": "P. Sudheer",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "Jayarajan M",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "129": [
+    {
+      "id": "CPI",
+      "name": "Manoj B Edamana",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Ramya Haridas",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "B. S. Anoop",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "130": [
+    {
+      "id": "CPI",
+      "name": "G. R. Anil",
+      "party": "CPI",
+      "front": "LDF",
+      "symbol": "cpi.svg"
+    },
+    {
+      "id": "INC",
+      "name": "Meenankal Kumar",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Yuvaraj Gokul",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "SDPI",
+      "name": "Siyad Kandala",
+      "party": "SDPI",
+      "front": "OTH",
+      "symbol": "sdpi.png"
+    }
+  ],
+  "131": [
+    {
+      "id": "CPI(M)",
+      "name": "D. K. Murali",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Sudheer Sha Palode",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BDJS",
+      "name": "Venu Karanavar",
+      "party": "BDJS",
+      "front": "NDA",
+      "symbol": "bdjs.png"
+    }
+  ],
+  "132": [
+    {
+      "id": "CPI(M)",
+      "name": "Kadakampally Surendran",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "T. Sarath Chandra Prasad",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "V. Muraleedharan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "133": [
+    {
+      "id": "CPI(M)",
+      "name": "V. K. Prasanth",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "K. Muraleedharan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "R. Sreelekha",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "134": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "Sudheer Karamana",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "CMP",
+      "name": "C. P. John",
+      "party": "CMP",
+      "front": "UDF",
+      "symbol": "cmp.png"
+    },
+    {
+      "id": "BJP",
+      "name": "Karamana Jayan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Samin Sathyadas",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "135": [
+    {
+      "id": "CPI(M)",
+      "name": "V. Sivankutty",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "KS Sabarinathan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Rajeev Chandrasekhar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Vinu K",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "136": [
+    {
+      "id": "CPI(M)",
+      "name": "G. Stephen",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "V. S. Sivakumar",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Vivek Gopan",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ],
+  "137": [
+    {
+      "id": "CPI(M)",
+      "name": "C. K. Hareendran",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "Neyyattinkara Sanal",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "Gireesh Neyyar",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Deepumon N",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "138": [
+    {
+      "id": "CPI(M)",
+      "name": "I. B. Satheesh",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "M. R. Baiju",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "P. K. Krishnadas",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Sandeep Kumar",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "139": [
+    {
+      "id": "Independent (CPI(M) support)",
+      "name": "Bhagat Rufus",
+      "party": "Independent (CPI(M) support)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "M. Vincent",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "T. N. Suresh",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    },
+    {
+      "id": "AAP",
+      "name": "Manoj S.P",
+      "party": "AAP",
+      "front": "OTH",
+      "symbol": "aap.png"
+    }
+  ],
+  "140": [
+    {
+      "id": "CPI(M)",
+      "name": "K. Ansalan",
+      "party": "CPI(M)",
+      "front": "LDF",
+      "symbol": "cpim.png"
+    },
+    {
+      "id": "INC",
+      "name": "N. Sakthan",
+      "party": "INC",
+      "front": "UDF",
+      "symbol": "inc.svg"
+    },
+    {
+      "id": "BJP",
+      "name": "S. Rajasekharan Nair",
+      "party": "BJP",
+      "front": "NDA",
+      "symbol": "bjp.svg"
+    }
+  ]
+}

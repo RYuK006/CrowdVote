@@ -1,10 +1,9 @@
 export interface User {
   uid: string;
   displayName: string;
-  influencePoints: number;
-  predictabilityScore: number;
-  accuracy: number;
-  rank: number;
+  predictionCount?: number;
+  accuracy?: number;
+  rank?: number;
   role: "user" | "admin";
   createdAt: string;
 }

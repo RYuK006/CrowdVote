@@ -7,7 +7,9 @@ import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/fire
 import { handleFirestoreError, OperationType } from "../lib/firebase-utils";
 import { cn } from "../lib/utils";
 
-import { CONSTITUENCIES, PARTIES } from "../data";
+import { CONSTITUENCIES } from "../data";
+import candidateDataObj from "../candidates.json";
+const candidateData = candidateDataObj as Record<string, any[]>;
 
 export function Voting() {
   const [loading, setLoading] = useState(true);
@@ -54,12 +56,29 @@ export function Voting() {
   }, []);
 
   const predictedList = Object.entries(predictions).map(([id, data]) => {
-    const constituency = CONSTITUENCIES.find(c => c.id === id);
-    const party = PARTIES.find(p => p.id === data.predictedParty);
+    // id looks like "Pre-Campaign_107". Wait, predictions keys are like "Pre-Campaign_107" in server.ts
+    // In database it stores `constituencyId`, so we can use data.constituencyId
+    const constId = data.constituencyId || id.split('_')[1] || id;
+    const constituency = CONSTITUENCIES.find(c => c.id === constId);
+    
+    // Find candidate details using the constituency candidates list
+    const constCandidates = candidateData[constId] || [];
+    const candidate = constCandidates.find(c => c.id === data.predictedParty && c.name === data.predictedCandidate)
+      || constCandidates.find(c => c.id === data.predictedParty); // Fallback to party match
+      
+    // Construct party context to render
+    const party = {
+      id: data.predictedParty,
+      name: data.predictedCandidate || data.predictedParty,
+      symbol: candidate?.symbol ? `/symbols/${candidate.symbol}` : null,
+      color: candidate ? '#10b981' : '#a855f7' // Emerald if matched, purple if default
+    };
+    
     return { ...data, constituency, party };
   }).filter(p => 
     p.constituency?.name.toLowerCase().includes(search.toLowerCase()) ||
-    p.party?.name.toLowerCase().includes(search.toLowerCase())
+    (p.party?.id && p.party.id.toLowerCase().includes(search.toLowerCase())) ||
+    (p.party?.name && p.party.name.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
@@ -69,20 +88,20 @@ export function Voting() {
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-emerald-500">
               <Vote className="w-6 h-6" />
-              <span className="text-[10px] font-mono uppercase tracking-[0.4em]">Voting Protocol Alpha</span>
+              <span className="text-[10px] font-mono uppercase tracking-[0.4em]">Election Prediction Dashboard</span>
             </div>
             <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter">
-              Predictive <span className="text-emerald-500">Consensus</span>
+              Your <span className="text-emerald-500">Predictions</span>
             </h1>
             <p className="text-white/40 max-w-xl text-lg leading-relaxed">
-              Your predictions are being aggregated into the global swarm intelligence model. 
-              The current phase is <span className="text-white font-bold uppercase tracking-widest">Pre-Election</span>.
+              Your voting predictions help us calculate the most likely election outcomes. 
+              The current phase is <span className="text-white font-bold uppercase tracking-widest">Live Voting</span>.
             </p>
           </div>
 
           <div className="flex gap-4">
             <div className="glass p-6 rounded-3xl border border-white/5 min-w-[160px]">
-              <span className="text-[10px] font-mono text-white/40 uppercase block mb-2">Completion</span>
+              <span className="text-[10px] font-mono text-white/40 uppercase block mb-2">Progress</span>
               <span className="text-3xl font-bold text-emerald-500">{stats.completionRate}%</span>
               <div className="w-full h-1 bg-white/5 rounded-full mt-4 overflow-hidden">
                 <div 
@@ -99,12 +118,12 @@ export function Voting() {
         {/* Prediction Review Section */}
         <div className="space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h2 className="text-2xl font-bold tracking-tight">Predictive <span className="text-emerald-500">Node Review</span></h2>
+            <h2 className="text-2xl font-bold tracking-tight">Review Your <span className="text-emerald-500">Votes</span></h2>
             <div className="relative group w-full sm:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-emerald-500 transition-colors" />
               <input
                 type="text"
-                placeholder="Search nodes..."
+                placeholder="Search areas..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all"
@@ -113,7 +132,7 @@ export function Voting() {
           </div>
 
           {loading ? (
-             <div className="py-20 text-center font-mono text-white/20 uppercase tracking-[0.5em] animate-pulse">Scanning Neural Mesh...</div>
+             <div className="py-20 text-center font-mono text-white/20 uppercase tracking-[0.5em] animate-pulse">Loading your data...</div>
           ) : predictedList.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {predictedList.map((item) => (
@@ -126,15 +145,24 @@ export function Voting() {
                       <h4 className="font-bold tracking-tight text-lg group-hover:text-emerald-500 transition-colors">{item.constituency?.name}</h4>
                       <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">{item.constituency?.district}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center p-2">
-                       <img src={item.party?.symbol} alt={item.party?.id} className="w-full h-full object-contain" />
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center p-1.5 overflow-hidden">
+                       {item.party?.symbol ? (
+                         <img src={item.party.symbol} alt={item.party?.id} className="w-full h-full object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                       ) : (
+                         <Users className="w-5 h-5 text-neutral-400" />
+                       )}
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-white/40 uppercase">Selected Vector</span>
-                      <span className="text-xs font-bold text-white uppercase px-2 py-1 bg-white/5 rounded-lg border border-white/5" style={{ color: item.party?.color }}>{item.party?.id}</span>
+                    <div className="space-y-2 mb-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest block">Candidate Predicted</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-emerald-500 uppercase px-2 py-1 bg-emerald-500/10 rounded-lg border border-emerald-500/20">{item.party?.id}</span>
+                        <span className="font-bold tracking-tight text-white/90 truncate">{item.party?.name !== item.party?.id ? item.party?.name : ""}</span>
+                      </div>
                     </div>
                     
                     <div className="space-y-2">
@@ -160,16 +188,16 @@ export function Voting() {
                 <AlertCircle className="w-10 h-10" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-bold">No Neural Nodes Synced</h3>
+                <h3 className="text-xl font-bold">No Predictions Yet</h3>
                 <p className="text-white/40 text-sm max-w-sm mx-auto leading-relaxed">
-                  You haven't locked any predictions yet. Head to the Arena to start synchronizing with the swarm.
+                  You haven't made any predictions yet. Go to the Prediction Center to start.
                 </p>
               </div>
               <button 
                 onClick={() => window.location.href = "/arena"}
                 className="px-8 py-3 rounded-2xl bg-emerald-500 text-black font-bold text-sm emerald-glow hover:bg-emerald-400 transition-all"
               >
-                GOTO ARENA
+                GO TO PREDICTION CENTER
               </button>
             </div>
           )}

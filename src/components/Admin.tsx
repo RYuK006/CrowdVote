@@ -430,9 +430,8 @@ export function Admin() {
                   <tr className="border-b border-white/5">
                     <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Display Name</th>
                     <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Phone Number</th>
-                    <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Predict. Score</th>
                     <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Votes Cast</th>
-                    <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Status</th>
+                    <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest text-right">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -440,9 +439,8 @@ export function Admin() {
                     <tr key={node.uid} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
                       <td className="py-4 text-xs font-bold">{node.displayName}</td>
                       <td className="py-4 text-xs font-mono text-white/40">{node.phoneNumber}</td>
-                      <td className="py-4 text-xs font-mono">{node.predictabilityScore}</td>
                       <td className="py-4 text-xs font-mono text-red-500 font-bold">{node.predictionCount}</td>
-                      <td className="py-4">
+                      <td className="py-4 text-right">
                         <span className="px-2 py-1 rounded bg-red-500/10 text-red-500 text-[10px] font-mono uppercase">
                           ACTIVE NODE
                         </span>

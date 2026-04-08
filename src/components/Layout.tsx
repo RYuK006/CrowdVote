@@ -4,6 +4,7 @@ import { LayoutDashboard, Swords, Trophy, BarChart3, User, Settings, LogOut, Shi
 import { cn } from "../lib/utils";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
+import { UnderDevelopmentPopup } from "./UnderDevelopmentPopup";
 
 interface LayoutProps {
   children: ReactNode;
@@ -14,6 +15,8 @@ export function Layout({ children, user }: LayoutProps) {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupData, setPopupData] = useState({ title: "", message: "" });
 
   const defaultNavItems = [
     { label: "VOTING", icon: LayoutDashboard, path: "/voting" },
@@ -73,33 +76,63 @@ export function Layout({ children, user }: LayoutProps) {
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
-                (item.path.includes("?tab=") ? location.search === item.path.split("?")[1] : location.pathname === item.path && !location.search)
-                  ? (isAdminRoute ? "bg-red-500/10 text-red-500 red-glow" : "bg-emerald-500/10 text-emerald-500 emerald-glow")
-                  : "text-white/40 hover:text-white hover:bg-white/5",
-                isCollapsed && "justify-center px-0"
-              )}
-            >
-              <item.icon className={cn("w-5 h-5 shrink-0", 
-                 (item.path.includes("?tab=") ? location.search === item.path.split("?")[1] : location.pathname === item.path && !location.search)
-                 ? (isAdminRoute ? "text-red-500" : "text-emerald-500") 
-                 : "text-white/20 group-hover:text-white/40")} />
-              {!isCollapsed && (
-                <span className="text-sm font-medium tracking-widest whitespace-nowrap">{item.label}</span>
-              )}
-              {isCollapsed && (
-                <div className={cn("absolute left-full ml-4 px-2 py-1 text-black text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap", isAdminRoute ? "bg-red-500" : "bg-emerald-500")}>
-                  {item.label}
-                </div>
-              )}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const isUnderConstruction = item.label === "ELITE" || item.label === "META";
+            
+            const content = (
+              <>
+                <item.icon className={cn("w-5 h-5 shrink-0", 
+                   (item.path.includes("?tab=") ? location.search === item.path.split("?")[1] : location.pathname === item.path && !location.search)
+                   ? (isAdminRoute ? "text-red-500" : "text-emerald-500") 
+                   : "text-white/20 group-hover:text-white/40")} />
+                {!isCollapsed && (
+                  <span className="text-sm font-medium tracking-widest whitespace-nowrap">{item.label}</span>
+                )}
+                {isCollapsed && (
+                  <div className={cn("absolute left-full ml-4 px-2 py-1 text-black text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 whitespace-nowrap", isAdminRoute ? "bg-red-500" : "bg-emerald-500")}>
+                    {item.label}
+                  </div>
+                )}
+              </>
+            );
+
+            const className = cn(
+              "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative w-full text-left",
+              (item.path.includes("?tab=") ? location.search === item.path.split("?")[1] : location.pathname === item.path && !location.search)
+                ? (isAdminRoute ? "bg-red-500/10 text-red-500 red-glow" : "bg-emerald-500/10 text-emerald-500 emerald-glow")
+                : "text-white/40 hover:text-white hover:bg-white/5",
+              isCollapsed && "justify-center px-0"
+            );
+
+            if (isUnderConstruction) {
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => {
+                    setPopupData({
+                      title: `${item.label} Module`,
+                      message: `The ${item.label} system is currently being calibrated and will be online shortly.`
+                    });
+                    setShowPopup(true);
+                  }}
+                  className={className}
+                >
+                  {content}
+                </button>
+              );
+            }
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={className}
+              >
+                {content}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="p-4 mt-auto border-t border-white/5">
@@ -170,6 +203,13 @@ export function Layout({ children, user }: LayoutProps) {
           {children}
         </div>
       </main>
+
+      <UnderDevelopmentPopup 
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        title={popupData.title}
+        message={popupData.message}
+      />
     </div>
   );
 }
