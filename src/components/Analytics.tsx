@@ -78,23 +78,23 @@ const getPartyColor = (name: string, index: number) => {
       <div className="space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4">
-            <div className="flex items-center gap-3 text-emerald-500">
+            <div className="flex items-center gap-3 text-emerald-500 font-bold">
               <Activity className="w-6 h-6" />
               <span className="text-xs font-mono uppercase tracking-[0.4em]">Swarm Intelligence Telemetry</span>
             </div>
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter">Predictive <span className="text-emerald-500">Analytics</span></h1>
-            <p className="text-white/40 max-w-md font-mono text-sm leading-relaxed">
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter text-[var(--text-primary)]">Predictive <span className="text-emerald-500 italic">Analytics</span></h1>
+            <p className="text-[var(--text-secondary)] max-w-md font-mono text-sm leading-relaxed font-bold">
               Real-time visualization of emergent consensus vectors and electoral trends.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
-            <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center w-full sm:w-auto">
-              <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest mb-1">Total Signals</span>
-              <span className="text-2xl font-bold">{totalSignals}</span>
+            <div className="glass px-6 py-4 rounded-3xl border border-[var(--glass-border)] flex flex-col items-center w-full sm:w-auto bg-black/5">
+              <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest mb-1 font-bold">Total Signals</span>
+              <span className="text-2xl font-bold text-[var(--text-primary)]">{totalSignals}</span>
             </div>
-            <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center w-full sm:w-auto">
-              <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest mb-1">Neural Sync</span>
+            <div className="glass px-6 py-4 rounded-3xl border border-[var(--glass-border)] flex flex-col items-center w-full sm:w-auto bg-black/5">
+              <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest mb-1 font-bold">Neural Sync</span>
               <span className="text-2xl font-bold text-emerald-500">94.2%</span>
             </div>
           </div>
@@ -102,17 +102,17 @@ const getPartyColor = (name: string, index: number) => {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Trend Chart */}
-          <div className="lg:col-span-2 glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-8">
+          <div className="lg:col-span-2 glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-[var(--glass-border)] space-y-8 bg-[var(--card-bg)] shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
               <div className="flex items-center gap-3">
                 <TrendingUp className="text-emerald-500 w-5 h-5" />
-                <h3 className="text-xl font-bold tracking-tight">Consensus Evolution</h3>
+                <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Consensus Evolution</h3>
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                 {partyShare.map(p => (
                   <div key={p.name} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
-                    <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">{p.name}</span>
+                    <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">{p.name}</span>
                   </div>
                 ))}
               </div>
@@ -129,20 +129,20 @@ const getPartyColor = (name: string, index: number) => {
                       </linearGradient>
                     ))}
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                   <XAxis 
                     dataKey="date" 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#ffffff20', fontSize: 10, fontFamily: 'JetBrains Mono' }} 
+                    tick={{ fill: 'var(--text-secondary)', fontSize: 10, fontFamily: 'JetBrains Mono' }} 
                   />
                   <YAxis 
                     axisLine={false} 
                     tickLine={false} 
-                    tick={{ fill: '#ffffff20', fontSize: 10, fontFamily: 'JetBrains Mono' }} 
+                    tick={{ fill: 'var(--text-secondary)', fontSize: 10, fontFamily: 'JetBrains Mono' }} 
                   />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #ffffff10', borderRadius: '16px' }}
+                    contentStyle={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--glass-border)', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                     itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                   />
                   {partyShare.map(p => (
@@ -162,10 +162,10 @@ const getPartyColor = (name: string, index: number) => {
           </div>
 
           {/* Party Share Pie */}
-          <div className="glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 flex flex-col min-h-[400px]">
+          <div className="glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-[var(--glass-border)] flex flex-col min-h-[400px] bg-[var(--card-bg)] shadow-xl">
             <div className="flex items-center gap-3 mb-10">
               <PieChartIcon className="text-emerald-500 w-5 h-5" />
-              <h3 className="text-xl font-bold tracking-tight">Seat Projection</h3>
+              <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Seat Projection</h3>
             </div>
 
             <div className="flex-1 relative">
@@ -185,13 +185,13 @@ const getPartyColor = (name: string, index: number) => {
                     ))}
                   </Pie>
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #ffffff10', borderRadius: '16px' }}
+                    contentStyle={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--glass-border)', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                <span className="block text-4xl font-bold tracking-tighter">140</span>
-                <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Total Seats</span>
+                <span className="block text-4xl font-bold tracking-tighter text-[var(--text-primary)] italic">140</span>
+                <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-extrabold">Total Seats</span>
               </div>
             </div>
 
@@ -200,11 +200,11 @@ const getPartyColor = (name: string, index: number) => {
                 <div key={p.name} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }} />
-                    <span className="text-sm font-bold tracking-tight">{p.name}</span>
+                    <span className="text-sm font-bold tracking-tight text-[var(--text-primary)]">{p.name}</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm font-mono font-bold">{p.value}</span>
-                    <span className="text-xs text-white/20">({((p.value / 140) * 100).toFixed(1)}%)</span>
+                    <span className="text-sm font-mono font-bold text-emerald-500">{p.value}</span>
+                    <span className="text-xs text-[var(--text-secondary)] font-bold uppercase tracking-tighter">({((p.value / 140) * 100).toFixed(1)}%)</span>
                   </div>
                 </div>
               ))}
@@ -213,43 +213,43 @@ const getPartyColor = (name: string, index: number) => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          <div className="glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6">
+          <div className="glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-[var(--glass-border)] space-y-6 bg-[var(--card-bg)] shadow-xl">
             <div className="flex items-center gap-3">
               <BarChart3 className="text-emerald-500 w-5 h-5" />
-              <h3 className="text-xl font-bold tracking-tight">District Dominance</h3>
+              <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">District Dominance</h3>
             </div>
             <div className="space-y-3">
               {districtStats.slice(0, 5).map((d) => (
-                <div key={d.name} className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
-                  <span className="text-xs font-mono text-white/60">{d.name}</span>
+                <div key={d.name} className="flex items-center justify-between p-3 rounded-2xl bg-black/5 border border-[var(--glass-border)]">
+                  <span className="text-xs font-mono text-[var(--text-secondary)] font-bold">{d.name}</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-mono text-emerald-500 uppercase">{d.winner}</span>
-                    <span className="text-xs font-bold">{d.count} Seats</span>
+                    <span className="text-[10px] font-mono text-emerald-500 uppercase font-extrabold italic">{d.winner}</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)]">{d.count} Seats</span>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="pt-6 border-t border-white/5 flex items-center gap-4">
+            <div className="pt-6 border-t border-[var(--glass-border)] flex items-center gap-4">
               <div className="flex -space-x-2">
                 {[1,2,3,4].map(i => (
-                  <div key={i} className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold">
+                  <div key={i} className="w-8 h-8 rounded-full bg-black/5 border border-[var(--glass-border)] flex items-center justify-center text-[10px] font-bold text-[var(--text-primary)]">
                     {i}
                   </div>
                 ))}
               </div>
-              <span className="text-xs font-mono text-white/20 uppercase tracking-widest">+12 District Nodes Active</span>
+              <span className="text-xs font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">+12 District Nodes Active</span>
             </div>
           </div>
 
-          <div className="glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 space-y-6 bg-emerald-500/5 border-emerald-500/20">
+          <div className="glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-emerald-500/20 space-y-6 bg-emerald-500/5 transition-colors">
             <div className="flex items-center gap-3">
               <AlertCircle className="text-emerald-500 w-5 h-5 shrink-0" />
-              <h3 className="text-xl font-bold tracking-tight">Swarm Anomaly Detection</h3>
+              <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Swarm Anomaly Detection</h3>
             </div>
-            <p className="text-sm text-white/60 leading-relaxed">
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-bold">
               Neural sync is currently at 94.2%. We have detected minor divergent vectors in the Ernakulam node. Predictive agents are advised to recalibrate their confidence parameters.
             </p>
-            <button className="flex items-center gap-2 text-emerald-500 font-bold text-sm group">
+            <button className="flex items-center gap-2 text-emerald-500 font-extrabold text-sm group uppercase tracking-widest">
               View Detailed Telemetry
               <TrendingUp className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>

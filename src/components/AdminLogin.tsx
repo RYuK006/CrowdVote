@@ -52,11 +52,11 @@ export function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 sm:p-8">
+    <div className="min-h-screen bg-[#d6d6d6] flex items-center justify-center p-4 sm:p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-red-500/10 shadow-[0_0_50px_rgba(239,68,68,0.05)] relative overflow-hidden"
+        className="w-full max-w-md glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-black/10 shadow-[0_0_50px_rgba(0,0,0,0.05)] relative overflow-hidden"
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-red-500/20">
           <motion.div
@@ -72,7 +72,7 @@ export function AdminLogin() {
           <h2 className="text-3xl font-bold tracking-tighter">
             {step === 1 ? "Admin Oversight" : "Access Confirmed"}
           </h2>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-slate-800 font-medium">
             {step === 1 ? "Authorized administrative node entry only." : "Synchronizing system permissions..."}
           </p>
         </div>
@@ -89,7 +89,7 @@ export function AdminLogin() {
               <button
                 disabled={loading}
                 onClick={handleGoogleAdminLogin}
-                className="w-full py-4 rounded-2xl bg-white text-black font-bold text-sm shadow-[0_0_20px_rgba(239,68,68,0.3)] hover:bg-gray-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                className="w-full py-4 rounded-2xl bg-slate-900 text-white font-bold text-sm shadow-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" className="w-5 h-5" />
                 {loading ? "COMMUNICATING..." : "SIGN IN WITH GOOGLE"}
@@ -98,7 +98,7 @@ export function AdminLogin() {
               {error && (
                 <div className="p-4 rounded-2xl bg-red-500/5 border border-red-500/20 flex items-start gap-3">
                     <AlertTriangle className="text-red-500 w-4 h-4 shrink-0" />
-                    <p className="text-[10px] font-mono text-red-400 uppercase leading-relaxed tracking-wider">{error}</p>
+                    <p className="text-[10px] font-mono text-red-700 uppercase leading-relaxed tracking-wider font-bold">{error}</p>
                 </div>
               )}
             </motion.div>
@@ -116,14 +116,14 @@ export function AdminLogin() {
               </div>
               <div className="text-center space-y-2">
                 <p className="text-red-500 font-mono text-xs uppercase tracking-widest font-bold">Authority Recognized</p>
-                <p className="text-white/40 text-sm">Synchronizing with Command Node...</p>
+                <p className="text-slate-800 text-sm font-medium">Synchronizing with Command Node...</p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="mt-10 pt-8 border-t border-white/5 text-center">
-          <p className="text-[8px] font-mono text-white/10 uppercase tracking-widest">
+        <div className="mt-10 pt-8 border-t border-black/10 text-center">
+          <p className="text-[8px] font-mono text-slate-600 uppercase tracking-widest font-bold">
             Attention: All administrative actions are logged in the sovereign record.
           </p>
         </div>

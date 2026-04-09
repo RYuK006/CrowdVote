@@ -1,12 +1,8 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "./firebase";
+import { ThemeProvider } from "./context/ThemeContext";
 
 import { Landing } from "./components/Landing";
 import { Signup } from "./components/Signup";
@@ -34,30 +30,32 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-emerald-500 font-mono">
+      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center text-emerald-700 font-mono font-bold">
         INITIALIZING SWARM_OS...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-emerald-500/30">
-      <ErrorBoundary>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/signin" element={<Signin />} />
-            <Route path="/arena" element={user ? <Arena /> : <Navigate to="/signin" />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/voting" element={user ? <Voting /> : <Navigate to="/signin" />} />
-            <Route path="/profile" element={user ? <Profile /> : <Navigate to="/signin" />} />
-            <Route path="/admin" element={user ? <Admin /> : <Navigate to="/admin-login" />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-          </Routes>
-        </Router>
-      </ErrorBoundary>
-    </div>
+    <ThemeProvider>
+      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-emerald-500/20 transition-colors">
+        <ErrorBoundary>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/signin" element={<Signin />} />
+              <Route path="/arena" element={user ? <Arena /> : <Navigate to="/signin" />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/voting" element={user ? <Voting /> : <Navigate to="/signin" />} />
+              <Route path="/profile" element={user ? <Profile /> : <Navigate to="/signin" />} />
+              <Route path="/admin" element={user ? <Admin /> : <Navigate to="/admin-login" />} />
+              <Route path="/admin-login" element={<AdminLogin />} />
+            </Routes>
+          </Router>
+        </ErrorBoundary>
+      </div>
+    </ThemeProvider>
   );
 }

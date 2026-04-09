@@ -47,11 +47,11 @@ export function Profile() {
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center gap-10">
           <div className="relative group">
-            <div className="w-40 h-40 rounded-[40px] bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden emerald-glow border-emerald-500/30">
-              <User className="w-16 h-16 text-white/20" />
+            <div className="w-40 h-40 rounded-[40px] bg-black/5 border border-black/10 flex items-center justify-center relative overflow-hidden emerald-glow border-emerald-500/30 shadow-lg">
+              <User className="w-16 h-16 text-slate-600" />
               <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <div className="absolute -bottom-4 -right-4 w-12 h-12 rounded-2xl bg-emerald-500 text-black flex items-center justify-center emerald-glow">
+            <div className="absolute -bottom-4 -right-4 w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center emerald-glow shadow-xl">
               <Award className="w-6 h-6" />
             </div>
           </div>
@@ -66,25 +66,25 @@ export function Profile() {
             </div>
 
             <div className="flex flex-wrap justify-center md:justify-start gap-4">
-              <div className="glass px-6 py-3 rounded-2xl border border-white/5 flex items-center gap-3">
-                <Target className="w-4 h-4 text-emerald-500" />
-                <span className="text-sm font-bold">{userPredictions.length} Signals Cast</span>
+              <div className="glass px-6 py-3 rounded-2xl border border-black/10 flex items-center gap-3 bg-black/5">
+                <Target className="w-4 h-4 text-emerald-700" />
+                <span className="text-sm font-bold text-slate-900">{userPredictions.length} Signals Cast</span>
               </div>
-              <div className="glass px-6 py-3 rounded-2xl border border-white/5 flex items-center gap-3">
-                <Shield className="w-4 h-4 text-emerald-500" />
-                <span className="text-sm font-bold">Verified Node</span>
+              <div className="glass px-6 py-3 rounded-2xl border border-black/10 flex items-center gap-3 bg-black/5">
+                <Shield className="w-4 h-4 text-emerald-700" />
+                <span className="text-sm font-bold text-slate-900">Verified Node</span>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-3 w-full md:w-auto">
-            <button className="px-8 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-bold flex items-center justify-center gap-3">
+            <button className="px-8 py-4 rounded-2xl bg-black/5 border border-black/10 hover:bg-black/10 transition-all font-bold flex items-center justify-center gap-3 text-slate-800">
               <Settings className="w-5 h-5" />
               Settings
             </button>
             <button 
               onClick={handleLogout}
-              className="px-8 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-all font-bold text-red-400 flex items-center justify-center gap-3"
+              className="px-8 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 transition-all font-bold text-red-600 flex items-center justify-center gap-3"
             >
               <LogOut className="w-5 h-5" />
               Disconnect
@@ -98,72 +98,72 @@ export function Profile() {
           className="relative cursor-pointer group"
         >
           {/* Overlay */}
-          <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 rounded-3xl backdrop-blur-sm">
-            <span className="text-white/80 font-mono tracking-widest uppercase text-xl">Under Construction</span>
+          <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white/60 rounded-3xl backdrop-blur-sm">
+            <span className="text-slate-700 font-mono tracking-widest uppercase text-xl font-bold">Under Construction</span>
           </div>
           
           {/* Faded Background Content */}
           <div className="opacity-10 pointer-events-none select-none space-y-12">
             {/* Stats Grid */}
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6">
+              <div className="glass p-8 rounded-[40px] border border-black/10 space-y-6 bg-white shadow-xl">
                 <div className="flex items-center gap-3">
-                  <MapPin className="text-emerald-500 w-5 h-5" />
-                  <h3 className="text-sm font-bold tracking-widest uppercase">Geographic Range</h3>
+                  <MapPin className="text-emerald-700 w-5 h-5" />
+                  <h3 className="text-sm font-bold tracking-widest uppercase text-slate-800">Geographic Range</h3>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-white/40">Constituencies Targetted</span>
-                    <span className="text-sm font-mono font-bold">42/140</span>
+                    <span className="text-xs text-slate-800 font-bold">Constituencies Targetted</span>
+                    <span className="text-sm font-mono font-bold text-slate-900">42/140</span>
                   </div>
-                  <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500" style={{ width: '30%' }} />
+                  <div className="w-full h-2 bg-black/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-600" style={{ width: '30%' }} />
                   </div>
-                  <p className="text-[10px] text-white/20 leading-relaxed">
+                  <p className="text-[10px] text-slate-600 leading-relaxed font-mono font-bold">
                     Your primary influence is concentrated in the Malappuram and Kozhikode districts.
                   </p>
                 </div>
               </div>
 
-              <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6">
+              <div className="glass p-8 rounded-[40px] border border-black/10 space-y-6 bg-white shadow-xl">
                 <div className="flex items-center gap-3">
-                  <Calendar className="text-emerald-500 w-5 h-5" />
-                  <h3 className="text-sm font-bold tracking-widest uppercase">Neural Activity</h3>
+                  <Calendar className="text-emerald-700 w-5 h-5" />
+                  <h3 className="text-sm font-bold tracking-widest uppercase text-slate-800">Neural Activity</h3>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-white/40">Last Sync</span>
-                    <span className="text-sm font-mono font-bold">2 hours ago</span>
+                    <span className="text-xs text-slate-800 font-bold">Last Sync</span>
+                    <span className="text-sm font-mono font-bold text-slate-900">2 hours ago</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-white/40">Uptime</span>
-                    <span className="text-sm font-mono font-bold">12 days</span>
+                    <span className="text-xs text-slate-800 font-bold">Uptime</span>
+                    <span className="text-sm font-mono font-bold text-slate-900">12 days</span>
                   </div>
                   <div className="pt-4 flex gap-1">
                     {[1,1,0,1,1,1,0,1,1,1,1,1,0,1].map((v, i) => (
-                      <div key={i} className={cn("flex-1 h-6 rounded-sm", v ? "bg-emerald-500/20" : "bg-white/5")} />
+                      <div key={i} className={cn("flex-1 h-6 rounded-sm", v ? "bg-emerald-500/20" : "bg-black/5")} />
                     ))}
                   </div>
                 </div>
               </div>
 
-              <div className="glass p-8 rounded-[40px] border border-white/5 space-y-6">
+              <div className="glass p-8 rounded-[40px] border border-black/10 space-y-6 bg-white shadow-xl">
                 <div className="flex items-center gap-3">
-                  <Bell className="text-emerald-500 w-5 h-5" />
-                  <h3 className="text-sm font-bold tracking-widest uppercase">Recent Alerts</h3>
+                  <Bell className="text-emerald-700 w-5 h-5" />
+                  <h3 className="text-sm font-bold tracking-widest uppercase text-slate-800">Recent Alerts</h3>
                 </div>
                 <div className="space-y-3">
-                  <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between">
-                    <span className="text-xs text-white/60">Prediction Locked: Varkala</span>
-                    <ChevronRight className="w-3 h-3 text-white/20" />
+                  <div className="p-3 rounded-2xl bg-black/5 border border-black/5 flex items-center justify-between">
+                    <span className="text-xs text-slate-800 font-bold">Prediction Locked: Varkala</span>
+                    <ChevronRight className="w-3 h-3 text-slate-600" />
                   </div>
-                  <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between">
-                    <span className="text-xs text-white/60">Node Sync Complete</span>
-                    <ChevronRight className="w-3 h-3 text-white/20" />
+                  <div className="p-3 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-between">
+                    <span className="text-xs text-slate-800 font-bold">Node Sync Complete</span>
+                    <ChevronRight className="w-3 h-3 text-slate-600" />
                   </div>
-                  <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between">
-                    <span className="text-xs text-white/60">Phase Shift: Campaign Node</span>
-                    <ChevronRight className="w-3 h-3 text-white/20" />
+                  <div className="p-3 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-between">
+                    <span className="text-xs text-slate-800 font-bold">Phase Shift: Campaign Node</span>
+                    <ChevronRight className="w-3 h-3 text-slate-600" />
                   </div>
                 </div>
               </div>
@@ -172,19 +172,19 @@ export function Profile() {
             {/* Your Predictions / Signals */}
             <div className="space-y-8">
               <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tighter">Your <span className="text-emerald-500">Signals</span></h2>
-                <span className="text-xs font-mono text-white/20 uppercase tracking-widest">0 Active Nodes</span>
+                <h2 className="text-3xl font-bold tracking-tighter text-slate-950">Your <span className="text-emerald-700 italic">Signals</span></h2>
+                <span className="text-xs font-mono text-slate-600 uppercase tracking-widest font-bold">0 Active Nodes</span>
               </div>
-              <div className="p-12 text-center glass rounded-[40px] border border-white/5">
-                <p className="text-sm text-white/20 font-mono uppercase">No active signals detected in your node.</p>
+              <div className="p-12 text-center glass rounded-[40px] border border-black/10 bg-white shadow-xl">
+                <p className="text-sm text-slate-600 font-mono uppercase font-bold">No active signals detected in your node.</p>
               </div>
             </div>
 
             {/* Achievements */}
             <div className="space-y-8">
               <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tighter">Neural <span className="text-emerald-500">Achievements</span></h2>
-                <button className="text-xs font-mono text-emerald-500 uppercase tracking-widest hover:underline">View All</button>
+                <h2 className="text-3xl font-bold tracking-tighter text-slate-950">Neural <span className="text-emerald-700 italic">Achievements</span></h2>
+                <button className="text-xs font-mono text-emerald-700 uppercase tracking-widest hover:underline font-bold">View All</button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                 {[
@@ -193,13 +193,13 @@ export function Profile() {
                   { name: "District Expert", desc: "Predicted all seats in one district", icon: MapPin },
                   { name: "High Conviction", desc: "10 predictions with 90%+ confidence", icon: Target },
                 ].map((a, i) => (
-                  <div key={i} className="glass p-6 rounded-[32px] border border-white/5 flex flex-col items-center text-center space-y-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                      <a.icon className="w-6 h-6 text-white/20" />
+                  <div key={i} className="glass p-6 rounded-[32px] border border-black/10 flex flex-col items-center text-center space-y-4 bg-white shadow-lg group-hover:border-emerald-500/30 transition-all">
+                    <div className="w-12 h-12 rounded-2xl bg-black/5 border border-black/10 flex items-center justify-center">
+                      <a.icon className="w-6 h-6 text-slate-600" />
                     </div>
                     <div className="space-y-1">
-                      <h4 className="text-sm font-bold tracking-tight">{a.name}</h4>
-                      <p className="text-[10px] text-white/20 leading-tight">{a.desc}</p>
+                      <h4 className="text-sm font-extrabold tracking-tight text-slate-900">{a.name}</h4>
+                      <p className="text-[10px] text-slate-600 leading-tight font-mono font-bold uppercase">{a.desc}</p>
                     </div>
                   </div>
                 ))}

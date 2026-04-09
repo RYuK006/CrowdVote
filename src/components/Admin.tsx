@@ -164,13 +164,13 @@ export function Admin() {
             </div>
             <div className="space-y-2">
               <h1 className="text-2xl font-bold tracking-tight">Access Denied</h1>
-              <p className="text-white/40 text-sm leading-relaxed font-mono">
+              <p className="text-slate-500 text-sm leading-relaxed font-mono">
                 Unauthorized node detected. Only verified administrative agents can access the central command node.
               </p>
             </div>
             <button 
               onClick={() => window.location.href = "/"}
-              className="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/60 font-bold transition-all uppercase tracking-widest text-xs"
+              className="px-8 py-3 rounded-2xl bg-black/5 border border-black/10 hover:bg-black/10 text-slate-600 font-bold transition-all uppercase tracking-widest text-xs"
             >
               RETURN TO PERIMETER
             </button>
@@ -207,24 +207,24 @@ export function Admin() {
       <div className="space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4">
-            <div className="flex items-center gap-3 text-red-500">
+            <div className="flex items-center gap-3 text-red-600">
               <Shield className="w-6 h-6" />
-              <span className="text-xs font-mono uppercase tracking-[0.4em]">Central Command Node</span>
+              <span className="text-xs font-mono uppercase tracking-[0.4em] font-bold">Central Command Node</span>
             </div>
-            <h1 className="text-6xl font-bold tracking-tighter">System <span className="text-red-500">Admin</span></h1>
-            <p className="text-white/40 max-w-md font-mono text-sm leading-relaxed">
+            <h1 className="text-6xl font-bold tracking-tighter text-[var(--text-primary)]">System <span className="text-red-600 italic">Admin</span></h1>
+            <p className="text-[var(--text-secondary)] max-w-md font-mono text-sm leading-relaxed font-bold">
               Global configuration and swarm management parameters.
             </p>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center">
-              <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest mb-1">Active Agents</span>
-              <span className="text-2xl font-bold">{stats.users}</span>
+            <div className="glass px-6 py-4 rounded-3xl border border-[var(--glass-border)] flex flex-col items-center">
+              <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest mb-1 font-bold">Active Agents</span>
+              <span className="text-2xl font-bold text-[var(--text-primary)]">{stats.users}</span>
             </div>
-            <div className="glass px-6 py-4 rounded-3xl border border-white/5 flex flex-col items-center">
-              <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest mb-1">Predictions</span>
-              <span className="text-2xl font-bold text-red-500">{stats.predictions}</span>
+            <div className="glass px-6 py-4 rounded-3xl border border-[var(--glass-border)] flex flex-col items-center">
+              <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest mb-1 font-bold">Predictions</span>
+              <span className="text-2xl font-bold text-red-600">{stats.predictions}</span>
             </div>
           </div>
         </div>
@@ -233,10 +233,10 @@ export function Admin() {
           <div className="space-y-12">
             <div className="grid lg:grid-cols-1 gap-8">
               {/* Phase Control */}
-              <div className="glass p-10 rounded-[40px] border border-white/5 space-y-10">
+              <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] space-y-10">
                 <div className="flex items-center gap-3">
                   <Clock className="text-red-500 w-5 h-5" />
-                  <h3 className="text-xl font-bold tracking-tight">Election Lifecycle Phase</h3>
+                  <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Election Lifecycle Phase</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -244,17 +244,17 @@ export function Admin() {
                     <div
                       key={p}
                       className={cn(
-                        "p-8 rounded-[32px] border transition-all duration-500 relative overflow-hidden group",
+                        "p-8 rounded-[32px] border transition-all duration-500 relative overflow-hidden group/phase",
                         phase === p
                           ? "bg-red-500/10 border-red-500/50 red-glow shadow-[0_0_30px_-5px_rgba(239,68,68,0.2)]"
-                          : "bg-white/[0.02] border-white/5 hover:border-white/10"
+                          : "bg-black/5 border-[var(--glass-border)] hover:border-black/20"
                       )}
                     >
                       <div className="space-y-6">
                         <div className="flex justify-between items-start">
                           <span className={cn(
                             "text-[10px] font-mono uppercase tracking-[0.2em] px-2 py-1 rounded-md",
-                            phase === p ? "bg-red-500 text-black font-bold" : "text-white/20"
+                            phase === p ? "bg-red-600 text-white font-extrabold" : "text-[var(--text-secondary)] font-bold"
                           )}>
                             {phase === p ? "Active Phase" : "Standby"}
                           </span>
@@ -269,17 +269,17 @@ export function Admin() {
                         </div>
                         
                         <div className="space-y-1">
-                          <h4 className="text-xl font-bold tracking-tight">{p}</h4>
-                          <p className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Temporal Node</p>
+                          <h4 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">{p}</h4>
+                          <p className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Temporal Node</p>
                         </div>
 
-                        <div className="space-y-3 pt-4 border-t border-white/5">
-                          <label className="text-[10px] font-mono text-white/40 uppercase tracking-widest block">Phase Expiry (End Date)</label>
+                        <div className="space-y-3 pt-4 border-t border-[var(--glass-border)]">
+                          <label className="text-[10px] font-mono text-[var(--text-primary)] uppercase tracking-widest block font-bold">Phase Expiry (End Date)</label>
                           <input 
                             type="datetime-local"
                             value={phaseExpiries[p] || ""}
                             onChange={(e) => handleExpiryUpdate(p, e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-mono text-white/60 focus:outline-none focus:border-red-500/50 transition-all"
+                            className="w-full bg-black/5 border border-[var(--glass-border)] rounded-xl px-4 py-3 text-xs font-mono text-[var(--text-primary)] focus:outline-none focus:border-red-500/50 transition-all placeholder:text-[var(--text-secondary)] font-bold"
                           />
                         </div>
                       </div>
@@ -290,47 +290,47 @@ export function Admin() {
             </div>
 
             {/* Live Data Monitor */}
-            <div className="glass rounded-[40px] border border-white/5 p-10 space-y-8">
+            <div className="glass rounded-[40px] border border-[var(--glass-border)] p-10 space-y-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Database className="text-red-500 w-5 h-5" />
-                  <h3 className="text-xl font-bold tracking-tight">Recent Prediction Monitor</h3>
+                  <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Recent Prediction Monitor</h3>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Live Stream</span>
+                  <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Live Stream</span>
                 </div>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-white/5">
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Agent ID</th>
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Constituency</th>
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Prediction</th>
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Confidence</th>
-                      <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Timestamp</th>
+                    <tr className="border-b border-[var(--glass-border)]">
+                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Agent ID</th>
+                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Constituency</th>
+                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Prediction</th>
+                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Confidence</th>
+                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Timestamp</th>
                     </tr>
                   </thead>
                   <tbody>
                     {recentPredictions.length > 0 ? (
                       recentPredictions.map((pred) => (
-                        <tr key={pred.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
-                          <td className="py-4 text-xs font-mono text-white/40 group-hover:text-white transition-colors">{pred.userId?.slice(0, 8)}...</td>
-                          <td className="py-4 text-xs font-bold">{pred.constituencyId}</td>
+                        <tr key={pred.id} className="border-b border-[var(--glass-border)] hover:bg-black/5 transition-colors group">
+                          <td className="py-4 text-xs font-mono text-[var(--text-primary)] font-bold group-hover:text-red-500 transition-colors">{pred.userId?.slice(0, 8)}...</td>
+                          <td className="py-4 text-xs font-bold text-[var(--text-primary)]">{pred.constituencyId}</td>
                           <td className="py-4">
-                            <span className="px-2 py-1 rounded bg-red-500/10 text-red-500 text-[10px] font-mono uppercase font-bold">
+                            <span className="px-2 py-1 rounded bg-red-500/10 text-red-600 text-[10px] font-mono uppercase font-extrabold">
                               {pred.predictedParty}
                             </span>
                           </td>
-                          <td className="py-4 text-xs font-mono">{pred.confidence}%</td>
-                          <td className="py-4 text-xs text-white/20">{new Date(pred.timestamp).toLocaleTimeString()}</td>
+                          <td className="py-4 text-xs font-mono font-bold text-[var(--text-primary)]">{pred.confidence}%</td>
+                          <td className="py-4 text-xs text-[var(--text-secondary)] font-bold">{new Date(pred.timestamp).toLocaleTimeString()}</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={5} className="py-12 text-center text-white/10 font-mono text-xs uppercase tracking-widest">
+                        <td colSpan={5} className="py-12 text-center text-[var(--text-secondary)] font-mono text-xs uppercase tracking-widest font-extrabold">
                           No live activity detected in the current temporal frame.
                         </td>
                       </tr>
@@ -342,8 +342,8 @@ export function Admin() {
 
             {adminMetrics && (
               <div className="grid md:grid-cols-2 gap-8">
-                <div className="glass p-10 rounded-[40px] border border-white/5 space-y-6">
-                  <h3 className="text-lg font-bold font-mono uppercase tracking-widest text-white/40">Votes Per Day</h3>
+                <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] space-y-6">
+                  <h3 className="text-lg font-bold font-mono uppercase tracking-widest text-[var(--text-primary)]">Votes Per Day</h3>
                   <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={adminMetrics.votesPerDay}>
@@ -353,11 +353,11 @@ export function Admin() {
                             <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                        <XAxis dataKey="date" stroke="#ffffff20" fontSize={10} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#ffffff20" fontSize={10} tickLine={false} axisLine={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                        <XAxis dataKey="date" stroke="#ffffff40" fontSize={10} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#ffffff40" fontSize={10} tickLine={false} axisLine={false} />
                         <Tooltip 
-                          contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #ffffff10', borderRadius: '12px' }}
+                          contentStyle={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
                           itemStyle={{ color: '#ef4444' }}
                         />
                         <Area type="monotone" dataKey="count" stroke="#ef4444" fillOpacity={1} fill="url(#colorVotes)" strokeWidth={2} />
@@ -366,19 +366,19 @@ export function Admin() {
                   </div>
                 </div>
 
-                <div className="glass p-10 rounded-[40px] border border-white/5 space-y-6">
-                  <h3 className="text-lg font-bold font-mono uppercase tracking-widest text-white/40">New Users Per Day</h3>
+                <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] space-y-6">
+                  <h3 className="text-lg font-bold font-mono uppercase tracking-widest text-[var(--text-primary)]">New Users Per Day</h3>
                   <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={adminMetrics.usersPerDay}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                        <XAxis dataKey="date" stroke="#ffffff20" fontSize={10} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#ffffff20" fontSize={10} tickLine={false} axisLine={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                        <XAxis dataKey="date" stroke="#ffffff40" fontSize={10} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#ffffff40" fontSize={10} tickLine={false} axisLine={false} />
                         <Tooltip 
-                          contentStyle={{ backgroundColor: '#0a0a0a', border: '1px solid #ffffff10', borderRadius: '12px' }}
+                          contentStyle={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
                           cursor={{ fill: '#ffffff05' }}
                         />
-                        <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="count" fill="#dc2626" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -394,16 +394,16 @@ export function Admin() {
               <button 
                 onClick={handleExportCSV}
                 disabled={exporting}
-                className="px-6 py-3 rounded-2xl bg-red-500 text-black font-bold flex items-center gap-3 hover:bg-red-400 transition-all red-glow"
+                className="px-6 py-3 rounded-2xl bg-red-600 text-white font-bold flex items-center gap-3 hover:bg-red-500 transition-all red-glow"
               >
                 {exporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
                 EXPORT COMPLETE DATA STREAM (.CSV)
               </button>
             </div>
-            <div className="glass p-12 rounded-[40px] border border-white/5 text-center flex flex-col items-center justify-center space-y-4">
-              <Database className="w-12 h-12 text-white/20 mb-4" />
-              <h3 className="text-xl font-bold tracking-tight">Data Stream Analytics</h3>
-              <p className="text-white/40 text-sm font-mono max-w-md mx-auto leading-relaxed">
+            <div className="glass p-12 rounded-[40px] border border-[var(--glass-border)] text-center flex flex-col items-center justify-center space-y-4">
+              <Database className="w-12 h-12 text-[var(--text-secondary)] mb-4" />
+              <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Data Stream Analytics</h3>
+              <p className="text-[var(--text-secondary)] text-sm font-mono max-w-md mx-auto leading-relaxed font-bold">
                 Raw data telemetry redirected to COMMAND overview for real-time monitoring.
               </p>
             </div>
@@ -411,37 +411,62 @@ export function Admin() {
         )}
 
         {tab === "nodes" && (
-          <div className="glass rounded-[40px] border border-white/5 p-10 space-y-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Users className="text-red-500 w-5 h-5" />
-                <h3 className="text-xl font-bold tracking-tight">Agent Mesh Management</h3>
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] space-y-4 bg-[var(--card-bg)] shadow-xl group hover:border-red-500/30 transition-all duration-500">
+                <div className="flex items-center gap-3 text-red-600">
+                  <Users className="w-5 h-5" />
+                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] font-bold">Registered Agents</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-bold tracking-tighter text-[var(--text-primary)]">{stats.users}</span>
+                  <span className="text-xs font-mono text-[var(--text-secondary)] font-bold uppercase tracking-widest">Active Units</span>
+                </div>
               </div>
-              <div className="flex items-center gap-4">
-                 <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-xs font-mono">
-                    TOTAL: {adminNodes.length}
-                 </div>
+
+              <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] space-y-4 bg-[var(--card-bg)] shadow-xl group hover:border-red-500/30 transition-all duration-500">
+                <div className="flex items-center gap-3 text-red-600">
+                  <Database className="w-5 h-5" />
+                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] font-bold">Temporal Signals</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-bold tracking-tighter text-red-600 italic">{stats.predictions}</span>
+                  <span className="text-xs font-mono text-[var(--text-secondary)] font-bold uppercase tracking-widest">Global Syncs</span>
+                </div>
               </div>
             </div>
+
+            <div className="glass rounded-[40px] border border-[var(--glass-border)] p-10 space-y-8 bg-[var(--card-bg)] shadow-xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Shield className="text-red-600 w-5 h-5" />
+                  <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Agent Mesh Management</h3>
+                </div>
+                <div className="flex items-center gap-4">
+                   <div className="px-4 py-2 rounded-xl bg-black/5 border border-[var(--glass-border)] text-xs font-mono font-extrabold text-[var(--text-primary)]">
+                      TOTAL: {adminNodes.length}
+                   </div>
+                </div>
+              </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-white/5">
-                    <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Display Name</th>
-                    <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Phone Number</th>
-                    <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest">Votes Cast</th>
-                    <th className="pb-4 text-[10px] font-mono text-white/20 uppercase tracking-widest text-right">Status</th>
+                  <tr className="border-b border-[var(--glass-border)]">
+                    <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Display Name</th>
+                    <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Email Address</th>
+                    <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Votes Cast</th>
+                    <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest text-right font-bold">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {adminNodes.map((node) => (
-                    <tr key={node.uid} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
-                      <td className="py-4 text-xs font-bold">{node.displayName}</td>
-                      <td className="py-4 text-xs font-mono text-white/40">{node.phoneNumber}</td>
-                      <td className="py-4 text-xs font-mono text-red-500 font-bold">{node.predictionCount}</td>
+                    <tr key={node.uid} className="border-b border-[var(--glass-border)] hover:bg-black/5 transition-colors group">
+                      <td className="py-4 text-xs font-bold text-[var(--text-primary)]">{node.displayName}</td>
+                      <td className="py-4 text-xs font-mono text-[var(--text-secondary)] font-bold italic">{node.email}</td>
+                      <td className="py-4 text-xs font-mono text-red-600 font-extrabold">{node.predictionCount}</td>
                       <td className="py-4 text-right">
-                        <span className="px-2 py-1 rounded bg-red-500/10 text-red-500 text-[10px] font-mono uppercase">
+                        <span className="px-2 py-1 rounded bg-red-500/10 text-red-600 text-[10px] font-mono uppercase font-extrabold">
                           ACTIVE NODE
                         </span>
                       </td>
@@ -451,13 +476,14 @@ export function Admin() {
               </table>
             </div>
           </div>
+        </div>
         )}
 
         {tab === "system" && (
-          <div className="glass p-12 rounded-[40px] border border-white/5 text-center flex flex-col items-center justify-center space-y-4">
-            <Settings className="w-12 h-12 text-white/20 mb-4" />
-            <h3 className="text-xl font-bold tracking-tight">System Configuration</h3>
-            <p className="text-white/40 text-sm font-mono max-w-md mx-auto leading-relaxed">
+          <div className="glass p-12 rounded-[40px] border border-[var(--glass-border)] text-center flex flex-col items-center justify-center space-y-4">
+            <Settings className="w-12 h-12 text-[var(--text-secondary)] mb-4" />
+            <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">System Configuration</h3>
+            <p className="text-[var(--text-secondary)] text-sm font-mono max-w-md mx-auto leading-relaxed font-bold">
               Neural network and swarm intelligence parameters are currently locked to optimal defaults. Subsystem overrides require Level 5 clearance.
             </p>
           </div>

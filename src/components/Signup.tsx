@@ -49,11 +49,11 @@ export function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 sm:p-8">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center p-4 sm:p-8 transition-colors">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-white/5 emerald-glow relative overflow-hidden"
+        className="w-full max-w-md glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-[var(--glass-border)] emerald-glow relative overflow-hidden bg-[var(--card-bg)]"
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500/20">
           <motion.div
@@ -66,10 +66,10 @@ export function Signup() {
           <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
             <ShieldCheck className="text-emerald-500 w-6 h-6" />
           </div>
-          <h2 className="text-3xl font-bold tracking-tighter">
+          <h2 className="text-3xl font-bold tracking-tighter text-[var(--text-primary)]">
             {step === 1 ? "Identity Registry" : "Access Granted"}
           </h2>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-[var(--text-secondary)] font-medium">
             {step === 1 ? "Initialize your predictive agent profile using Google." : "Synchronizing with the swarm..."}
           </p>
         </div>
@@ -86,13 +86,13 @@ export function Signup() {
               <button
                 disabled={loading}
                 onClick={handleGoogleSignup}
-                className="w-full py-4 rounded-2xl bg-white text-black font-bold text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                className="w-full py-4 rounded-2xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-lg dark:bg-emerald-500 dark:text-black dark:hover:bg-emerald-400"
               >
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo" className="w-5 h-5" />
                 {loading ? "INITIALIZING..." : "SIGN UP WITH GOOGLE"}
               </button>
               
-              {error && <p className="text-xs text-red-400 text-center">{error}</p>}
+              {error && <p className="text-xs text-red-500 text-center font-bold tracking-tight">{error}</p>}
             </motion.div>
           )}
 
@@ -107,15 +107,15 @@ export function Signup() {
                 <CheckCircle2 className="text-emerald-500 w-10 h-10" />
               </div>
               <div className="text-center space-y-2">
-                <p className="text-emerald-500 font-mono text-xs uppercase tracking-widest">Protocol Success</p>
-                <p className="text-white/40 text-sm">Redirecting to Neural Arena...</p>
+                <p className="text-emerald-500 font-mono text-xs uppercase tracking-widest font-bold">Protocol Success</p>
+                <p className="text-[var(--text-secondary)] text-sm font-medium">Redirecting to Neural Arena...</p>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="mt-10 pt-8 border-t border-white/5 text-center">
-          <p className="text-xs text-white/20">
+        <div className="mt-10 pt-8 border-t border-[var(--glass-border)] text-center">
+          <p className="text-xs text-[var(--text-secondary)] font-bold">
             Already registered? <Link to="/signin" className="text-emerald-500 hover:underline">Sign In</Link>
           </p>
         </div>

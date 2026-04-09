@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export function Landing() {
   return (
-    <div className="min-h-screen bg-[#050505] text-white overflow-hidden selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden selection:bg-emerald-500/30 transition-colors">
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-8 max-w-7xl mx-auto">
         {/* Background Glow */}
@@ -17,14 +17,14 @@ export function Landing() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="space-y-8"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-500 tracking-[0.2em] uppercase">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-500 tracking-[0.2em] uppercase font-bold">
               <ShieldCheck className="w-3 h-3" />
               India's Voting Prediction Platform
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] text-white">
-              The <span className="text-emerald-500">Pulse</span> of Indian Elections.
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] text-[var(--text-primary)]">
+              The <span className="text-emerald-500 italic">Pulse</span> of Indian Elections.
             </h1>
-            <p className="text-lg text-white/40 leading-relaxed max-w-lg">
+            <p className="text-lg text-[var(--text-secondary)] leading-relaxed max-w-lg font-medium">
               Predicting election results across India using the collective wisdom of the people. Fast, accurate, and open for all.
             </p>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:gap-6 gap-4">
@@ -37,19 +37,19 @@ export function Landing() {
               </Link>
               <Link
                 to="/leaderboard"
-                className="flex text-center justify-center px-8 py-4 rounded-2xl bg-white/5 border border-white/10 text-sm font-bold hover:bg-white/10 transition-all w-full sm:w-auto"
+                className="flex text-center justify-center px-8 py-4 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-sm font-bold hover:bg-black/10 transition-all w-full sm:w-auto text-[var(--text-primary)]"
               >
                 LIVE PREDICTIONS
               </Link>
             </div>
-            <div className="flex items-center gap-8 sm:gap-12 pt-8 border-t border-white/5">
+            <div className="flex items-center gap-8 sm:gap-12 pt-8 border-t border-[var(--glass-border)]">
               <div className="flex flex-col">
-                <span className="text-3xl font-bold tracking-tighter">2.4M</span>
-                <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">Votes Predicted</span>
+                <span className="text-3xl font-bold tracking-tighter text-[var(--text-primary)]">2.4M</span>
+                <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Votes Predicted</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-3xl font-bold tracking-tighter">140</span>
-                <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">Areas Covered</span>
+                <span className="text-3xl font-bold tracking-tighter text-[var(--text-primary)]">140</span>
+                <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Areas Covered</span>
               </div>
             </div>
           </motion.div>
@@ -66,20 +66,22 @@ export function Landing() {
                 <img 
                   src="/kerala-map.svg" 
                   alt="Kerala Electoral Map" 
-                  className="w-full h-full object-contain p-4 drop-shadow-[0_0_20px_rgba(16,185,129,0.3)] opacity-80 mix-blend-screen"
+                  className="w-full h-full object-contain p-4 drop-shadow-[0_0_20px_rgba(16,185,129,0.3)] opacity-80 mix-blend-multiply transition-opacity duration-300 pointer-events-none"
                 />
               </div>
+              <div className="absolute bottom-10 left-10 p-6 glass rounded-2xl border border-emerald-500/20 backdrop-blur-xl">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-mono text-emerald-500 uppercase tracking-widest">Current Trend</span>
-                  <span className="text-xl font-bold tracking-tight">Kerala State</span>
+                  <span className="text-[10px] font-mono text-emerald-500 uppercase tracking-widest font-bold">Current Trend</span>
+                  <span className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Kerala State</span>
                   <div className="flex items-center justify-between mt-4 mb-2">
-                    <span className="text-3xl font-bold">94%</span>
-                    <span className="text-[10px] font-mono text-white/40 uppercase">Confidence</span>
+                    <span className="text-3xl font-bold text-[var(--text-primary)]">94%</span>
+                    <span className="text-[10px] font-mono text-emerald-500 uppercase font-bold">Confidence</span>
                   </div>
-                  <div className="text-[8px] text-white/20 font-mono leading-tight">
+                  <div className="text-[8px] text-[var(--text-secondary)] font-mono leading-tight font-bold">
                     Map: <a href="https://commons.wikimedia.org/wiki/User:Kambliyil" target="_blank" className="hover:text-emerald-500">Kambliyil</a> / <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" className="hover:text-emerald-500">CC BY-SA 4.0</a>
                   </div>
                 </div>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -88,8 +90,8 @@ export function Landing() {
       {/* Features Section */}
       <section className="py-20 md:py-32 px-8 max-w-7xl mx-auto">
         <div className="flex flex-col items-center text-center mb-12 md:mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">Community Driven <span className="text-emerald-500">Predictions.</span></h2>
-          <p className="text-white/40 max-w-2xl">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 text-[var(--text-primary)]">Community Driven <span className="text-emerald-500 italic">Predictions.</span></h2>
+          <p className="text-[var(--text-secondary)] max-w-2xl font-medium">
             We don't just count votes. We calculate election outcomes using previous election results and live data from people like you.
           </p>
         </div>
@@ -103,13 +105,13 @@ export function Landing() {
             <motion.div
               key={i}
               whileHover={{ y: -5 }}
-              className="glass p-8 rounded-[32px] border border-white/5 space-y-6 hover:border-emerald-500/20 transition-all duration-300"
+              className="glass p-8 rounded-[32px] border border-[var(--glass-border)] space-y-6 hover:border-emerald-500/20 transition-all duration-300 bg-[var(--card-bg)]"
             >
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
                 <feature.icon className="text-emerald-500 w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold tracking-tight">{feature.title}</h3>
-              <p className="text-sm text-white/40 leading-relaxed">{feature.desc}</p>
+              <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">{feature.title}</h3>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-medium">{feature.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -117,16 +119,16 @@ export function Landing() {
 
       {/* CTA Section */}
       <section className="py-20 md:py-32 px-4 sm:px-8 text-center">
-        <div className="max-w-3xl mx-auto glass p-8 sm:p-16 rounded-[48px] border border-emerald-500/10 emerald-glow relative overflow-hidden">
+        <div className="max-w-3xl mx-auto glass p-8 sm:p-16 rounded-[48px] border border-emerald-500/10 emerald-glow relative overflow-hidden bg-[var(--card-bg)]">
           <div className="absolute top-0 left-0 w-full h-full bg-emerald-500/5 -z-10" />
           <ShieldCheck className="w-16 h-16 text-emerald-500 mx-auto mb-8" />
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">Ready to <span className="text-emerald-500">Start</span> Your Prediction?</h2>
-          <p className="text-white/40 mb-12 text-lg">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6 text-[var(--text-primary)]">Ready to <span className="text-emerald-500 italic">Start</span> Your Prediction?</h2>
+          <p className="text-[var(--text-secondary)] mb-12 text-lg font-medium">
             Join thousands of others in predicting the future of Indian politics.
           </p>
           <Link
             to="/signup"
-            className="inline-flex items-center gap-3 px-12 py-5 rounded-2xl bg-emerald-500 text-black font-bold text-lg emerald-glow hover:bg-emerald-400 transition-all"
+            className="inline-flex items-center gap-3 px-12 py-5 rounded-2xl bg-emerald-500 text-white font-bold text-lg emerald-glow hover:bg-emerald-400 transition-all"
           >
             GET STARTED
           </Link>
@@ -134,21 +136,21 @@ export function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 md:py-20 px-8 border-t border-white/5">
+      <footer className="py-12 md:py-20 px-8 border-t border-[var(--glass-border)]">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 md:gap-12">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
-              <ShieldCheck className="text-black w-5 h-5" />
+              <ShieldCheck className="text-white w-5 h-5" />
             </div>
-            <span className="font-bold text-lg tracking-tight">CrowdVote <span className="text-emerald-500">India</span></span>
+            <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">CrowdVote <span className="text-emerald-500">India</span></span>
           </div>
-          <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-[10px] font-mono text-white/40 uppercase tracking-widest">
+          <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">
             <a href="#" className="hover:text-emerald-500">Documentation</a>
             <a href="#" className="hover:text-emerald-500">Methodology</a>
             <a href="#" className="hover:text-emerald-500">Privacy Policy</a>
-            <Link to="/admin-login" className="text-white/20 hover:text-emerald-500 border border-white/5 px-2 py-1 rounded">Admin Login</Link>
+            <Link to="/adminlogin" className="text-[var(--text-secondary)] hover:text-emerald-500 border border-[var(--glass-border)] px-2 py-1 rounded">Admin Login</Link>
           </div>
-          <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest text-center">© 2026 CrowdVote Project</span>
+          <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest text-center font-bold">© 2026 CrowdVote Project</span>
         </div>
       </footer>
     </div>
