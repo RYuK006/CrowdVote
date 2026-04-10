@@ -648,7 +648,10 @@ export function Arena() {
                                                     className={cn(
                                                         "w-full py-8 sm:py-10 rounded-[32px] font-bold text-xl transition-all duration-300 flex items-center justify-center gap-4 relative overflow-hidden group active:scale-[0.98]",
                                                         !predictions[selectedId]?.predictedParty || saving
-                                                            ? "bg-[var(--glass-bg)] border-2 border-dashed border-[var(--glass-border)] text-[var(--text-secondary)] opacity-60 grayscale cursor-not-allowed"
+                                                            ? cn(
+                                                                "bg-[var(--glass-bg)] border-2 border-dashed opacity-60 grayscale cursor-not-allowed",
+                                                                isDark ? "border-[var(--glass-border)] text-[var(--text-secondary)]" : "border-slate-400 text-slate-700 font-extrabold"
+                                                              )
                                                             : "bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 text-white shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] hover:scale-[1.01] ring-1 ring-white/20"
                                                     )}
                                                 >
