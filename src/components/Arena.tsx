@@ -645,14 +645,23 @@ export function Arena() {
                                                 <button 
                                                     onClick={handleSave}
                                                     disabled={saving || !predictions[selectedId]?.predictedParty}
-                                                    className="w-full py-8 sm:py-10 rounded-[32px] bg-emerald-600 text-white font-bold text-xl emerald-glow hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-4 disabled:opacity-20 disabled:grayscale shadow-xl"
+                                                    className={cn(
+                                                        "w-full py-8 sm:py-10 rounded-[32px] font-bold text-xl transition-all duration-300 flex items-center justify-center gap-4 relative overflow-hidden group active:scale-[0.98]",
+                                                        !predictions[selectedId]?.predictedParty || saving
+                                                            ? "bg-[var(--glass-bg)] border-2 border-dashed border-[var(--glass-border)] text-[var(--text-secondary)] opacity-60 grayscale cursor-not-allowed"
+                                                            : "bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 text-white shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] hover:scale-[1.01] ring-1 ring-white/20"
+                                                    )}
                                                 >
                                                     {saving ? (
-                                                        <RefreshCw className="w-6 h-6 animate-spin" />
+                                                        <RefreshCw className="w-7 h-7 animate-spin" />
                                                     ) : (
                                                         <>
-                                                            <Database className="w-6 h-6" />
-                                                            CONFIRM VOTE
+                                                            <Database className={cn(
+                                                                "w-6 h-6 transition-transform group-hover:scale-110",
+                                                                !predictions[selectedId]?.predictedParty ? "opacity-30" : "opacity-100"
+                                                            )} />
+                                                            <span className="tracking-[0.1em]">CONFIRM VOTE</span>
+                                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
                                                         </>
                                                     )}
                                                 </button>
