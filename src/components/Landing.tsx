@@ -1,10 +1,27 @@
 import { motion } from "framer-motion";
-import { ShieldCheck, Swords, Trophy, BarChart3, ArrowRight } from "lucide-react";
+import { ShieldCheck, Swords, Trophy, BarChart3, ArrowRight, Sun, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 export function Landing() {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden selection:bg-emerald-500/30 transition-colors">
+      {/* Top Header Toggle */}
+      <header className="fixed top-0 left-0 w-full z-50 px-8 py-6 flex justify-end items-center max-w-7xl mx-auto right-0">
+        <button 
+          onClick={toggleTheme}
+          className="p-3 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] hover:emerald-glow transition-all group backdrop-blur-xl"
+        >
+          {theme === 'light' ? (
+            <Sun className="w-6 h-6 text-emerald-500 group-hover:rotate-45 transition-transform" />
+          ) : (
+            <Moon className="w-6 h-6 text-emerald-500 group-hover:-rotate-12 transition-transform" />
+          )}
+        </button>
+      </header>
+
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-8 max-w-7xl mx-auto">
         {/* Background Glow */}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, CheckCircle2, AlertTriangle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Shield, CheckCircle2, AlertTriangle, ChevronLeft } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import { auth } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 
@@ -58,6 +58,13 @@ export function AdminLogin() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-black/10 shadow-[0_0_50px_rgba(0,0,0,0.05)] relative overflow-hidden"
       >
+        <Link 
+          to="/" 
+          className="absolute top-6 left-6 z-20 flex items-center justify-center w-8 h-8 rounded-xl bg-white/50 border border-black/5 text-slate-800 hover:text-red-500 hover:border-red-500/30 transition-all active:scale-95 group"
+        >
+          <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+        </Link>
+
         <div className="absolute top-0 left-0 w-full h-1 bg-red-500/20">
           <motion.div
             className="h-full bg-red-500"

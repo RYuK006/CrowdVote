@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, CheckCircle2, ChevronLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
@@ -55,6 +55,12 @@ export function Signup() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md glass p-6 sm:p-10 rounded-[32px] sm:rounded-[40px] border border-[var(--glass-border)] emerald-glow relative overflow-hidden bg-[var(--card-bg)]"
       >
+        <Link 
+          to="/" 
+          className="absolute top-6 left-6 z-20 flex items-center justify-center w-8 h-8 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--text-secondary)] hover:text-emerald-500 hover:border-emerald-500/30 transition-all active:scale-95 group"
+        >
+          <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+        </Link>
         <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500/20">
           <motion.div
             className="h-full bg-emerald-500"

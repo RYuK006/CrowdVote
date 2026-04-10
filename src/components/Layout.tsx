@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Swords, Trophy, BarChart3, User, Settings, LogOut, ShieldCheck, Menu, X, ChevronLeft, ChevronRight, ShieldAlert, Users, Database, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, Swords, Trophy, BarChart3, User, LogOut, ShieldCheck, Menu, X, ChevronLeft, ChevronRight, ShieldAlert, Users, Database, Sun, Moon } from "lucide-react";
 import { cn } from "../lib/utils";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
@@ -32,7 +32,7 @@ export function Layout({ children, user }: LayoutProps) {
     { label: "COMMAND", icon: ShieldAlert, path: "/admin" },
     { label: "NODES", icon: Users, path: "/admin?tab=nodes" },
     { label: "STREAM", icon: Database, path: "/admin?tab=data" },
-    { label: "SYSTEM", icon: Settings, path: "/admin?tab=system" },
+    { label: "SYSTEM", icon: LayoutDashboard, path: "/admin?tab=system" },
   ];
 
   const isAdminRoute = location.pathname.startsWith("/admin") && location.pathname !== "/admin-login";
@@ -202,12 +202,11 @@ export function Layout({ children, user }: LayoutProps) {
               className="p-2 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] hover:emerald-glow transition-all group"
             >
               {theme === 'light' ? (
-                <Sun className="w-5 h-5 text-amber-500 group-hover:rotate-45 transition-transform" />
+                <Sun className="w-5 h-5 text-emerald-500 group-hover:rotate-45 transition-transform" />
               ) : (
                 <Moon className="w-5 h-5 text-emerald-500 group-hover:-rotate-12 transition-transform" />
               )}
             </button>
-            <Settings className="w-5 h-5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer transition-colors" />
           </div>
         </header>
 

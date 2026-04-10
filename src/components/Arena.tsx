@@ -9,8 +9,11 @@ import { auth } from "../firebase";
 import { Layout } from "./Layout";
 import { User } from "../types";
 import { UnderDevelopmentPopup } from "./UnderDevelopmentPopup";
+import { useTheme } from "../context/ThemeContext";
 
 export function Arena() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [constituencies, setConstituencies] = useState<any[]>([]);
   const [details, setDetails] = useState<any>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -32,6 +35,8 @@ export function Arena() {
   const [selectedStateForPopup, setSelectedStateForPopup] = useState("");
   
   const contentRef = useRef<HTMLDivElement>(null);
+  const detailsScrollRef = useRef<HTMLDivElement>(null);
+  const [detailsScrolled, setDetailsScrolled] = useState(false);
 
   useEffect(() => {
     fetch('/api/constituencies')
@@ -41,8 +46,9 @@ export function Arena() {
   }, []);
 
   useEffect(() => {
-    if (selectedId && contentRef.current) {
-      contentRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    if (selectedId && detailsScrollRef.current) {
+      detailsScrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
+      setDetailsScrolled(false);
     }
     if (selectedId) {
       fetch(`/api/constituencies/${selectedId}`)
@@ -187,7 +193,7 @@ export function Arena() {
                 <MapPin className="w-5 h-5" />
                 <span className="text-[9px] font-mono uppercase tracking-[0.4em] font-bold">India Prediction Center</span>
               </div>
-              <h2 className="text-4xl sm:text-6xl font-bold tracking-tighter text-slate-950">
+              <h2 className="text-4xl sm:text-6xl font-bold tracking-tighter text-[var(--text-primary)]">
                 {selectedState ? (
                   <>
                     <span className="text-emerald-700 italic">{selectedState}</span> Prediction
@@ -196,7 +202,7 @@ export function Arena() {
                   <>Select <span className="text-emerald-700 italic">State</span></>
                 )}
               </h2>
-              <p className="text-slate-800 text-[10px] font-mono uppercase tracking-widest max-w-sm font-bold">
+              <p className="text-[var(--text-secondary)] text-[10px] font-mono uppercase tracking-widest max-w-sm font-bold">
                 {selectedState 
                   ? `Predicting ${filteredConstituencies.length} areas in ${selectedState}`
                   : "Choose a state to start your voting prediction"}
@@ -210,29 +216,29 @@ export function Arena() {
                     setSelectedState(null);
                     setFilterDistrict("ALL");
                   }}
-                  className="flex items-center gap-2 px-4 py-3 bg-black/5 border border-black/10 rounded-2xl text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-black/10 transition-all"
+                  className="flex items-center gap-2 px-4 py-3 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-[var(--glass-border)] transition-all text-[var(--text-primary)]"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Back to States
                 </button>
 
                 <div className="relative group flex-1 md:w-64">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 group-focus-within:text-emerald-700 transition-colors" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)] group-focus-within:text-emerald-700 transition-colors" />
                   <input
                     type="text"
                     placeholder="Search Area..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full bg-black/5 border border-black/10 rounded-2xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono placeholder:text-slate-600 text-slate-900 font-bold"
+                    className="w-full bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono placeholder:text-[var(--text-secondary)] text-[var(--text-primary)] font-bold"
                   />
                 </div>
 
                 <div className="relative group w-32 sm:w-40 shrink-0">
-                  <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 group-focus-within:text-emerald-700 transition-colors" />
+                  <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)] group-focus-within:text-emerald-700 transition-colors" />
                   <select
                     value={filterDistrict}
                     onChange={(e) => setFilterDistrict(e.target.value)}
-                    className="w-full bg-black/5 border border-black/10 rounded-2xl py-3 pl-11 pr-8 text-[11px] focus:outline-none focus:border-emerald-500/50 transition-all appearance-none cursor-pointer font-bold uppercase tracking-tighter text-slate-900"
+                    className="w-full bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl py-3 pl-11 pr-8 text-[11px] focus:outline-none focus:border-emerald-500/50 transition-all appearance-none cursor-pointer font-bold uppercase tracking-tighter text-[var(--text-primary)]"
                   >
                     <option value="ALL">ALL DISTRICTS</option>
                     {DISTRICTS.map(d => <option key={d} value={d}>{d}</option>)}
@@ -241,13 +247,13 @@ export function Arena() {
               </div>
             ) : (
                 <div className="relative group max-w-md w-full px-1">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600 group-focus-within:text-emerald-700 transition-colors" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)] group-focus-within:text-emerald-700 transition-colors" />
                   <input
                     type="text"
                     placeholder="Search State..."
                     value={stateSearch}
                     onChange={(e) => setStateSearch(e.target.value)}
-                    className="w-full bg-black/5 border border-black/10 rounded-2xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono placeholder:text-slate-600 text-slate-900 font-bold"
+                    className="w-full bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-2xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-emerald-500/50 transition-all font-mono placeholder:text-[var(--text-secondary)] text-[var(--text-primary)] font-bold"
                   />
                 </div>
             )}
@@ -260,17 +266,17 @@ export function Arena() {
                   <button
                     key={state}
                     onClick={() => handleStateSelect(state)}
-                    className="group relative p-8 rounded-[32px] border border-black/10 bg-black/5 hover:bg-black/[0.08] hover:border-emerald-500/30 transition-all duration-500 text-left flex flex-col justify-between h-[120px] overflow-hidden"
+                    className="group relative p-8 rounded-[32px] border border-[var(--glass-border)] bg-[var(--glass-bg)] hover:bg-[var(--glass-border)] hover:border-emerald-500/30 transition-all duration-500 text-left flex flex-col justify-between h-[120px] overflow-hidden"
                   >
                     <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-xl sm:text-2xl tracking-tight text-slate-950">{state}</h3>
+                      <h3 className="font-bold text-xl sm:text-2xl tracking-tight text-[var(--text-primary)]">{state}</h3>
                       {state === "Kerala" ? (
                         <div className="px-2 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded text-[8px] font-mono text-emerald-700 font-extrabold uppercase">Active</div>
                       ) : (
-                        <Lock className="w-4 h-4 text-slate-500" />
+                        <Lock className="w-4 h-4 text-[var(--text-secondary)]" />
                       )}
                     </div>
-                    <span className="text-[10px] font-mono text-slate-600 uppercase tracking-widest font-bold">
+                    <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">
                       {state === "Kerala" ? "Predict now" : "Coming Soon"}
                     </span>
                     <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
@@ -287,8 +293,8 @@ export function Arena() {
                     <div key={district} className="space-y-6">
                       <div className="flex items-center gap-4 px-1">
                         <h4 className="text-sm font-mono text-emerald-700 uppercase tracking-[0.4em] font-bold">{district}</h4>
-                        <div className="h-px flex-1 bg-black/10" />
-                        <span className="text-[10px] font-mono text-slate-600 uppercase font-bold">{items.length} Areas</span>
+                        <div className="h-px flex-1 bg-[var(--glass-border)]" />
+                        <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase font-bold">{items.length} Areas</span>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {items.map((c) => (
@@ -300,14 +306,16 @@ export function Arena() {
                                 lockedIds.has(c.id)
                                 ? "bg-emerald-500/5 border-emerald-500/30 hover:shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
                                 : predictions[c.id]
-                                  ? "bg-black/[0.08] border-black/20 shadow-lg"
-                                  : "bg-black/5 border-black/10 hover:border-black/20 hover:bg-black/[0.08]"
+                                  ? "bg-[var(--glass-border)] border-[var(--glass-border)] shadow-lg"
+                                  : "bg-[var(--glass-bg)] border-[var(--glass-border)] hover:border-emerald-500/30 hover:bg-[var(--glass-border)]"
                             )}
                         >
                             <div className="flex items-start justify-between w-full">
                                 <div className={cn(
                                     "w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center border transition-all duration-500 shrink-0",
-                                    lockedIds.has(c.id) ? "bg-emerald-500 text-white border-emerald-500" : "bg-black/5 border-black/10 group-hover:border-emerald-500/40"
+                                    lockedIds.has(c.id) 
+                                      ? "bg-emerald-500 text-white border-emerald-500" 
+                                      : "bg-[var(--glass-bg)] border-[var(--glass-border)] group-hover:border-emerald-500/40"
                                 )}>
                                     <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />
                                 </div>
@@ -322,8 +330,8 @@ export function Arena() {
                             </div>
                             
                             <div className="space-y-1">
-                                <h3 className="font-bold tracking-tight text-lg sm:text-xl truncate leading-tight group-hover:text-emerald-700 transition-colors uppercase text-slate-950">{c.name}</h3>
-                                <p className="text-[9px] font-mono text-slate-600 uppercase tracking-widest font-bold">{c.district}</p>
+                                <h3 className="font-bold tracking-tight text-lg sm:text-xl truncate leading-tight group-hover:text-emerald-700 transition-colors uppercase text-[var(--text-primary)]">{c.name}</h3>
+                                <p className="text-[9px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">{c.district}</p>
                             </div>
                         
                             <div className="absolute bottom-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 hidden sm:block">
@@ -360,7 +368,10 @@ export function Arena() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/90 backdrop-blur-3xl"
+                className={cn(
+                  "absolute inset-0 backdrop-blur-3xl",
+                  isDark ? "bg-black/90" : "bg-white/40"
+                )}
                 onClick={() => setSelectedId(null)}
               />
               
@@ -369,45 +380,64 @@ export function Arena() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 30, scale: 0.98 }}
                 transition={{ type: "spring", damping: 35, stiffness: 300 }}
-                className="glass w-full h-full lg:max-w-6xl lg:max-h-[90vh] lg:rounded-[48px] border-b sm:border border-black/10 relative overflow-hidden flex flex-col bg-white/95 shadow-2xl z-10"
+                className="glass w-full h-full lg:max-w-6xl lg:max-h-[90vh] lg:rounded-[48px] border-b sm:border border-[var(--glass-border)] relative overflow-hidden flex flex-col bg-[var(--bg-primary)] shadow-2xl z-10"
               >
                 {/* Fixed Control Bar (Top) */}
-                <div className="absolute top-4 sm:top-8 right-4 sm:right-8 z-[110] flex items-center gap-3">
+                <div className={cn(
+                  "absolute top-4 sm:top-8 right-4 sm:right-8 z-[110] flex items-center gap-3 transition-all duration-500",
+                  detailsScrolled ? "scale-90 sm:scale-100" : ""
+                )}>
                     <button 
                       onClick={() => setShowInfo(!showInfo)}
                       className={cn(
-                        "flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl border transition-all duration-300 group",
+                        "flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl border transition-all duration-500 group backdrop-blur-md",
                         showInfo 
-                          ? "bg-emerald-600 text-white border-emerald-600" 
-                          : "bg-black/5 border-black/10 text-slate-800 hover:bg-black/10 hover:text-slate-950 font-bold"
+                          ? "bg-emerald-600 text-white border-emerald-600 shadow-[0_0_20px_rgba(16,185,129,0.4)]" 
+                          : detailsScrolled
+                            ? "bg-white/90 border-emerald-500/30 text-emerald-700 shadow-xl"
+                            : "bg-[var(--glass-bg)] border-[var(--glass-border)] text-[var(--text-secondary)] hover:bg-[var(--glass-border)] hover:text-[var(--text-primary)] font-bold"
                       )}
                     >
-                      <Info className="w-4 h-4" />
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] hidden sm:inline">{showInfo ? "EXIT INTEL" : "DATA INTEL"}</span>
+                      <Info className={cn("w-4 h-4 transition-colors", detailsScrolled ? "text-emerald-600" : (isDark ? "text-emerald-400" : "text-emerald-700"))} />
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] hidden sm:inline">
+                        {showInfo ? "EXIT INTEL" : "DATA INTEL"}
+                      </span>
                     </button>
                     <button 
                       onClick={() => setSelectedId(null)}
-                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-black/5 border border-black/10 hover:bg-red-500/10 hover:border-red-500/30 flex items-center justify-center transition-all group active:scale-95"
+                      className={cn(
+                        "w-10 h-10 sm:w-12 sm:h-12 rounded-2xl border flex items-center justify-center transition-all group active:scale-95 backdrop-blur-md",
+                        detailsScrolled
+                          ? "bg-white/90 border-red-500/30 text-red-600 shadow-xl"
+                          : "bg-[var(--glass-bg)] border-[var(--glass-border)] text-[var(--text-secondary)] hover:bg-[var(--glass-border)] hover:text-red-500"
+                      )}
                     >
-                      <X className="w-5 h-5 sm:w-6 sm:h-6 text-slate-300 group-hover:text-red-500 transition-all font-bold" />
+                      <X className={cn("w-5 h-5 sm:w-6 sm:h-6 transition-all font-bold", detailsScrolled ? "text-red-500" : (isDark ? "text-slate-200" : "text-slate-400") + " group-hover:text-red-500")} />
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                <div 
+                  ref={detailsScrollRef}
+                  onScroll={(e) => {
+                    const target = e.currentTarget;
+                    setDetailsScrolled(target.scrollTop > 60);
+                  }}
+                  className="flex-1 overflow-y-auto custom-scrollbar"
+                >
                     {/* Header Banner - Responsive Sizing */}
                     <div className="h-[220px] sm:h-[300px] relative overflow-hidden shrink-0">
                         <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/10 via-emerald-500/5 to-transparent opacity-50" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] to-transparent" />
                         <div className="absolute inset-0 flex items-end p-6 sm:p-12">
                             <div className="space-y-2 max-w-full">
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-emerald-700 animate-pulse" />
                                     <span className="text-[9px] font-mono text-emerald-700 uppercase tracking-[0.4em] font-extrabold">Constituency Details</span>
                                 </div>
-                                <h3 className="text-2xl sm:text-6xl font-bold tracking-tighter leading-[0.9] break-words text-slate-950">{selectedConstituency?.name}</h3>
-                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-slate-800 font-bold">
+                                <h3 className="text-2xl sm:text-6xl font-bold tracking-tighter leading-[0.9] break-words text-[var(--text-primary)]">{selectedConstituency?.name}</h3>
+                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-[var(--text-secondary)] font-bold">
                                     <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest">{selectedConstituency?.district} DISTRICT</span>
-                                    <div className="w-1 h-1 rounded-full bg-black/20 hidden sm:block" />
+                                    <div className="w-1 h-1 rounded-full bg-[var(--glass-border)] hidden sm:block" />
                                     <span className="text-[10px] sm:text-xs font-mono text-emerald-700 uppercase tracking-widest">AREA CODE: {selectedId}</span>
                                 </div>
                             </div>
@@ -421,15 +451,15 @@ export function Arena() {
                                     {/* Metrics Column */}
                                     <div className="space-y-10">
                                         <div className="space-y-6">
-                                            <h4 className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.4em] font-extrabold">Voting Statistics</h4>
+                                            <h4 className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-[0.4em] font-extrabold">Voting Statistics</h4>
                                             <div className="grid grid-cols-1 gap-4">
-                                                <div className="glass p-6 rounded-[32px] border border-black/10 space-y-2 bg-black/5">
-                                                    <span className="text-[9px] font-mono text-slate-800 uppercase font-bold">Voter Turnout (2021)</span>
-                                                    <p className="text-3xl font-bold text-emerald-700">{details?.results2021.turnout || "--"}%</p>
+                                                <div className="glass p-6 rounded-[32px] border border-[var(--glass-border)] space-y-2 bg-[var(--glass-bg)] hover:bg-black/[0.08] transition-colors">
+                                                    <span className="text-[9px] font-mono text-[var(--text-secondary)] uppercase font-bold">Voter Turnout (2021)</span>
+                                                    <p className="text-3xl font-bold text-emerald-800">{details?.results2021.turnout || "--"}%</p>
                                                 </div>
-                                                <div className="glass p-6 rounded-[32px] border border-black/10 space-y-2 bg-black/5">
-                                                    <span className="text-[9px] font-mono text-slate-800 uppercase font-bold">Total Voters</span>
-                                                    <p className="text-2xl font-bold font-mono tracking-tighter text-slate-900">{details?.results2021.electors.toLocaleString() || "N/A"}</p>
+                                                <div className="glass p-6 rounded-[32px] border border-[var(--glass-border)] space-y-2 bg-[var(--glass-bg)] hover:bg-black/[0.08] transition-colors">
+                                                    <span className="text-[9px] font-mono text-[var(--text-secondary)] uppercase font-bold">Total Voters</span>
+                                                    <p className="text-2xl font-bold font-mono tracking-tighter text-[var(--text-primary)]">{details?.results2021.electors.toLocaleString() || "N/A"}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -438,21 +468,21 @@ export function Arena() {
                                     {/* Past Results Column */}
                                     <div className="space-y-10">
                                         <div className="space-y-6">
-                                            <h4 className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.4em] font-extrabold">Historical Data</h4>
-                                            <div className="glass p-8 rounded-[40px] border border-black/10 relative overflow-hidden bg-black/5">
-                                                <div className="absolute -top-4 -right-4 p-8 opacity-[0.03]">
+                                            <h4 className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-[0.4em] font-extrabold">Historical Data</h4>
+                                            <div className="glass p-8 rounded-[40px] border border-[var(--glass-border)] relative overflow-hidden bg-[var(--glass-bg)]">
+                                                <div className="absolute -top-4 -right-4 p-8 opacity-[0.03] text-[var(--text-primary)]">
                                                     <Trophy className="w-32 h-32" />
                                                 </div>
                                                 <div className="space-y-8 relative z-10">
                                                     <div>
-                                                        <span className="text-[9px] font-mono text-emerald-700 uppercase tracking-widest block mb-2 font-extrabold italic">2021 Winner</span>
-                                                        <h5 className="text-2xl font-bold tracking-tight text-slate-950">{details?.results2021.winner.name}</h5>
-                                                        <span className="text-[10px] font-mono text-emerald-700 uppercase font-extrabold mt-2 inline-block px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">{details?.results2021.winner.front}</span>
+                                                        <span className="text-[9px] font-mono text-emerald-800 uppercase tracking-widest block mb-2 font-extrabold italic">2021 Winner</span>
+                                                        <h5 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">{details?.results2021.winner.name}</h5>
+                                                        <span className="text-[10px] font-mono text-emerald-700 uppercase font-extrabold mt-2 inline-block px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/30">{details?.results2021.winner.front}</span>
                                                     </div>
-                                                    <div className="pt-8 border-t border-black/10 flex justify-between items-end">
+                                                    <div className="pt-8 border-t border-[var(--glass-border)] flex justify-between items-end">
                                                        <div>
-                                                          <span className="text-[9px] font-mono text-slate-600 uppercase tracking-widest block mb-1 font-bold">Runner Up</span>
-                                                          <h5 className="text-sm font-bold text-slate-800">{details?.results2021.runnerUp.name}</h5>
+                                                          <span className="text-[9px] font-mono text-[var(--text-secondary)] uppercase tracking-widest block mb-1 font-bold">Runner Up</span>
+                                                          <h5 className="text-sm font-bold text-[var(--text-primary)]">{details?.results2021.runnerUp.name}</h5>
                                                        </div>
                                                     </div>
                                                 </div>
@@ -489,8 +519,8 @@ export function Arena() {
                                                                 </div>
                                                             </div>
                                                                 <div className="text-right">
-                                                                    <p className="text-xs font-mono text-emerald-700 font-extrabold">{user.predictionCount || 0}</p>
-                                                                    <span className="text-[8px] font-mono text-slate-600 uppercase text-center block font-bold">Signals</span>
+                                                                    <p className="text-xs font-mono text-emerald-500 font-extrabold">{user.predictionCount || 0}</p>
+                                                                    <span className="text-[8px] font-mono text-[var(--text-secondary)] uppercase text-center block font-bold">Signals</span>
                                                                 </div>
                                                         </div>
                                                     ))
@@ -504,7 +534,10 @@ export function Arena() {
                                     <div className="space-y-12">
                                         <div className="space-y-8">
                                             <div className="flex items-center justify-between">
-                                                <h4 className="text-[10px] font-mono text-emerald-700 uppercase tracking-[0.4em] font-extrabold">Choose Your Candidate</h4>
+                                                <h4 className={cn(
+                                                    "text-[10px] font-mono uppercase tracking-[0.4em] font-extrabold",
+                                                    isDark ? "text-emerald-400" : "text-emerald-700"
+                                                )}>Choose Your Candidate</h4>
                                                 <button 
                                                     onClick={() => setPredictions(prev => {
                                                         const next = { ...prev };
@@ -512,7 +545,7 @@ export function Arena() {
                                                         return next;
                                                     })}
                                                     disabled={isLocked}
-                                                    className="flex items-center gap-2 text-[10px] font-mono text-slate-700 hover:text-red-700 transition-colors uppercase disabled:opacity-0 active:scale-95 font-bold"
+                                                    className="flex items-center gap-2 text-[10px] font-mono text-[var(--text-secondary)] hover:text-red-500 transition-colors uppercase disabled:opacity-0 active:scale-95 font-bold"
                                                 >
                                                     <RotateCcw className="w-3.5 h-3.5" />
                                                     Reset
@@ -526,16 +559,19 @@ export function Arena() {
                                                         onClick={() => !isLocked && handlePredict(candidate.id, candidate.name)}
                                                         disabled={isLocked}
                                                         className={cn(
-                                                            "p-4 sm:p-5 rounded-[24px] border transition-all duration-500 text-left relative overflow-hidden group flex flex-col gap-4",
+                                                            "p-4 sm:p-5 rounded-[24px] border transition-all duration-500 text-left relative overflow-hidden group flex flex-col gap-4 shadow-sm",
                                                             predictions[selectedId]?.predictedParty === candidate.id && predictions[selectedId]?.predictedCandidate === candidate.name
-                                                                ? "bg-black/10 border-emerald-500/50 shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
-                                                                : "bg-black/5 border-black/10 hover:border-black/20",
+                                                                ? "bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
+                                                                : "bg-[var(--glass-bg)] border-[var(--glass-border)] hover:border-emerald-500/30",
                                                             isLocked && "opacity-80 cursor-not-allowed"
                                                         )}
                                                     >
-                                                        <div className="absolute top-0 left-0 w-1.5 h-full transition-transform duration-500 bg-black/10 group-hover:bg-emerald-500/50" />
+                                                        <div className="absolute top-0 left-0 w-1.5 h-full transition-transform duration-500 bg-[var(--glass-border)] group-hover:bg-emerald-500/50" />
                                                         <div className="flex items-center gap-3 w-full">
-                                                            <div className="w-12 h-12 rounded-xl bg-black/5 border border-black/10 flex items-center justify-center p-2 shrink-0 overflow-hidden bg-white">
+                                                            <div className={cn(
+                                                              "w-12 h-12 rounded-xl border flex items-center justify-center p-2 shrink-0 overflow-hidden",
+                                                              isDark ? "bg-white/10 border-white/10" : "bg-white border-black/10"
+                                                            )}>
                                                                 {candidate.symbol ? (
                                                                     <img src={`/symbols/${candidate.symbol}`} alt={candidate.id} className="w-full h-full object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement?.classList.add('fallback-icon'); }} />
                                                                 ) : (
@@ -543,8 +579,8 @@ export function Arena() {
                                                                 )}
                                                             </div>
                                                             <div className="flex-1 min-w-0 pb-1">
-                                                                <span className="text-[9px] font-mono text-emerald-700 uppercase tracking-widest block mb-1 font-extrabold">{candidate.front || "IND"} <span className="text-slate-500 px-1 font-bold">•</span> {candidate.id}</span>
-                                                                <h5 className="text-sm font-bold tracking-tight leading-snug text-slate-900">{candidate.name}</h5>
+                                                                <span className="text-[9px] font-mono text-emerald-700 uppercase tracking-widest block mb-1 font-extrabold">{candidate.front || "IND"} <span className="text-[var(--text-secondary)] px-1 font-bold">•</span> {candidate.id}</span>
+                                                                <h5 className="text-sm font-bold tracking-tight leading-snug text-[var(--text-primary)]">{candidate.name}</h5>
                                                             </div>
                                                         </div>
                                                         {predictions[selectedId]?.predictedParty === candidate.id && predictions[selectedId]?.predictedCandidate === candidate.name && (
@@ -562,12 +598,18 @@ export function Arena() {
 
                                         <div className="space-y-8">
                                             <div className="flex items-center justify-between">
-                                                <h4 className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.4em] font-extrabold">Your Confidence</h4>
+                                                <h4 className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-[0.4em] font-extrabold">Your Confidence</h4>
                                                 <div className="flex items-end gap-3">
-                                                  <span className="text-[10px] font-mono text-emerald-700 uppercase font-extrabold mb-1">
+                                                  <span className={cn(
+                                                    "text-[10px] font-mono uppercase font-extrabold mb-1",
+                                                    isDark ? "text-emerald-500" : "text-emerald-700"
+                                                  )}>
                                                     { (predictions[selectedId]?.confidence || 50) < 40 ? "LOW" : (predictions[selectedId]?.confidence || 50) < 80 ? "MEDIUM" : "HIGH" }
                                                   </span>
-                                                  <span className="text-3xl sm:text-4xl font-bold text-emerald-700 font-mono tracking-tighter italic">{predictions[selectedId]?.confidence || 50}%</span>
+                                                  <span className={cn(
+                                                    "text-3xl sm:text-4xl font-bold font-mono tracking-tighter italic",
+                                                    isDark ? "text-emerald-500" : "text-emerald-700"
+                                                  )}>{predictions[selectedId]?.confidence || 50}%</span>
                                                 </div>
                                             </div>
                                             <div className="relative group">
@@ -579,10 +621,13 @@ export function Arena() {
                                                     value={predictions[selectedId]?.confidence || 50}
                                                     onChange={(e) => !isLocked && handleConfidence(parseInt(e.target.value))}
                                                     disabled={isLocked}
-                                                    className="w-full h-3 bg-black/20 rounded-full appearance-none cursor-pointer accent-emerald-600 disabled:opacity-20 transition-all font-bold"
+                                                    className={cn(
+                                                        "w-full h-3 rounded-full appearance-none cursor-pointer accent-emerald-500 disabled:opacity-20 transition-all font-bold",
+                                                        isDark ? "bg-white/10" : "bg-black/10"
+                                                    )}
                                                 />
                                             </div>
-                                            <div className="flex justify-between text-[8px] font-mono text-slate-600 uppercase tracking-[0.4em] pt-1 font-bold">
+                                            <div className="flex justify-between text-[8px] font-mono text-[var(--text-secondary)] uppercase tracking-[0.4em] pt-1 font-bold">
                                                 <span>Minimum Core</span>
                                                 <span className="hidden sm:inline">Swarm Average</span>
                                                 <span>Total Convergence</span>

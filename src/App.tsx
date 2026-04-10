@@ -52,6 +52,7 @@ export default function App() {
               <Route path="/profile" element={user ? <Profile /> : <Navigate to="/signin" />} />
               <Route path="/admin" element={user ? <Admin /> : <Navigate to="/admin-login" />} />
               <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/adminlogin" element={<Navigate to="/admin-login" replace />} />
             </Routes>
           </Router>
         </ErrorBoundary>
