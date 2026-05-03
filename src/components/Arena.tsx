@@ -33,6 +33,7 @@ export function Arena() {
   const [stateSearch, setStateSearch] = useState("");
   const [showDevPopup, setShowDevPopup] = useState(false);
   const [selectedStateForPopup, setSelectedStateForPopup] = useState("");
+  const [showVotingEndedPopup, setShowVotingEndedPopup] = useState(false);
   
   const contentRef = useRef<HTMLDivElement>(null);
   const detailsScrollRef = useRef<HTMLDivElement>(null);
@@ -153,6 +154,8 @@ export function Arena() {
   };
 
   const handleSave = async () => {
+    setShowVotingEndedPopup(true);
+    return;
     if (!selectedId || !auth.currentUser) return;
     const prediction = predictions[selectedId];
     if (!prediction?.predictedParty) return;
@@ -353,6 +356,13 @@ export function Arena() {
           onClose={() => setShowDevPopup(false)}
           title="Under Development"
           message={`Voting prediction for ${selectedStateForPopup} is coming soon. Currently, you can predict results for the upcoming Kerala Elections.`}
+        />
+
+        <UnderDevelopmentPopup 
+          isOpen={showVotingEndedPopup}
+          onClose={() => setShowVotingEndedPopup(false)}
+          title="Voting Period Over"
+          message="The time for voting has been ended. Your predictions can no longer be modified or submitted."
         />
 
         {/* Full-Screen Cinematic Overlay */}
