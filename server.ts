@@ -360,6 +360,24 @@ app.get("/api/admin/export", authenticateToken, requireAdmin, async (req: any, r
   }
 });
 
+app.get("/api/results/actual", (req, res) => {
+  const results: any[] = [];
+  const csvPath = path.join(process.cwd(), 'kerala_election_results_2026.csv');
+  
+  if (!fs.existsSync(csvPath)) {
+    return res.json([]);
+  }
+
+  fs.createReadStream(csvPath)
+    .pipe(csvParser())
+    .on('data', (row) => {
+      results.push(row);
+    })
+    .on('end', () => {
+      res.json(results);
+    });
+});
+
 // --- VITE MIDDLEWARE ---
 // In production on Vercel, static files are handled by vercel.json rewrites.
 const distPath = path.join(process.cwd(), "dist");

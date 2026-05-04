@@ -14,6 +14,7 @@ const candidateData = candidateDataObj as Record<string, any[]>;
 export function Voting() {
   const [loading, setLoading] = useState(true);
   const [predictions, setPredictions] = useState<Record<string, any>>({});
+  const [actualResults, setActualResults] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [stats, setStats] = useState({
     totalPredictions: 0,
@@ -45,6 +46,11 @@ export function Voting() {
           totalPredictions: globalData.totalSignals || 0,
           completionRate: Math.round((userCount / 140) * 100),
         });
+
+        // Fetch actual results
+        const actualRes = await fetch('/api/results/actual');
+        const actualData = await actualRes.json();
+        setActualResults(actualData);
       } catch (error) {
         console.error("Error fetching voting data:", error);
       } finally {
@@ -73,8 +79,37 @@ export function Voting() {
       symbol: candidate?.symbol ? `/symbols/${candidate.symbol}` : null,
       color: candidate ? '#10b981' : '#a855f7' // Emerald if matched, purple if default
     };
+
+    // Compare with actual results
+    const actual = actualResults.find(r => r.Constituency.toUpperCase() === constituency?.name?.toUpperCase());
+    let isCorrect = false;
+    let actualWinner = null;
+
+    if (actual) {
+      const partyMapping: Record<string, string> = {
+        "Indian National Congress": "UDF",
+        "Communist Party of India (Marxist)": "LDF",
+        "Communist Party of India": "LDF",
+        "Bharatiya Janata Party": "NDA",
+        "Indian Union Muslim League": "UDF",
+        "Kerala Congress": "UDF",
+        "Kerala Congress (Jacob)": "UDF",
+        "Revolutionary Socialist Party": "UDF",
+        "Revolutionary Marxist Party of India": "UDF",
+        "Communist Marxist Party Kerala State Committee": "UDF",
+        "Rashtriya Janata Dal": "LDF",
+        "Independent": "OTH"
+      };
+      const actualPartyId = partyMapping[actual.Party] || "OTH";
+      isCorrect = data.predictedParty === actualPartyId;
+      actualWinner = {
+        name: actual.Winner,
+        party: actual.Party,
+        partyId: actualPartyId
+      };
+    }
     
-    return { ...data, constituency, party };
+    return { ...data, constituency, party, isCorrect, actualWinner };
   }).filter(p => 
     p.constituency?.name.toLowerCase().includes(search.toLowerCase()) ||
     (p.party?.id && p.party.id.toLowerCase().includes(search.toLowerCase())) ||
@@ -138,7 +173,14 @@ export function Voting() {
               {predictedList.map((item) => (
                 <div 
                   key={item.constituencyId}
-                  className="glass p-5 rounded-[28px] border border-black/10 hover:border-emerald-500/30 transition-all group bg-white shadow-lg"
+                  className={cn(
+                    "glass p-5 rounded-[28px] border transition-all group shadow-lg",
+                    item.actualWinner ? (
+                      item.isCorrect 
+                        ? "bg-emerald-50 border-emerald-500/30 hover:border-emerald-500" 
+                        : "bg-red-50 border-red-500/30 hover:border-red-500"
+                    ) : "bg-white border-black/10 hover:border-emerald-500/30"
+                  )}
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="space-y-0.5">
@@ -158,12 +200,46 @@ export function Voting() {
                     <div className="space-y-2 mb-3">
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block">Candidate Predicted</span>
+                        {item.actualWinner && (
+                          <span className={cn(
+                            "text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-md",
+                            item.isCorrect ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
+                          )}>
+                            {item.isCorrect ? "CORRECT" : "WRONG"}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-emerald-600 uppercase px-2 py-1 bg-emerald-500/10 rounded-lg border border-emerald-500/20">{item.party?.id}</span>
+                        <span className={cn(
+                          "text-xs font-bold uppercase px-2 py-1 rounded-lg border",
+                          item.party?.id === "LDF" ? "text-red-600 bg-red-500/10 border-red-500/20" :
+                          item.party?.id === "UDF" ? "text-blue-600 bg-blue-500/10 border-blue-500/20" :
+                          item.party?.id === "NDA" ? "text-orange-600 bg-orange-500/10 border-orange-500/20" :
+                          "text-slate-600 bg-slate-500/10 border-slate-500/20"
+                        )}>
+                          {item.party?.id}
+                        </span>
                         <span className="font-bold tracking-tight text-slate-700 truncate">{item.party?.name !== item.party?.id ? item.party?.name : ""}</span>
                       </div>
                     </div>
+
+                    {item.actualWinner && !item.isCorrect && (
+                      <div className="space-y-2 mb-3 pt-2 border-t border-red-100">
+                        <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block">Actual Winner</span>
+                        <div className="flex items-center gap-2">
+                          <span className={cn(
+                            "text-xs font-bold uppercase px-2 py-1 rounded-lg border",
+                            item.actualWinner.partyId === "LDF" ? "text-red-600 bg-red-500/10 border-red-500/20" :
+                            item.actualWinner.partyId === "UDF" ? "text-blue-600 bg-blue-500/10 border-blue-500/20" :
+                            item.actualWinner.partyId === "NDA" ? "text-orange-600 bg-orange-500/10 border-orange-500/20" :
+                            "text-slate-600 bg-slate-500/10 border-slate-500/20"
+                          )}>
+                            {item.actualWinner.partyId}
+                          </span>
+                          <span className="font-bold tracking-tight text-red-700 truncate">{item.actualWinner.name}</span>
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
