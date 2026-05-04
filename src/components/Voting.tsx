@@ -67,6 +67,21 @@ export function Voting() {
     const constId = data.constituencyId || id.split('_')[1] || id;
     const constituency = CONSTITUENCIES.find(c => c.id === constId);
     
+    // Helper to normalize names for comparison and display
+    const normalizeName = (name: string) => {
+      if (!name) return "";
+      return name.toUpperCase()
+        .replace(/^(ADV\.|DR\.|PROF\.|SRI\.|SMT\.|SHRIL\.)\s*/i, "")
+        .replace(/\./g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    };
+
+    // Helper for title casing
+    const toTitleCase = (str: string) => {
+      return str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    };
+
     // Find candidate details using the constituency candidates list
     const constCandidates = candidateData[constId] || [];
     const candidate = constCandidates.find(c => c.id === data.predictedParty && c.name === data.predictedCandidate)
@@ -100,12 +115,23 @@ export function Voting() {
         "Rashtriya Janata Dal": "LDF",
         "Independent": "OTH"
       };
-      const actualPartyId = partyMapping[actual.Party] || "OTH";
-      isCorrect = data.predictedParty === actualPartyId;
+      
+      const actualPartyAlliance = partyMapping[actual.Party] || "OTH";
+      
+      // Get alliance of the predicted party from candidates.json if possible
+      const predictedCandidateInfo = constCandidates.find(c => c.id === data.predictedParty);
+      const predictedAlliance = predictedCandidateInfo?.front || data.predictedParty;
+
+      // isCorrect if alliances match OR if names match closely
+      const nameMatch = normalizeName(data.predictedCandidate) === normalizeName(actual.Winner);
+      const allianceMatch = predictedAlliance === actualPartyAlliance;
+      
+      isCorrect = allianceMatch || nameMatch;
+
       actualWinner = {
-        name: actual.Winner,
+        name: toTitleCase(normalizeName(actual.Winner)),
         party: actual.Party,
-        partyId: actualPartyId
+        partyId: actualPartyAlliance
       };
     }
     
