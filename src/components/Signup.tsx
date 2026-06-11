@@ -39,7 +39,7 @@ export function Signup() {
       }
 
       setStep(2);
-      setTimeout(() => navigate("/arena"), 2000);
+      setTimeout(() => navigate("/polls"), 2000);
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to register with Google.");
@@ -114,7 +114,7 @@ export function Signup() {
               </div>
               <div className="text-center space-y-2">
                 <p className="text-emerald-500 font-mono text-xs uppercase tracking-widest font-bold">Protocol Success</p>
-                <p className="text-[var(--text-secondary)] text-sm font-medium">Redirecting to Neural Arena...</p>
+                <p className="text-[var(--text-secondary)] text-sm font-medium">Redirecting to Dashboard...</p>
               </div>
             </motion.div>
           )}

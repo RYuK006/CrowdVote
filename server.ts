@@ -62,53 +62,32 @@ try {
 
 const CURRENT_PHASE: "pre_election" | "campaign" | "final" | "exit" = "pre_election";
 
-// In-Memory Data Structures
-let CONSTITUENCIES: any[] = [];
-let CONSTITUENCY_DETAILS: Record<string, any> = {};
-
-function initData() {
-  const results: any[] = [];
-  const csvPath = path.join(process.cwd(), 'server', 'data', 'master_data.csv');
-  
-  if (!fs.existsSync(csvPath)) {
-    console.error("❌ Master data CSV not found at:", csvPath);
+async function initData() {
+  if (!db) {
+    console.log("Database not initialized. Skipping poll sync.");
     return;
   }
-
-  fs.createReadStream(csvPath)
-    .pipe(csvParser())
-    .on('data', (row) => {
-      const id = String(row['Constituency_ID']);
-      const name = row['Constituency_Name'];
-      const state = row['State'];
-      const district = row['District'];
-      
-      CONSTITUENCIES.push({ id, name, state, district });
-      
-      const othersText = row['2026_OTH_Candidates'];
-      const othersList = othersText && othersText.trim() !== "" ? othersText.split(' | ') : [];
-
-      CONSTITUENCY_DETAILS[id] = {
-        population: "N/A",
-        demographics: { male: "N/A", female: "N/A", others: "N/A" },
-        results2021: {
-          winner: { name: row['2021_Winner_Name'], front: row['2021_Winner_Front'], votes: row['2021_Winner_TotalVotes'] },
-          runnerUp: { name: row['2021_RunnerUp_Name'], front: "N/A", votes: row['2021_RunnerUp_TotalVotes'] },
-          margin: row['2021_Margin'],
-          turnout: row['2021_Turnout'],
-          electors: row['2021_Electors']
-        },
-        candidates2026: {
-          ldf: { name: row['2026_LDF_Candidate'], party: row['2026_LDF_Party'] },
-          udf: { name: row['2026_UDF_Candidate'], party: row['2026_UDF_Party'] },
-          nda: { name: row['2026_NDA_Candidate'], party: row['2026_NDA_Party'] },
-          others: othersList
-        }
-      };
-    })
-    .on('end', () => {
-      console.log(`✅ Loaded ${CONSTITUENCIES.length} constituencies into memory.`);
-    });
+  try {
+    const pollsSnap = await db.collection('world_cup_polls').limit(1).get();
+    if (pollsSnap.empty) {
+      console.log("No polls found in Firestore. Seeding from polls.json...");
+      const pollsPath = path.join(process.cwd(), 'server', 'data', 'polls.json');
+      if (fs.existsSync(pollsPath)) {
+        const data = JSON.parse(fs.readFileSync(pollsPath, 'utf8'));
+        const batch = db.batch();
+        data.forEach((p: any) => {
+          const docRef = db.collection('world_cup_polls').doc(p.id);
+          batch.set(docRef, p);
+        });
+        await batch.commit();
+        console.log(`✅ Seeded ${data.length} polls into Firestore.`);
+      }
+    } else {
+      console.log("✅ Polls collection already exists in Firestore.");
+    }
+  } catch (err) {
+    console.error("❌ Failed to sync polls to Firestore:", err);
+  }
 }
 
 const app = express();
@@ -149,12 +128,47 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-app.get("/api/constituencies", (req, res) => {
-  res.json(CONSTITUENCIES);
+app.get("/api/polls", async (req, res) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const snapshot = await db.collection("world_cup_polls").get();
+    const polls = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.json(polls);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.get("/api/constituencies/:id", (req, res) => {
-  res.json(CONSTITUENCY_DETAILS[req.params.id] || null);
+app.get("/api/polls/:id", async (req, res) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const docSnap = await db.collection("world_cup_polls").doc(req.params.id).get();
+    if (docSnap.exists) {
+      res.json({ id: docSnap.id, ...docSnap.data() });
+    } else {
+      res.status(404).json({ error: "Poll not found" });
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+app.post("/api/admin/polls", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const newPoll = req.body;
+    if (!newPoll.id || !newPoll.title || !newPoll.options) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    await db.collection("world_cup_polls").doc(newPoll.id).set({
+      ...newPoll,
+      createdAt: new Date().toISOString()
+    });
+    res.json({ success: true, message: "Poll created successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.get("/api/user/check", authenticateToken, async (req: any, res: any) => {
@@ -187,86 +201,83 @@ app.post("/api/user/register", authenticateToken, async (req: any, res: any) => 
   }
 });
 
-app.post("/api/predict", authenticateToken, async (req: any, res: any) => {
+app.post("/api/vote", authenticateToken, async (req: any, res: any) => {
   if (!db) return res.status(500).json({ error: "DB not initialized" });
-  const { constituencyId, predictedParty, predictedCandidate, confidence } = req.body;
+  const { pollId, selectedOption, confidence } = req.body;
   const uid = req.user.uid;
 
   try {
     const userRef = db.collection("users").doc(uid);
-    const docId = `${CURRENT_PHASE}_${constituencyId}`;
-    const predictionRef = userRef.collection("predictions").doc(docId);
+    const docId = `vote_${pollId}`;
+    const voteRef = userRef.collection("predictions").doc(docId);
 
     await db.runTransaction(async (transaction) => {
       const userDoc = await transaction.get(userRef);
-      const predictionDoc = await transaction.get(predictionRef);
-      if (predictionDoc.exists) throw new Error("ALREADY_LOCKED");
+      const voteDoc = await transaction.get(voteRef);
+      if (voteDoc.exists) throw new Error("ALREADY_LOCKED");
+
+      const pollRef = db.collection("world_cup_polls").doc(pollId);
+      const pollDoc = await transaction.get(pollRef);
+      if (pollDoc.exists) {
+        const pollData = pollDoc.data();
+        if (pollData?.lockAt && new Date() > new Date(pollData.lockAt)) {
+          throw new Error("POLL_EXPIRED");
+        }
+      }
 
       if (!userDoc.exists) {
         transaction.set(userRef, { uid, displayName: "Neural Predictor", createdAt: new Date().toISOString() });
       }
 
-      const predictionData: any = {
-        constituencyId, predictedParty, confidence,
-        timestamp: new Date().toISOString(), phase: CURRENT_PHASE
+      const voteData: any = {
+        pollId, selectedOption, confidence,
+        timestamp: new Date().toISOString()
       };
-      if (predictedCandidate) predictionData.predictedCandidate = predictedCandidate;
-      transaction.set(predictionRef, predictionData);
+      transaction.set(voteRef, voteData);
 
-      const globalPredRef = db.collection("global_predictions").doc();
-      const globalPredictionData: any = {
-        constituencyId, predictedParty, confidence,
+      const globalVoteRef = db.collection("global_votes").doc();
+      const globalVoteData: any = {
+        pollId, selectedOption, confidence,
         userId: uid, timestamp: new Date().toISOString()
       };
-      if (predictedCandidate) globalPredictionData.predictedCandidate = predictedCandidate;
-      transaction.set(globalPredRef, globalPredictionData);
+      transaction.set(globalVoteRef, globalVoteData);
     });
-    res.json({ success: true, message: "Prediction synced to neural mesh." });
+    res.json({ success: true, message: "Vote synced to neural mesh." });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.get("/api/user/predictions", authenticateToken, async (req: any, res: any) => {
+app.get("/api/user/votes", authenticateToken, async (req: any, res: any) => {
   if (!db) return res.json({});
   const uid = req.user.uid;
   try {
     const snap = await db.collection("users").doc(uid).collection("predictions").get();
-    const preds: Record<string, any> = {};
+    const votes: Record<string, any> = {};
     snap.forEach(doc => {
       const d = doc.data();
-      preds[d.constituencyId] = d;
+      votes[d.pollId] = d;
     });
-    res.json(preds);
+    res.json(votes);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 });
 
 app.get("/api/analytics", async (req: any, res: any) => {
-  if (!db) return res.json({ partyShare: [], districtStats: [] });
+  if (!db) return res.json({ pollVotes: {}, totalSignals: 0 });
   try {
-    const predsSnap = await db.collectionGroup("predictions").get();
-    const partyVotes: Record<string, number> = {};
-    const districtMap: Record<string, Record<string, number>> = {};
+    const votesSnap = await db.collectionGroup("votes").get();
+    const pollVotes: Record<string, Record<string, number>> = {};
     
-    predsSnap.docs.forEach(doc => {
+    votesSnap.docs.forEach(doc => {
       const data = doc.data();
-      const { predictedParty, constituencyId } = data;
-      partyVotes[predictedParty] = (partyVotes[predictedParty] || 0) + 1;
-      const constituency = CONSTITUENCIES.find(c => c.id === constituencyId);
-      if (constituency) {
-        if (!districtMap[constituency.district]) districtMap[constituency.district] = {};
-        districtMap[constituency.district][predictedParty] = (districtMap[constituency.district][predictedParty] || 0) + 1;
-      }
+      const { selectedOption, pollId } = data;
+      if (!pollVotes[pollId]) pollVotes[pollId] = {};
+      pollVotes[pollId][selectedOption] = (pollVotes[pollId][selectedOption] || 0) + 1;
     });
     
-    const districtList = Object.entries(districtMap).map(([name, counts]) => {
-      const winner = Object.entries(counts).reduce((a, b) => b[1] > a[1] ? b : a, ["", 0]);
-      return { name, winner: winner[0], count: winner[1] };
-    });
-    
-    res.json({ partyShare: partyVotes, districtStats: districtList.sort((a, b) => b.count - a.count), totalSignals: predsSnap.size });
+    res.json({ pollVotes, totalSignals: votesSnap.size });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

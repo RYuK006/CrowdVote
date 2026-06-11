@@ -8,16 +8,31 @@ export interface User {
   createdAt: string;
 }
 
-export interface Prediction {
+export interface PollOption {
+  id: string;
+  name: string;
+  text?: string;
+}
+
+export interface Poll {
+  id: string;
+  title: string;
+  description: string;
+  status: "active" | "closed";
+  category?: string;
+  options: PollOption[];
+  lockAt?: string;
+  matchTime?: string;
+}
+
+export interface Vote {
   userId: string;
-  constituencyId: string;
-  predictedParty: string;
+  pollId: string;
+  selectedOption: string;
   confidence: number;
-  margin: number;
   timestamp: string;
-  phase: string;
 }
 
 export interface GlobalConfig {
-  phase: "Pre-Campaign" | "Campaign" | "Polling" | "Counting";
+  phase: string;
 }

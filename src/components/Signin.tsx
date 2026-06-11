@@ -30,7 +30,7 @@ export function Signin() {
 
       if (checkData.exists) {
         setStep(2);
-        setTimeout(() => navigate("/arena"), 1500);
+        setTimeout(() => navigate("/polls"), 1500);
       } else {
         // User doesn't exist, redirect to signup
         setError("Account not found. Redirecting to registration...");
@@ -73,7 +73,7 @@ export function Signin() {
             {step === 1 ? "Continue Sequence" : "Access Granted"}
           </h2>
           <p className="text-sm text-[var(--text-secondary)] font-medium">
-            {step === 1 ? "Secure entry point for verified election archivists." : "Synchronizing with the swarm..."}
+            {step === 1 ? "Secure entry point for verified football analysts." : "Synchronizing with the swarm..."}
           </p>
         </div>
 
@@ -111,7 +111,7 @@ export function Signin() {
               </div>
               <div className="text-center space-y-2">
                 <p className="text-emerald-500 font-mono text-xs uppercase tracking-widest font-bold">Protocol Success</p>
-                <p className="text-[var(--text-secondary)] text-sm font-medium">Redirecting to Neural Arena...</p>
+                <p className="text-[var(--text-secondary)] text-sm font-medium">Redirecting to Dashboard...</p>
               </div>
             </motion.div>
           )}

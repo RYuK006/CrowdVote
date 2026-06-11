@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Shield, Settings, Users, Database, AlertTriangle, CheckCircle, Clock, RefreshCw } from "lucide-react";
+import { Shield, Settings, Users, Database, AlertTriangle, CheckCircle, Clock, RefreshCw, PlusCircle, X } from "lucide-react";
 import { db, auth } from "../firebase";
 import { doc, updateDoc, collection, onSnapshot, setDoc } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
@@ -16,7 +16,7 @@ export function Admin() {
   const searchParams = new URLSearchParams(location.search);
   const tab = searchParams.get("tab") || "overview";
 
-  const [phase, setPhase] = useState("Pre-Election");
+  const [phase, setPhase] = useState("Pre-Tournament");
   const [stats, setStats] = useState({ users: 0, predictions: 0 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -27,6 +27,13 @@ export function Admin() {
   const [adminNodes, setAdminNodes] = useState<any[]>([]);
   const [exporting, setExporting] = useState(false);
   const [phaseExpiries, setPhaseExpiries] = useState<Record<string, string>>({});
+
+  // Host Poll States
+  const [newPollTitle, setNewPollTitle] = useState("");
+  const [newPollDesc, setNewPollDesc] = useState("");
+  const [newPollCategory, setNewPollCategory] = useState("Technology");
+  const [newPollOptions, setNewPollOptions] = useState([{id: "1", text: ""}]);
+  const [creatingPoll, setCreatingPoll] = useState(false);
 
   useEffect(() => {
     // 1. Listen to public global config (available to all authenticated users)
@@ -142,6 +149,41 @@ export function Admin() {
     }
   };
 
+  const handleCreatePoll = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreatingPoll(true);
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const id = newPollTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const payload = {
+        id,
+        title: newPollTitle,
+        description: newPollDesc,
+        category: newPollCategory,
+        status: "active",
+        options: newPollOptions.filter(o => o.text.trim() !== "").map(o => ({ id: o.id, name: o.text.trim() }))
+      };
+
+      const res = await fetch("/api/admin/polls", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error("Failed to create poll");
+      alert("Poll Created Successfully!");
+      setNewPollTitle("");
+      setNewPollDesc("");
+      setNewPollOptions([{id: "1", text: ""}]);
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    } finally {
+      setCreatingPoll(false);
+    }
+  };
+
   if (loading || isAdmin === null) {
     return (
       <Layout user={auth.currentUser}>
@@ -236,11 +278,11 @@ export function Admin() {
               <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] space-y-10">
                 <div className="flex items-center gap-3">
                   <Clock className="text-red-500 w-5 h-5" />
-                  <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Election Lifecycle Phase</h3>
+                  <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Tournament Phase</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {["Pre-Election", "Campaign", "After Polling"].map((p) => (
+                  {["Pre-Tournament", "Group Stages", "Knockouts"].map((p) => (
                     <div
                       key={p}
                       className={cn(
@@ -307,7 +349,7 @@ export function Admin() {
                   <thead>
                     <tr className="border-b border-[var(--glass-border)]">
                       <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Agent ID</th>
-                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Constituency</th>
+                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Poll ID</th>
                       <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Prediction</th>
                       <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Confidence</th>
                       <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Timestamp</th>
@@ -318,7 +360,7 @@ export function Admin() {
                       recentPredictions.map((pred) => (
                         <tr key={pred.id} className="border-b border-[var(--glass-border)] hover:bg-black/5 transition-colors group">
                           <td className="py-4 text-xs font-mono text-[var(--text-primary)] font-bold group-hover:text-red-500 transition-colors">{pred.userId?.slice(0, 8)}...</td>
-                          <td className="py-4 text-xs font-bold text-[var(--text-primary)]">{pred.constituencyId}</td>
+                          <td className="py-4 text-xs font-bold text-[var(--text-primary)]">{pred.pollId}</td>
                           <td className="py-4">
                             <span className="px-2 py-1 rounded bg-red-500/10 text-red-600 text-[10px] font-mono uppercase font-extrabold">
                               {pred.predictedParty}
@@ -477,6 +519,100 @@ export function Admin() {
             </div>
           </div>
         </div>
+        )}
+
+        {tab === "host" && (
+          <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] max-w-3xl mx-auto bg-[var(--card-bg)] shadow-xl">
+            <div className="flex items-center gap-3 mb-8">
+              <PlusCircle className="text-red-500 w-8 h-8" />
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Host New Poll</h2>
+                <p className="text-[var(--text-secondary)] text-sm font-mono mt-1">Deploy a new node to the prediction mesh.</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleCreatePoll} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Poll Title</label>
+                <input 
+                  required
+                  value={newPollTitle}
+                  onChange={e => setNewPollTitle(e.target.value)}
+                  className="w-full bg-black/5 border border-[var(--glass-border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-red-500/50"
+                  placeholder="e.g. Group A Winner"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Category</label>
+                <select 
+                  value={newPollCategory}
+                  onChange={e => setNewPollCategory(e.target.value)}
+                  className="w-full bg-black/5 border border-[var(--glass-border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-red-500/50"
+                >
+                  <option value="Technology">Technology</option>
+                  <option value="Politics">Politics</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Economics">Economics</option>
+                  <option value="Science">Science</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Description</label>
+                <textarea 
+                  required
+                  value={newPollDesc}
+                  onChange={e => setNewPollDesc(e.target.value)}
+                  className="w-full bg-black/5 border border-[var(--glass-border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-red-500/50 min-h-[100px]"
+                  placeholder="Detailed description of the prediction event..."
+                />
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-[var(--glass-border)]">
+                <label className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Prediction Options</label>
+                {newPollOptions.map((opt, idx) => (
+                  <div key={opt.id} className="flex items-center gap-3">
+                    <input 
+                      required
+                      value={opt.text}
+                      onChange={e => {
+                        const newOpts = [...newPollOptions];
+                        newOpts[idx].text = e.target.value;
+                        setNewPollOptions(newOpts);
+                      }}
+                      className="flex-1 bg-black/5 border border-[var(--glass-border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-red-500/50"
+                      placeholder={`Option ${idx + 1}`}
+                    />
+                    {newPollOptions.length > 1 && (
+                      <button 
+                        type="button"
+                        onClick={() => setNewPollOptions(newPollOptions.filter(o => o.id !== opt.id))}
+                        className="p-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button 
+                  type="button"
+                  onClick={() => setNewPollOptions([...newPollOptions, {id: Date.now().toString(), text: ""}])}
+                  className="text-xs font-bold text-red-500 hover:text-red-400 flex items-center gap-2"
+                >
+                  <PlusCircle className="w-4 h-4" /> ADD OPTION
+                </button>
+              </div>
+
+              <button 
+                type="submit"
+                disabled={creatingPoll}
+                className="w-full py-4 mt-8 rounded-2xl bg-red-600 text-white font-bold tracking-widest uppercase hover:bg-red-500 transition-colors disabled:opacity-50 red-glow"
+              >
+                {creatingPoll ? "Deploying..." : "Deploy to Neural Mesh"}
+              </button>
+            </form>
+          </div>
         )}
 
         {tab === "system" && (

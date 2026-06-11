@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Swords, Trophy, BarChart3, User, LogOut, ShieldCheck, Menu, X, ChevronLeft, ChevronRight, ShieldAlert, Users, Database, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, Swords, Trophy, BarChart3, User, LogOut, ShieldCheck, Menu, X, ChevronLeft, ChevronRight, ShieldAlert, Users, Database, Sun, Moon, PlusCircle } from "lucide-react";
 import { cn } from "../lib/utils";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
@@ -21,8 +21,7 @@ export function Layout({ children, user }: LayoutProps) {
   const [popupData, setPopupData] = useState({ title: "", message: "" });
 
   const defaultNavItems = [
-    { label: "VOTING", icon: LayoutDashboard, path: "/voting" },
-    { label: "ARENA", icon: Swords, path: "/arena" },
+    { label: "POLLS", icon: Swords, path: "/polls" },
     { label: "ELITE", icon: Trophy, path: "/leaderboard" },
     { label: "META", icon: BarChart3, path: "/analytics" },
     { label: "VAULT", icon: ShieldCheck, path: "/profile" },
@@ -32,6 +31,7 @@ export function Layout({ children, user }: LayoutProps) {
     { label: "COMMAND", icon: ShieldAlert, path: "/admin" },
     { label: "NODES", icon: Users, path: "/admin?tab=nodes" },
     { label: "STREAM", icon: Database, path: "/admin?tab=data" },
+    { label: "HOST POLLS", icon: PlusCircle, path: "/admin?tab=host" },
     { label: "SYSTEM", icon: LayoutDashboard, path: "/admin?tab=system" },
   ];
 

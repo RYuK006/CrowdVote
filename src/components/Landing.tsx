@@ -36,17 +36,17 @@ export function Landing() {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-500 tracking-[0.2em] uppercase font-bold">
               <ShieldCheck className="w-3 h-3" />
-              India's Voting Prediction Platform
+              The Global Polling & Prediction Platform
             </div>
             <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] text-[var(--text-primary)]">
-              The <span className="text-emerald-500 italic">Pulse</span> of Indian Elections.
+              The <span className="text-emerald-500 italic">Pulse</span> of the Crowd.
             </h1>
             <p className="text-lg text-[var(--text-secondary)] leading-relaxed max-w-lg font-medium">
-              Predicting election results across India using the collective wisdom of the people. Fast, accurate, and open for all.
+              Predicting matches, golden boot winners, and World Cup trends using the collective wisdom of the people. Fast, accurate, and open for all.
             </p>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:gap-6 gap-4">
               <Link
-                to="/signup"
+                to="/polls"
                 className="group flex justify-center items-center gap-3 px-8 py-4 rounded-2xl bg-emerald-500 text-black font-bold text-sm emerald-glow hover:bg-emerald-400 transition-all w-full sm:w-auto"
               >
                 START PREDICTING
@@ -65,8 +65,8 @@ export function Landing() {
                 <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Votes Predicted</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-3xl font-bold tracking-tighter text-[var(--text-primary)]">140</span>
-                <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Areas Covered</span>
+                <span className="text-3xl font-bold tracking-tighter text-[var(--text-primary)]">140+</span>
+                <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Active Polls</span>
               </div>
             </div>
           </motion.div>
@@ -80,22 +80,18 @@ export function Landing() {
             <div className="aspect-square glass rounded-[40px] p-4 sm:p-8 flex items-center justify-center emerald-glow overflow-hidden relative">
               {/* Map Graphic */}
               <div className="w-full h-full bg-emerald-500/5 rounded-3xl flex items-center justify-center border border-emerald-500/10 overflow-hidden">
-                <img 
-                  src="/kerala-map.svg" 
-                  alt="Kerala Electoral Map" 
-                  className="w-full h-full object-contain p-4 drop-shadow-[0_0_20px_rgba(16,185,129,0.3)] opacity-80 mix-blend-multiply transition-opacity duration-300 pointer-events-none"
-                />
+                <BarChart3 className="w-32 h-32 text-emerald-500/20" />
               </div>
               <div className="absolute bottom-10 left-10 p-6 glass rounded-2xl border border-emerald-500/20 backdrop-blur-xl">
                 <div className="flex flex-col gap-1">
                   <span className="text-[10px] font-mono text-emerald-500 uppercase tracking-widest font-bold">Current Trend</span>
-                  <span className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Kerala State</span>
+                  <span className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Global Consensus</span>
                   <div className="flex items-center justify-between mt-4 mb-2">
                     <span className="text-3xl font-bold text-[var(--text-primary)]">94%</span>
                     <span className="text-[10px] font-mono text-emerald-500 uppercase font-bold">Confidence</span>
                   </div>
                   <div className="text-[8px] text-[var(--text-secondary)] font-mono leading-tight font-bold">
-                    Map: <a href="https://commons.wikimedia.org/wiki/User:Kambliyil" target="_blank" className="hover:text-emerald-500">Kambliyil</a> / <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" className="hover:text-emerald-500">CC BY-SA 4.0</a>
+                    Powered by CrowdVote AI
                   </div>
                 </div>
               </div>
@@ -109,14 +105,14 @@ export function Landing() {
         <div className="flex flex-col items-center text-center mb-12 md:mb-20">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 text-[var(--text-primary)]">Community Driven <span className="text-emerald-500 italic">Predictions.</span></h2>
           <p className="text-[var(--text-secondary)] max-w-2xl font-medium">
-            We don't just count votes. We calculate election outcomes using previous election results and live data from people like you.
+            We don't just count votes. We calculate match outcomes using historical data and live predictions from analysts like you.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
           {[
-            { title: "CROWD WISDOM", icon: Swords, desc: "Accurate prediction models based on community input and historical data." },
-            { title: "HISTORICAL DATA", icon: ShieldCheck, desc: "Using verified election results from previous years ensuring better accuracy." },
+            { title: "CROWD WISDOM", icon: Swords, desc: "Accurate prediction models based on community input and trends." },
+            { title: "VERIFIED DATA", icon: ShieldCheck, desc: "Using advanced algorithms to ensure genuine polling participation." },
             { title: "LIVE UPDATES", icon: BarChart3, desc: "See how predictions change in real-time as more people cast their votes." },
           ].map((feature, i) => (
             <motion.div
@@ -141,7 +137,7 @@ export function Landing() {
           <ShieldCheck className="w-16 h-16 text-emerald-500 mx-auto mb-8" />
           <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6 text-[var(--text-primary)]">Ready to <span className="text-emerald-500 italic">Start</span> Your Prediction?</h2>
           <p className="text-[var(--text-secondary)] mb-12 text-lg font-medium">
-            Join thousands of others in predicting the future of Indian politics.
+            Join thousands of others in predicting the future.
           </p>
           <Link
             to="/signup"
@@ -159,7 +155,7 @@ export function Landing() {
             <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
               <ShieldCheck className="text-white w-5 h-5" />
             </div>
-            <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">CrowdVote <span className="text-emerald-500">India</span></span>
+            <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">CrowdVote <span className="text-emerald-500">AI</span></span>
           </div>
           <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">
             <a href="#" className="hover:text-emerald-500">Documentation</a>

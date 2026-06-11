@@ -1,0 +1,132 @@
+[
+  {
+    "id": "mex-rsa-1",
+    "title": "Match: Mexico vs South Africa - Who will win?",
+    "matchTime": "12-06-2026, 12:30 AM",
+    "lockAt": "2026-06-12T00:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "Mexico" },
+      { "id": "opt2", "text": "Draw" },
+      { "id": "opt3", "text": "South Africa" }
+    ]
+  },
+  {
+    "id": "mex-rsa-2",
+    "title": "Match: Mexico vs South Africa - Who will score first?",
+    "matchTime": "12-06-2026, 12:30 AM",
+    "lockAt": "2026-06-12T00:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "Mexico" },
+      { "id": "opt2", "text": "South Africa" },
+      { "id": "opt3", "text": "No Goals" }
+    ]
+  },
+  {
+    "id": "mex-rsa-3",
+    "title": "Match: Mexico vs South Africa - How many goals will Mexico score?",
+    "matchTime": "12-06-2026, 12:30 AM",
+    "lockAt": "2026-06-12T00:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "0" },
+      { "id": "opt2", "text": "1" },
+      { "id": "opt3", "text": "2" },
+      { "id": "opt4", "text": "3+" }
+    ]
+  },
+  {
+    "id": "mex-rsa-4",
+    "title": "Match: Mexico vs South Africa - How many goals will South Africa score?",
+    "matchTime": "12-06-2026, 12:30 AM",
+    "lockAt": "2026-06-12T00:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "0" },
+      { "id": "opt2", "text": "1" },
+      { "id": "opt3", "text": "2" },
+      { "id": "opt4", "text": "3+" }
+    ]
+  },
+  {
+    "id": "mex-rsa-5",
+    "title": "Match: Mexico vs South Africa - Who will be Player of the Match?",
+    "matchTime": "12-06-2026, 12:30 AM",
+    "lockAt": "2026-06-12T00:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "Santiago Giménez" },
+      { "id": "opt2", "text": "Raúl Jiménez" },
+      { "id": "opt3", "text": "Hirving Lozano" },
+      { "id": "opt4", "text": "Percy Tau" },
+      { "id": "opt5", "text": "Teboho Mokoena" },
+      { "id": "opt6", "text": "Other" }
+    ]
+  },
+  {
+    "id": "kor-cze-1",
+    "title": "Match: Republic of Korea vs Czechia - Who will win?",
+    "matchTime": "12-06-2026, 7:30 AM",
+    "lockAt": "2026-06-12T07:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "Republic of Korea" },
+      { "id": "opt2", "text": "Draw" },
+      { "id": "opt3", "text": "Czechia" }
+    ]
+  },
+  {
+    "id": "kor-cze-2",
+    "title": "Match: Republic of Korea vs Czechia - Who will score first?",
+    "matchTime": "12-06-2026, 7:30 AM",
+    "lockAt": "2026-06-12T07:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "Republic of Korea" },
+      { "id": "opt2", "text": "Czechia" },
+      { "id": "opt3", "text": "No Goals" }
+    ]
+  },
+  {
+    "id": "kor-cze-3",
+    "title": "Match: Republic of Korea vs Czechia - How many goals will Republic of Korea score?",
+    "matchTime": "12-06-2026, 7:30 AM",
+    "lockAt": "2026-06-12T07:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "0" },
+      { "id": "opt2", "text": "1" },
+      { "id": "opt3", "text": "2" },
+      { "id": "opt4", "text": "3+" }
+    ]
+  },
+  {
+    "id": "kor-cze-4",
+    "title": "Match: Republic of Korea vs Czechia - How many goals will Czechia score?",
+    "matchTime": "12-06-2026, 7:30 AM",
+    "lockAt": "2026-06-12T07:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "0" },
+      { "id": "opt2", "text": "1" },
+      { "id": "opt3", "text": "2" },
+      { "id": "opt4", "text": "3+" }
+    ]
+  },
+  {
+    "id": "kor-cze-5",
+    "title": "Match: Republic of Korea vs Czechia - Who will be Player of the Match?",
+    "matchTime": "12-06-2026, 7:30 AM",
+    "lockAt": "2026-06-12T07:30:00+05:30",
+    "status": "open",
+    "options": [
+      { "id": "opt1", "text": "Son Heung-min" },
+      { "id": "opt2", "text": "Lee Kang-in" },
+      { "id": "opt3", "text": "Hwang Hee-chan" },
+      { "id": "opt4", "text": "Patrik Schick" },
+      { "id": "opt5", "text": "Tomáš Souček" },
+      { "id": "opt6", "text": "Other" }
+    ]
+  }
+]

@@ -7,13 +7,13 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { Landing } from "./components/Landing";
 import { Signup } from "./components/Signup";
 import { Signin } from "./components/Signin";
-import { Arena } from "./components/Arena";
+import { PollsList } from "./components/PollsList";
+import { PollView } from "./components/PollView";
 import { Leaderboard } from "./components/Leaderboard";
 import { Analytics } from "./components/Analytics";
 import { Profile } from "./components/Profile";
 import { Admin } from "./components/Admin";
 import { AdminLogin } from "./components/AdminLogin";
-import { Voting } from "./components/Voting";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 export default function App() {
@@ -30,7 +30,7 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center text-emerald-700 font-mono font-bold">
+      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center text-amber-700 font-mono font-bold">
         INITIALIZING SWARM_OS...
       </div>
     );
@@ -38,17 +38,17 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-emerald-500/20 transition-colors">
+      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-amber-500/20 transition-colors">
         <ErrorBoundary>
           <Router>
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/signin" element={<Signin />} />
-              <Route path="/arena" element={user ? <Arena /> : <Navigate to="/signin" />} />
+              <Route path="/polls" element={user ? <PollsList /> : <Navigate to="/signin" />} />
+              <Route path="/polls/:pollId" element={user ? <PollView /> : <Navigate to="/signin" />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/analytics" element={<Analytics />} />
-              <Route path="/voting" element={user ? <Voting /> : <Navigate to="/signin" />} />
               <Route path="/profile" element={user ? <Profile /> : <Navigate to="/signin" />} />
               <Route path="/admin" element={user ? <Admin /> : <Navigate to="/admin-login" />} />
               <Route path="/admin-login" element={<AdminLogin />} />
