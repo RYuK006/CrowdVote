@@ -79,8 +79,8 @@ export function Landing() {
           >
             <div className="aspect-square glass rounded-[40px] p-4 sm:p-8 flex items-center justify-center emerald-glow overflow-hidden relative">
               {/* Map Graphic */}
-              <div className="w-full h-full bg-emerald-500/5 rounded-3xl flex items-center justify-center border border-emerald-500/10 overflow-hidden">
-                <BarChart3 className="w-32 h-32 text-emerald-500/20" />
+              <div className="w-full h-full bg-emerald-500/5 rounded-3xl flex items-center justify-center border border-emerald-500/10 overflow-hidden p-8">
+                <img src="/2026_world_cup_colored.svg" alt="2026 World Cup" className="w-full h-full object-contain opacity-80 drop-shadow-2xl" />
               </div>
               <div className="absolute bottom-10 left-10 p-6 glass rounded-2xl border border-emerald-500/20 backdrop-blur-xl">
                 <div className="flex flex-col gap-1">
