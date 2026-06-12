@@ -492,9 +492,14 @@ export function Admin() {
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {userActivityCache[node.uid].electionPredictions.map((pred: any) => (
                                       <div key={pred.id} className="p-3 bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl space-y-1">
-                                        <div className="text-xs font-bold text-[var(--text-primary)] truncate">Constituency {pred.constituencyId}</div>
+                                        <div className="text-xs font-bold text-[var(--text-primary)] truncate">
+                                          {pred.pollId ? pred.pollId : `Constituency ${pred.constituencyId}`}
+                                        </div>
                                         <div className="flex justify-between items-center">
-                                          <span className="text-xs font-mono text-[var(--text-primary)] font-bold">{pred.predictedParty} {pred.predictedCandidate ? `- ${pred.predictedCandidate}` : ""}</span>
+                                          <span className="text-xs font-mono text-[var(--text-primary)] font-bold">
+                                            {pred.selectedOption || pred.predictedParty} {pred.predictedCandidate ? `- ${pred.predictedCandidate}` : ""}
+                                            {pred.actualWinner && <span className="text-emerald-600 ml-1">(Winner: {pred.actualWinner})</span>}
+                                          </span>
                                           <span className="text-[10px] font-mono text-[var(--text-secondary)]">{pred.confidence}% confidence</span>
                                         </div>
                                       </div>

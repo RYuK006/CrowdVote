@@ -77,8 +77,6 @@ export function Layout({ children, user }: LayoutProps) {
 
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
           {navItems.map((item) => {
-            const isUnderConstruction = item.label === "ELITE" || item.label === "META";
-            
             const content = (
               <>
                 <item.icon className={cn("w-5 h-5 shrink-0", 
@@ -103,24 +101,6 @@ export function Layout({ children, user }: LayoutProps) {
                 : "text-[var(--text-primary)] hover:bg-[var(--glass-bg)]",
               isCollapsed && "justify-center px-0"
             );
-
-            if (isUnderConstruction) {
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => {
-                    setPopupData({
-                      title: `${item.label} Module`,
-                      message: `The ${item.label} system is currently being calibrated and will be online shortly.`
-                    });
-                    setShowPopup(true);
-                  }}
-                  className={className}
-                >
-                  {content}
-                </button>
-              );
-            }
 
             return (
               <Link
