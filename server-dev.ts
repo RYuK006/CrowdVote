@@ -139,7 +139,16 @@ app.get("/api/polls/:id", async (req, res) => {
   try {
     const docSnap = await db.collection("world_cup_polls").doc(req.params.id).get();
     if (docSnap.exists) {
-      res.json({ id: docSnap.id, ...docSnap.data() });
+      const pollData = docSnap.data();
+      
+      const votesSnap = await db.collection("global_votes").where("pollId", "==", req.params.id).get();
+      const optionCounts: Record<string, number> = {};
+      votesSnap.docs.forEach((doc: any) => {
+        const vote = doc.data();
+        optionCounts[vote.selectedOption] = (optionCounts[vote.selectedOption] || 0) + 1;
+      });
+
+      res.json({ id: docSnap.id, ...pollData, optionCounts });
     } else {
       res.status(404).json({ error: "Poll not found" });
     }
@@ -177,6 +186,17 @@ app.put("/api/admin/polls/:id", authenticateToken, requireAdmin, async (req: any
       updatedAt: new Date().toISOString()
     });
     res.json({ success: true, message: "Poll updated successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/api/admin/polls/:id", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.id;
+    await db.collection("world_cup_polls").doc(pollId).delete();
+    res.json({ success: true, message: "Poll deleted successfully" });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -431,15 +451,54 @@ app.get("/api/admin/predictions/recent", authenticateToken, requireAdmin, async 
   }
 });
 
+app.get("/api/admin/nodes/:uid/activity", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.params.uid;
+    const [worldCupSnap, electionSnap] = await Promise.all([
+      db.collection("global_votes").where("userId", "==", uid).get(),
+      db.collection("global_predictions").where("userId", "==", uid).get()
+    ]);
+    
+    const worldCupVotes = worldCupSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const electionPredictions = electionSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    
+    res.json({ worldCupVotes, electionPredictions });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/api/admin/export", authenticateToken, requireAdmin, async (req: any, res: any) => {
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
-    const snap = await db.collectionGroup("predictions").get();
-    let csv = "UserID,Constituency,PredictedParty,Confidence,Timestamp,Phase\n";
+    const snap = await db.collection("global_votes").get();
+    
+    const usersSnap = await db.collection("users").get();
+    const usersMap = new Map();
+    usersSnap.docs.forEach(doc => usersMap.set(doc.id, doc.data().displayName || doc.data().email || doc.id));
+
+    const pollsSnap = await db.collection("world_cup_polls").get();
+    const pollsMap = new Map();
+    pollsSnap.docs.forEach(doc => pollsMap.set(doc.id, doc.data()));
+
+    let csv = "UserName,PollName,SelectedOption,Confidence,Timestamp\n";
     snap.docs.forEach(doc => {
       const d = doc.data();
-      const userId = doc.ref.parent.parent?.id || "unknown";
-      csv += `${userId},${d.constituencyId},${d.predictedParty},${d.confidence},${d.timestamp},${d.phase}\n`;
+      const userName = usersMap.get(d.userId) || d.userId;
+      const poll = pollsMap.get(d.pollId);
+      const pollName = poll ? poll.title : d.pollId;
+      let optionName = d.selectedOption;
+      if (poll && poll.options) {
+        const opt = poll.options.find((o: any) => o.id === d.selectedOption);
+        if (opt) optionName = opt.name || opt.text;
+      }
+      
+      const safeUserName = `"${String(userName).replace(/"/g, '""')}"`;
+      const safePollName = `"${String(pollName).replace(/"/g, '""')}"`;
+      const safeOptionName = `"${String(optionName).replace(/"/g, '""')}"`;
+
+      csv += `${safeUserName},${safePollName},${safeOptionName},${d.confidence},${d.timestamp}\n`;
     });
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename=crowdvote_export.csv');

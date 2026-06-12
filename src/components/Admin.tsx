@@ -14,7 +14,7 @@ import {
 export function Admin() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const tab = searchParams.get("tab") || "overview";
+  const tab = searchParams.get("tab") || "nodes";
 
   const [phase, setPhase] = useState("Pre-Tournament");
   const [stats, setStats] = useState({ users: 0, predictions: 0 });
@@ -25,6 +25,9 @@ export function Admin() {
   const [recentPredictions, setRecentPredictions] = useState<any[]>([]);
   const [adminMetrics, setAdminMetrics] = useState<any>(null);
   const [adminNodes, setAdminNodes] = useState<any[]>([]);
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
+  const [userActivityCache, setUserActivityCache] = useState<Record<string, any>>({});
+  const [loadingActivity, setLoadingActivity] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [phaseExpiries, setPhaseExpiries] = useState<Record<string, string>>({});
 
@@ -226,6 +229,31 @@ export function Admin() {
     }
   };
 
+  const handleDeletePoll = async () => {
+    if (!selectedPollId) return;
+    if (!window.confirm("Are you sure you want to completely delete this poll? This action cannot be undone.")) return;
+    
+    setCreatingPoll(true);
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const res = await fetch(`/api/admin/polls/${selectedPollId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Failed to delete poll");
+      alert("Poll Deleted Successfully!");
+      setPolls(polls.filter(p => p.id !== selectedPollId));
+      setSelectedPollId("");
+      setNewPollTitle("");
+      setNewPollDesc("");
+      setNewPollOptions([{id: "1", text: ""}]);
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    } finally {
+      setCreatingPoll(false);
+    }
+  };
+
   if (loading || isAdmin === null) {
     return (
       <Layout user={auth.currentUser}>
@@ -286,6 +314,31 @@ export function Admin() {
     }
   };
 
+  const handleExpandUser = async (uid: string) => {
+    if (expandedUserId === uid) {
+      setExpandedUserId(null);
+      return;
+    }
+    setExpandedUserId(uid);
+    if (!userActivityCache[uid]) {
+      setLoadingActivity(true);
+      try {
+        const token = await auth.currentUser?.getIdToken();
+        const res = await fetch(`/api/admin/nodes/${uid}/activity`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUserActivityCache(prev => ({ ...prev, [uid]: data }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch activity:", err);
+      } finally {
+        setLoadingActivity(false);
+      }
+    }
+  };
+
   return (
     <Layout user={auth.currentUser}>
       <div className="space-y-12">
@@ -313,164 +366,7 @@ export function Admin() {
           </div>
         </div>
 
-        {tab === "overview" && (
-          <div className="space-y-12">
-            <div className="grid lg:grid-cols-1 gap-8">
-              {/* Phase Control */}
-              <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] space-y-10">
-                <div className="flex items-center gap-3">
-                  <Clock className="text-red-500 w-5 h-5" />
-                  <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Tournament Phase</h3>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {["Pre-Tournament", "Group Stages", "Knockouts"].map((p) => (
-                    <div
-                      key={p}
-                      className={cn(
-                        "p-8 rounded-[32px] border transition-all duration-500 relative overflow-hidden group/phase",
-                        phase === p
-                          ? "bg-red-500/10 border-red-500/50 red-glow shadow-[0_0_30px_-5px_rgba(239,68,68,0.2)]"
-                          : "bg-black/5 border-[var(--glass-border)] hover:border-black/20"
-                      )}
-                    >
-                      <div className="space-y-6">
-                        <div className="flex justify-between items-start">
-                          <span className={cn(
-                            "text-[10px] font-mono uppercase tracking-[0.2em] px-2 py-1 rounded-md",
-                            phase === p ? "bg-red-600 text-white font-extrabold" : "text-[var(--text-secondary)] font-bold"
-                          )}>
-                            {phase === p ? "Active Phase" : "Standby"}
-                          </span>
-                          {phase !== p && (
-                            <button 
-                              onClick={() => handlePhaseChange(p)}
-                              className="text-[10px] font-mono text-red-500/60 hover:text-red-500 border-b border-red-500/20 hover:border-red-500 transition-all uppercase tracking-widest"
-                            >
-                              Activate
-                            </button>
-                          )}
-                        </div>
-                        
-                        <div className="space-y-1">
-                          <h4 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">{p}</h4>
-                          <p className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Temporal Node</p>
-                        </div>
-
-                        <div className="space-y-3 pt-4 border-t border-[var(--glass-border)]">
-                          <label className="text-[10px] font-mono text-[var(--text-primary)] uppercase tracking-widest block font-bold">Phase Expiry (End Date)</label>
-                          <input 
-                            type="datetime-local"
-                            value={phaseExpiries[p] || ""}
-                            onChange={(e) => handleExpiryUpdate(p, e.target.value)}
-                            className="w-full bg-black/5 border border-[var(--glass-border)] rounded-xl px-4 py-3 text-xs font-mono text-[var(--text-primary)] focus:outline-none focus:border-red-500/50 transition-all placeholder:text-[var(--text-secondary)] font-bold"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Live Data Monitor */}
-            <div className="glass rounded-[40px] border border-[var(--glass-border)] p-10 space-y-8">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Database className="text-red-500 w-5 h-5" />
-                  <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Recent Prediction Monitor</h3>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest">Live Stream</span>
-                </div>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-[var(--glass-border)]">
-                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Agent ID</th>
-                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Poll ID</th>
-                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Prediction</th>
-                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Confidence</th>
-                      <th className="pb-4 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Timestamp</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentPredictions.length > 0 ? (
-                      recentPredictions.map((pred) => (
-                        <tr key={pred.id} className="border-b border-[var(--glass-border)] hover:bg-black/5 transition-colors group">
-                          <td className="py-4 text-xs font-mono text-[var(--text-primary)] font-bold group-hover:text-red-500 transition-colors">{pred.userId?.slice(0, 8)}...</td>
-                          <td className="py-4 text-xs font-bold text-[var(--text-primary)]">{pred.pollId}</td>
-                          <td className="py-4">
-                            <span className="px-2 py-1 rounded bg-red-500/10 text-red-600 text-[10px] font-mono uppercase font-extrabold">
-                              {pred.predictedParty}
-                            </span>
-                          </td>
-                          <td className="py-4 text-xs font-mono font-bold text-[var(--text-primary)]">{pred.confidence}%</td>
-                          <td className="py-4 text-xs text-[var(--text-secondary)] font-bold">{new Date(pred.timestamp).toLocaleTimeString()}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={5} className="py-12 text-center text-[var(--text-secondary)] font-mono text-xs uppercase tracking-widest font-extrabold">
-                          No live activity detected in the current temporal frame.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {adminMetrics && (
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] space-y-6">
-                  <h3 className="text-lg font-bold font-mono uppercase tracking-widest text-[var(--text-primary)]">Votes Per Day</h3>
-                  <div className="h-64 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={adminMetrics.votesPerDay}>
-                        <defs>
-                          <linearGradient id="colorVotes" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                        <XAxis dataKey="date" stroke="#ffffff40" fontSize={10} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#ffffff40" fontSize={10} tickLine={false} axisLine={false} />
-                        <Tooltip 
-                          contentStyle={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
-                          itemStyle={{ color: '#ef4444' }}
-                        />
-                        <Area type="monotone" dataKey="count" stroke="#ef4444" fillOpacity={1} fill="url(#colorVotes)" strokeWidth={2} />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-
-                <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] space-y-6">
-                  <h3 className="text-lg font-bold font-mono uppercase tracking-widest text-[var(--text-primary)]">New Users Per Day</h3>
-                  <div className="h-64 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={adminMetrics.usersPerDay}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                        <XAxis dataKey="date" stroke="#ffffff40" fontSize={10} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#ffffff40" fontSize={10} tickLine={false} axisLine={false} />
-                        <Tooltip 
-                          contentStyle={{ backgroundColor: 'var(--bg-primary)', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
-                          cursor={{ fill: '#ffffff05' }}
-                        />
-                        <Bar dataKey="count" fill="#dc2626" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
 
         {tab === "data" && (
           <div className="space-y-8">
@@ -545,7 +441,8 @@ export function Admin() {
                 </thead>
                 <tbody>
                   {adminNodes.map((node) => (
-                    <tr key={node.uid} className="border-b border-[var(--glass-border)] hover:bg-black/5 transition-colors group">
+                    <React.Fragment key={node.uid}>
+                    <tr onClick={() => handleExpandUser(node.uid)} className="border-b border-[var(--glass-border)] hover:bg-black/5 transition-colors group cursor-pointer">
                       <td className="py-4 text-xs font-bold text-[var(--text-primary)]">{node.displayName}</td>
                       <td className="py-4 text-xs font-mono text-[var(--text-secondary)] font-bold italic">{node.email}</td>
                       <td className="py-4 text-xs font-mono text-red-600 font-extrabold">{node.predictionCount}</td>
@@ -555,6 +452,64 @@ export function Admin() {
                         </span>
                       </td>
                     </tr>
+                    {expandedUserId === node.uid && (
+                      <tr className="border-b border-[var(--glass-border)] bg-black/5">
+                        <td colSpan={4} className="p-6">
+                          {loadingActivity && !userActivityCache[node.uid] ? (
+                            <div className="text-center text-xs font-mono text-[var(--text-secondary)] py-4 animate-pulse">Loading Activity Stream...</div>
+                          ) : (
+                            <div className="space-y-6">
+                              <div>
+                                <h4 className="text-sm font-bold text-red-600 mb-3 uppercase tracking-widest font-mono border-b border-red-500/20 pb-2">World Cup Match Votes</h4>
+                                {userActivityCache[node.uid]?.worldCupVotes?.length > 0 ? (
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {userActivityCache[node.uid].worldCupVotes.map((vote: any) => {
+                                      const pollName = polls.find(p => p.id === vote.pollId)?.title || vote.pollId;
+                                      const pollOptions = polls.find(p => p.id === vote.pollId)?.options;
+                                      let optName = vote.selectedOption;
+                                      if (pollOptions) {
+                                        const opt = pollOptions.find((o:any) => o.id === vote.selectedOption);
+                                        if (opt) optName = opt.name || opt.text;
+                                      }
+                                      return (
+                                      <div key={vote.id} className="p-3 bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl space-y-1">
+                                        <div className="text-xs font-bold text-[var(--text-primary)] truncate">{pollName}</div>
+                                        <div className="flex justify-between items-center">
+                                          <span className="text-xs font-mono text-red-600 font-bold">{optName}</span>
+                                          <span className="text-[10px] font-mono text-[var(--text-secondary)]">{vote.confidence}% confidence</span>
+                                        </div>
+                                      </div>
+                                    )})}
+                                  </div>
+                                ) : (
+                                  <div className="text-xs font-mono text-[var(--text-secondary)]">No match votes recorded yet.</div>
+                                )}
+                              </div>
+                              
+                              <div>
+                                <h4 className="text-sm font-bold text-[var(--text-primary)] mb-3 uppercase tracking-widest font-mono border-b border-[var(--glass-border)] pb-2">Election Predictions</h4>
+                                {userActivityCache[node.uid]?.electionPredictions?.length > 0 ? (
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {userActivityCache[node.uid].electionPredictions.map((pred: any) => (
+                                      <div key={pred.id} className="p-3 bg-[var(--bg-primary)] border border-[var(--glass-border)] rounded-xl space-y-1">
+                                        <div className="text-xs font-bold text-[var(--text-primary)] truncate">Constituency {pred.constituencyId}</div>
+                                        <div className="flex justify-between items-center">
+                                          <span className="text-xs font-mono text-[var(--text-primary)] font-bold">{pred.predictedParty} {pred.predictedCandidate ? `- ${pred.predictedCandidate}` : ""}</span>
+                                          <span className="text-[10px] font-mono text-[var(--text-secondary)]">{pred.confidence}% confidence</span>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="text-xs font-mono text-[var(--text-secondary)]">No election predictions recorded.</div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
@@ -615,7 +570,7 @@ export function Admin() {
                       setNewPollTitle(poll.title);
                       setNewPollDesc(poll.description || "");
                       setNewPollCategory(poll.category || "Technology");
-                      setNewPollOptions(poll.options.map((o: any) => ({id: o.id, text: o.name})));
+                      setNewPollOptions(poll.options.map((o: any) => ({id: o.id, text: o.name || o.text})));
                     }
                   }}
                   className="w-full bg-black/5 border border-[var(--glass-border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-red-500/50"
@@ -701,13 +656,25 @@ export function Admin() {
                 </button>
               </div>
 
-              <button 
-                type="submit"
-                disabled={creatingPoll || (manageMode === "edit" && !selectedPollId)}
-                className="w-full py-4 mt-8 rounded-2xl bg-red-600 text-white font-bold tracking-widest uppercase hover:bg-red-500 transition-colors disabled:opacity-50 red-glow"
-              >
-                {creatingPoll ? "Processing..." : manageMode === "create" ? "Deploy to Neural Mesh" : "Update Poll"}
-              </button>
+              <div className="flex gap-4 mt-8">
+                <button 
+                  type="submit"
+                  disabled={creatingPoll || (manageMode === "edit" && !selectedPollId)}
+                  className="flex-1 py-4 rounded-2xl bg-red-600 text-white font-bold tracking-widest uppercase hover:bg-red-500 transition-colors disabled:opacity-50 red-glow"
+                >
+                  {creatingPoll ? "Processing..." : manageMode === "create" ? "Deploy to Neural Mesh" : "Update Poll"}
+                </button>
+                {manageMode === "edit" && selectedPollId && (
+                  <button 
+                    type="button"
+                    onClick={handleDeletePoll}
+                    disabled={creatingPoll}
+                    className="px-8 py-4 rounded-2xl bg-transparent border border-red-600/30 text-red-600 font-bold tracking-widest uppercase hover:bg-red-600/10 transition-colors disabled:opacity-50"
+                  >
+                    Delete Poll
+                  </button>
+                )}
+              </div>
             </form>
 
             {manageMode === "edit" && selectedPollId && (
@@ -747,15 +714,7 @@ export function Admin() {
           </div>
         )}
 
-        {tab === "system" && (
-          <div className="glass p-12 rounded-[40px] border border-[var(--glass-border)] text-center flex flex-col items-center justify-center space-y-4">
-            <Settings className="w-12 h-12 text-[var(--text-secondary)] mb-4" />
-            <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">System Configuration</h3>
-            <p className="text-[var(--text-secondary)] text-sm font-mono max-w-md mx-auto leading-relaxed font-bold">
-              Neural network and swarm intelligence parameters are currently locked to optimal defaults. Subsystem overrides require Level 5 clearance.
-            </p>
-          </div>
-        )}
+
       </div>
     </Layout>
   );

@@ -28,11 +28,9 @@ export function Layout({ children, user }: LayoutProps) {
   ];
 
   const adminNavItems = [
-    { label: "COMMAND", icon: ShieldAlert, path: "/admin" },
     { label: "NODES", icon: Users, path: "/admin?tab=nodes" },
     { label: "STREAM", icon: Database, path: "/admin?tab=data" },
     { label: "HOST POLLS", icon: PlusCircle, path: "/admin?tab=host" },
-    { label: "SYSTEM", icon: LayoutDashboard, path: "/admin?tab=system" },
   ];
 
   const isAdminRoute = location.pathname.startsWith("/admin") && location.pathname !== "/admin-login";
