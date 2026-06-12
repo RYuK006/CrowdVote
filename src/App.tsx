@@ -15,6 +15,7 @@ import { Profile } from "./components/Profile";
 import { Admin } from "./components/Admin";
 import { AdminLogin } from "./components/AdminLogin";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { Documentation } from "./components/Documentation";
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -43,6 +44,7 @@ export default function App() {
           <Router>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/docs" element={<Documentation />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/signin" element={<Signin />} />
               <Route path="/polls" element={user ? <PollsList /> : <Navigate to="/signin" />} />

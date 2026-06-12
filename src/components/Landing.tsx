@@ -1,10 +1,12 @@
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Swords, Trophy, BarChart3, ArrowRight, Sun, Moon } from "lucide-react";
+import { ShieldCheck, Swords, Trophy, BarChart3, ArrowRight, Sun, Moon, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
 export function Landing() {
   const { theme, toggleTheme } = useTheme();
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden selection:bg-emerald-500/30 transition-colors">
@@ -158,14 +160,49 @@ export function Landing() {
             <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">CrowdVote <span className="text-emerald-500">AI</span></span>
           </div>
           <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">
-            <a href="#" className="hover:text-emerald-500">Documentation</a>
-            <a href="#" className="hover:text-emerald-500">Methodology</a>
-            <a href="#" className="hover:text-emerald-500">Privacy Policy</a>
+            <Link to="/docs" className="hover:text-emerald-500">Documentation</Link>
+            <button onClick={() => setShowPrivacyPolicy(true)} className="hover:text-emerald-500 uppercase font-mono text-[10px] tracking-widest font-bold">Privacy Policy</button>
             <Link to="/adminlogin" className="text-[var(--text-secondary)] hover:text-emerald-500 border border-[var(--glass-border)] px-2 py-1 rounded">Admin Login</Link>
           </div>
           <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest text-center font-bold">© 2026 CrowdVote Project</span>
         </div>
       </footer>
+
+      {/* Privacy Policy Modal */}
+      {showPrivacyPolicy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="glass max-w-2xl w-full max-h-[80vh] overflow-y-auto rounded-[32px] p-8 border border-[var(--glass-border)] bg-[var(--card-bg)] shadow-2xl relative custom-scrollbar">
+            <button 
+              onClick={() => setShowPrivacyPolicy(false)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-[var(--glass-border)] transition-colors"
+            >
+              <X className="w-6 h-6 text-[var(--text-primary)]" />
+            </button>
+            
+            <div className="space-y-6 text-[var(--text-secondary)]">
+              <div className="flex items-center gap-3 text-emerald-500 mb-8">
+                <ShieldCheck className="w-8 h-8" />
+                <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Privacy Policy</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold text-[var(--text-primary)]">1. Data Collection</h3>
+                <p>We collect predictions, voting history, and standard authentication data to maintain the integrity of the Swarm Intelligence model. We do not sell your personal data to third parties.</p>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold text-[var(--text-primary)]">2. AI Training & Usage</h3>
+                <p>By using the platform, you consent to your anonymized voting patterns being used to train the global Predictive Analytics model and your personal Autonomous Predictor (if enabled).</p>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold text-[var(--text-primary)]">3. Security</h3>
+                <p>All authentication is securely handled via Google Firebase. We implement industry-standard encryption to protect your account and AE points.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

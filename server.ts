@@ -114,9 +114,11 @@ async function authenticateToken(req: any, res: any, next: any) {
 }
 
 // Middleware to require admin privileges
+const ADMIN_EMAILS = ["aaronalexmathew48@gmail.com", "prems4u@gmail.com"];
+
 async function requireAdmin(req: any, res: any, next: any) {
   if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
-  if (req.user.email !== "aaronalexmathew48@gmail.com") {
+  if (!ADMIN_EMAILS.includes(req.user.email)) {
     return res.status(403).json({ error: 'Forbidden: Admin access required' });
   }
   next();
@@ -252,7 +254,7 @@ app.get("/api/user/check", authenticateToken, async (req: any, res: any) => {
     const userDoc = await db.collection('users').doc(uid).get();
     const exists = userDoc.exists;
     const userData = userDoc.data();
-    const isAdmin = (email === "aaronalexmathew48@gmail.com");
+    const isAdmin = ADMIN_EMAILS.includes(email);
     res.json({ exists, uid, isAdmin, user: exists ? userData : null });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

@@ -116,7 +116,7 @@ export function Leaderboard() {
                 <div className="w-full flex justify-center">
                   <div className="bg-black/5 rounded-3xl p-6 border border-black/5 w-full">
                     <Zap className="w-6 h-6 text-emerald-700 mb-2 mx-auto" />
-                    <span className="block text-2xl font-bold text-slate-950">{user.points || 0} pts</span>
+                    <span className="block text-2xl font-bold text-slate-950">{user.points || 0} AE points</span>
                     <span className="text-[10px] font-mono text-slate-600 uppercase tracking-widest text-center block font-bold">{user.predictionCount || 0} Signals</span>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ export function Leaderboard() {
                   </div>
                 </div>
                 <div className="text-center font-mono font-bold text-emerald-700">
-                  <div className="text-lg">{user.points || 0} pts</div>
+                  <div className="text-lg">{user.points || 0} AE points</div>
                   <div className="text-[9px] text-slate-500">{user.predictionCount || 0} signals</div>
                 </div>
                 <div className="text-center font-mono font-bold">100%</div>
