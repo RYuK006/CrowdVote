@@ -166,6 +166,59 @@ app.post("/api/admin/polls", authenticateToken, requireAdmin, async (req: any, r
   }
 });
 
+app.put("/api/admin/polls/:id", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.id;
+    const updates = req.body;
+    
+    await db.collection("world_cup_polls").doc(pollId).update({
+      ...updates,
+      updatedAt: new Date().toISOString()
+    });
+    res.json({ success: true, message: "Poll updated successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/admin/polls/:id/resolve", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.id;
+    const { winningOptionId } = req.body;
+    
+    // Update the poll
+    await db.collection("world_cup_polls").doc(pollId).update({
+      status: "closed",
+      winningOptionId,
+      resolvedAt: new Date().toISOString()
+    });
+
+    // Distribute points
+    const votesSnapshot = await db.collection("global_votes").where("pollId", "==", pollId).get();
+    
+    const batch = db.batch();
+    votesSnapshot.docs.forEach((doc: any) => {
+      const vote = doc.data();
+      if (vote.selectedOption === winningOptionId) {
+        const userRef = db.collection("users").doc(vote.userId);
+        // We use FieldValue.increment to safely add points
+        batch.update(userRef, {
+          points: require("firebase-admin/firestore").FieldValue.increment(100),
+          correctPredictions: require("firebase-admin/firestore").FieldValue.increment(1)
+        });
+      }
+    });
+
+    await batch.commit();
+
+    res.json({ success: true, message: "Poll resolved and points distributed successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/api/user/check", authenticateToken, async (req: any, res: any) => {
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   const uid = req.user.uid;
@@ -249,13 +302,45 @@ app.get("/api/user/votes", authenticateToken, async (req: any, res: any) => {
   try {
     const snap = await db.collection("users").doc(uid).collection("predictions").get();
     const votes: Record<string, any> = {};
-    snap.forEach(doc => {
+    snap.docs.forEach((doc: any) => {
       const d = doc.data();
       votes[d.pollId] = d;
     });
     res.json(votes);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/leaderboard/global", async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    // Sort by points descending, then by predictionCount descending
+    const usersSnap = await db.collection("users")
+      .orderBy("points", "desc")
+      .orderBy("predictionCount", "desc")
+      .limit(100)
+      .get();
+      
+    const users = usersSnap.docs.map((doc: any) => doc.data());
+    res.json(users);
+  } catch (err: any) {
+    // If index doesn't exist, fallback to fetching all and sorting in memory
+    try {
+      const usersSnap = await db.collection("users").get();
+      let users = usersSnap.docs.map((doc: any) => doc.data());
+      users.sort((a: any, b: any) => {
+        const aPoints = a.points || 0;
+        const bPoints = b.points || 0;
+        if (aPoints !== bPoints) return bPoints - aPoints;
+        const aCount = a.predictionCount || 0;
+        const bCount = b.predictionCount || 0;
+        return bCount - aCount;
+      });
+      res.json(users.slice(0, 100));
+    } catch (fallbackErr: any) {
+      res.status(500).json({ error: fallbackErr.message });
+    }
   }
 });
 

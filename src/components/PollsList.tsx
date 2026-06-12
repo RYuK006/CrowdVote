@@ -63,7 +63,21 @@ export function PollsList() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {polls.map((poll) => {
+            {[...polls].sort((a, b) => {
+              const aVoted = !!votes[a.id];
+              const bVoted = !!votes[b.id];
+              const aExpired = a.lockAt ? new Date() > new Date(a.lockAt) : false;
+              const bExpired = b.lockAt ? new Date() > new Date(b.lockAt) : false;
+              const aLocked = aVoted || aExpired || a.status === "closed";
+              const bLocked = bVoted || bExpired || b.status === "closed";
+
+              if (aLocked && !bLocked) return 1;
+              if (!aLocked && bLocked) return -1;
+
+              const timeA = new Date(a.lockAt || 0).getTime();
+              const timeB = new Date(b.lockAt || 0).getTime();
+              return timeA - timeB;
+            }).map((poll) => {
               const hasVoted = !!votes[poll.id];
               const isExpired = poll.lockAt ? new Date() > new Date(poll.lockAt) : false;
               return (

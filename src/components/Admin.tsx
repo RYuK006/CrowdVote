@@ -35,6 +35,12 @@ export function Admin() {
   const [newPollOptions, setNewPollOptions] = useState([{id: "1", text: ""}]);
   const [creatingPoll, setCreatingPoll] = useState(false);
 
+  // Manage Polls States
+  const [polls, setPolls] = useState<any[]>([]);
+  const [manageMode, setManageMode] = useState<"create" | "edit">("create");
+  const [selectedPollId, setSelectedPollId] = useState("");
+  const [winningOptionId, setWinningOptionId] = useState("");
+
   useEffect(() => {
     // 1. Listen to public global config (available to all authenticated users)
     const unsubscribeConfig = onSnapshot(doc(db, "config", "global"), (docSnap) => {
@@ -83,10 +89,11 @@ export function Admin() {
     const fetchAdminData = async () => {
       try {
         const token = await auth.currentUser!.getIdToken();
-        const [metricsRes, nodesRes, predictionsRes] = await Promise.all([
+        const [metricsRes, nodesRes, predictionsRes, pollsRes] = await Promise.all([
           fetch("/api/admin/metrics", { headers: { Authorization: `Bearer ${token}` } }),
           fetch("/api/admin/nodes", { headers: { Authorization: `Bearer ${token}` } }),
-          fetch("/api/admin/predictions/recent", { headers: { Authorization: `Bearer ${token}` } })
+          fetch("/api/admin/predictions/recent", { headers: { Authorization: `Bearer ${token}` } }),
+          fetch("/api/polls")
         ]);
         
         if (metricsRes.ok) {
@@ -104,6 +111,10 @@ export function Admin() {
         if (predictionsRes.ok) {
           const predsData = await predictionsRes.json();
           setRecentPredictions(Array.isArray(predsData) ? predsData : []);
+        }
+        if (pollsRes.ok) {
+          const pData = await pollsRes.json();
+          setPolls(Array.isArray(pData) ? pData : []);
         }
       } catch (error) {
         console.error("Failed to fetch admin API data:", error);
@@ -149,12 +160,12 @@ export function Admin() {
     }
   };
 
-  const handleCreatePoll = async (e: React.FormEvent) => {
+  const handleCreateOrUpdatePoll = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreatingPoll(true);
     try {
       const token = await auth.currentUser?.getIdToken();
-      const id = newPollTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const id = manageMode === "create" ? newPollTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-') : selectedPollId;
       const payload = {
         id,
         title: newPollTitle,
@@ -164,19 +175,50 @@ export function Admin() {
         options: newPollOptions.filter(o => o.text.trim() !== "").map(o => ({ id: o.id, name: o.text.trim() }))
       };
 
-      const res = await fetch("/api/admin/polls", {
-        method: "POST",
+      const url = manageMode === "create" ? "/api/admin/polls" : `/api/admin/polls/${id}`;
+      const method = manageMode === "create" ? "POST" : "PUT";
+
+      const res = await fetch(url, {
+        method,
         headers: { 
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}` 
         },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error("Failed to create poll");
-      alert("Poll Created Successfully!");
-      setNewPollTitle("");
-      setNewPollDesc("");
-      setNewPollOptions([{id: "1", text: ""}]);
+      if (!res.ok) throw new Error(`Failed to ${manageMode} poll`);
+      alert(`Poll ${manageMode === "create" ? "Created" : "Updated"} Successfully!`);
+      
+      if (manageMode === "create") {
+        setNewPollTitle("");
+        setNewPollDesc("");
+        setNewPollOptions([{id: "1", text: ""}]);
+      }
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    } finally {
+      setCreatingPoll(false);
+    }
+  };
+
+  const handleResolvePoll = async () => {
+    if (!selectedPollId || !winningOptionId) {
+      alert("Select a poll and a winning option.");
+      return;
+    }
+    setCreatingPoll(true);
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const res = await fetch(`/api/admin/polls/${selectedPollId}/resolve`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ winningOptionId })
+      });
+      if (!res.ok) throw new Error("Failed to resolve poll");
+      alert("Poll Resolved Successfully!");
     } catch (err: any) {
       alert("Error: " + err.message);
     } finally {
@@ -524,14 +566,69 @@ export function Admin() {
         {tab === "host" && (
           <div className="glass p-10 rounded-[40px] border border-[var(--glass-border)] max-w-3xl mx-auto bg-[var(--card-bg)] shadow-xl">
             <div className="flex items-center gap-3 mb-8">
-              <PlusCircle className="text-red-500 w-8 h-8" />
+              <Settings className="text-red-500 w-8 h-8" />
               <div>
-                <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Host New Poll</h2>
-                <p className="text-[var(--text-secondary)] text-sm font-mono mt-1">Deploy a new node to the prediction mesh.</p>
+                <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Host Polls</h2>
+                <p className="text-[var(--text-secondary)] text-sm font-mono mt-1">Deploy new polls or modify existing predictions.</p>
               </div>
             </div>
 
-            <form onSubmit={handleCreatePoll} className="space-y-6">
+            <div className="flex gap-4 mb-8">
+              <button
+                type="button"
+                onClick={() => {
+                  setManageMode("create");
+                  setNewPollTitle("");
+                  setNewPollDesc("");
+                  setNewPollCategory("Technology");
+                  setNewPollOptions([{id: "1", text: ""}]);
+                }}
+                className={cn(
+                  "flex-1 py-3 rounded-xl font-bold font-mono text-xs uppercase tracking-widest transition-all",
+                  manageMode === "create" ? "bg-red-600 text-white shadow-lg shadow-red-500/20" : "bg-black/5 text-[var(--text-secondary)] hover:bg-black/10 hover:text-[var(--text-primary)] border border-[var(--glass-border)]"
+                )}
+              >
+                Create New Poll
+              </button>
+              <button
+                type="button"
+                onClick={() => setManageMode("edit")}
+                className={cn(
+                  "flex-1 py-3 rounded-xl font-bold font-mono text-xs uppercase tracking-widest transition-all",
+                  manageMode === "edit" ? "bg-red-600 text-white shadow-lg shadow-red-500/20" : "bg-black/5 text-[var(--text-secondary)] hover:bg-black/10 hover:text-[var(--text-primary)] border border-[var(--glass-border)]"
+                )}
+              >
+                Edit / Resolve Poll
+              </button>
+            </div>
+
+            {manageMode === "edit" && (
+              <div className="space-y-4 mb-8">
+                <label className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Select Poll to Edit</label>
+                <select 
+                  value={selectedPollId}
+                  onChange={(e) => {
+                    const id = e.target.value;
+                    setSelectedPollId(id);
+                    const poll = polls.find(p => p.id === id);
+                    if (poll) {
+                      setNewPollTitle(poll.title);
+                      setNewPollDesc(poll.description || "");
+                      setNewPollCategory(poll.category || "Technology");
+                      setNewPollOptions(poll.options.map((o: any) => ({id: o.id, text: o.name})));
+                    }
+                  }}
+                  className="w-full bg-black/5 border border-[var(--glass-border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-red-500/50"
+                >
+                  <option value="">-- Select Poll --</option>
+                  {polls.map((p) => (
+                    <option key={p.id} value={p.id}>{p.title}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <form onSubmit={handleCreateOrUpdatePoll} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Poll Title</label>
                 <input 
@@ -606,12 +703,47 @@ export function Admin() {
 
               <button 
                 type="submit"
-                disabled={creatingPoll}
+                disabled={creatingPoll || (manageMode === "edit" && !selectedPollId)}
                 className="w-full py-4 mt-8 rounded-2xl bg-red-600 text-white font-bold tracking-widest uppercase hover:bg-red-500 transition-colors disabled:opacity-50 red-glow"
               >
-                {creatingPoll ? "Deploying..." : "Deploy to Neural Mesh"}
+                {creatingPoll ? "Processing..." : manageMode === "create" ? "Deploy to Neural Mesh" : "Update Poll"}
               </button>
             </form>
+
+            {manageMode === "edit" && selectedPollId && (
+              <div className="mt-12 pt-8 border-t border-[var(--glass-border)] space-y-6">
+                <div className="flex items-center gap-3">
+                  <AlertTriangle className="text-yellow-500 w-6 h-6" />
+                  <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Resolve Poll</h3>
+                </div>
+                <p className="text-[var(--text-secondary)] text-sm font-mono leading-relaxed">
+                  Submit the final answer for this poll. This will lock the poll and set the winning option.
+                </p>
+                
+                <div className="space-y-4">
+                  <label className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Winning Option</label>
+                  <select 
+                    value={winningOptionId}
+                    onChange={(e) => setWinningOptionId(e.target.value)}
+                    className="w-full bg-black/5 border border-[var(--glass-border)] rounded-xl px-4 py-3 text-sm text-[var(--text-primary)] focus:outline-none focus:border-yellow-500/50"
+                  >
+                    <option value="">-- Select Winner --</option>
+                    {newPollOptions.map((opt) => (
+                      <option key={opt.id} value={opt.id}>{opt.text}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <button 
+                  type="button"
+                  onClick={handleResolvePoll}
+                  disabled={creatingPoll || !winningOptionId}
+                  className="w-full py-4 rounded-2xl bg-yellow-600 text-white font-bold tracking-widest uppercase hover:bg-yellow-500 transition-colors disabled:opacity-50 shadow-[0_0_15px_rgba(202,138,4,0.3)]"
+                >
+                  DECLARE WINNER
+                </button>
+              </div>
+            )}
           </div>
         )}
 

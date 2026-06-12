@@ -11,6 +11,7 @@ interface LeaderboardUser {
   id: string;
   displayName: string;
   predictionCount?: number;
+  points?: number;
   rank?: number;
 }
 
@@ -115,8 +116,8 @@ export function Leaderboard() {
                 <div className="w-full flex justify-center">
                   <div className="bg-black/5 rounded-3xl p-6 border border-black/5 w-full">
                     <Zap className="w-6 h-6 text-emerald-700 mb-2 mx-auto" />
-                    <span className="block text-2xl font-bold text-slate-950">{user.predictionCount || 0}</span>
-                    <span className="text-[10px] font-mono text-slate-600 uppercase tracking-widest text-center block font-bold">Signals Cast</span>
+                    <span className="block text-2xl font-bold text-slate-950">{user.points || 0} pts</span>
+                    <span className="text-[10px] font-mono text-slate-600 uppercase tracking-widest text-center block font-bold">{user.predictionCount || 0} Signals</span>
                   </div>
                 </div>
               </div>
@@ -148,7 +149,10 @@ export function Leaderboard() {
                     <p className="text-[10px] font-mono text-slate-600 uppercase tracking-widest font-bold">ID: {user.id.slice(0, 8)}</p>
                   </div>
                 </div>
-                <div className="text-center font-mono font-bold text-emerald-700">{user.predictionCount || 0}</div>
+                <div className="text-center font-mono font-bold text-emerald-700">
+                  <div className="text-lg">{user.points || 0} pts</div>
+                  <div className="text-[9px] text-slate-500">{user.predictionCount || 0} signals</div>
+                </div>
                 <div className="text-center font-mono font-bold">100%</div>
                 <div className="flex justify-end">
                   <button className="p-2 rounded-xl bg-black/5 border border-black/10 hover:bg-emerald-500 hover:text-white transition-all">

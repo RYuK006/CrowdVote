@@ -1,132 +1,1514 @@
 [
   {
-    "id": "mex-rsa-1",
+    "id": "mex-sou-win",
     "title": "Match: Mexico vs South Africa - Who will win?",
-    "matchTime": "12-06-2026, 12:30 AM",
-    "lockAt": "2026-06-12T00:30:00+05:30",
-    "status": "open",
+    "matchTime": "12-06-2026, 12:00 AM",
+    "lockAt": "2026-06-12T00:00:00+05:30",
+    "status": "closed",
     "options": [
-      { "id": "opt1", "text": "Mexico" },
-      { "id": "opt2", "text": "Draw" },
-      { "id": "opt3", "text": "South Africa" }
+      {
+        "id": "opt1",
+        "text": "Mexico"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "South Africa"
+      }
     ]
   },
   {
-    "id": "mex-rsa-2",
-    "title": "Match: Mexico vs South Africa - Who will score first?",
-    "matchTime": "12-06-2026, 12:30 AM",
-    "lockAt": "2026-06-12T00:30:00+05:30",
-    "status": "open",
-    "options": [
-      { "id": "opt1", "text": "Mexico" },
-      { "id": "opt2", "text": "South Africa" },
-      { "id": "opt3", "text": "No Goals" }
-    ]
-  },
-  {
-    "id": "mex-rsa-3",
-    "title": "Match: Mexico vs South Africa - How many goals will Mexico score?",
-    "matchTime": "12-06-2026, 12:30 AM",
-    "lockAt": "2026-06-12T00:30:00+05:30",
-    "status": "open",
-    "options": [
-      { "id": "opt1", "text": "0" },
-      { "id": "opt2", "text": "1" },
-      { "id": "opt3", "text": "2" },
-      { "id": "opt4", "text": "3+" }
-    ]
-  },
-  {
-    "id": "mex-rsa-4",
-    "title": "Match: Mexico vs South Africa - How many goals will South Africa score?",
-    "matchTime": "12-06-2026, 12:30 AM",
-    "lockAt": "2026-06-12T00:30:00+05:30",
-    "status": "open",
-    "options": [
-      { "id": "opt1", "text": "0" },
-      { "id": "opt2", "text": "1" },
-      { "id": "opt3", "text": "2" },
-      { "id": "opt4", "text": "3+" }
-    ]
-  },
-  {
-    "id": "mex-rsa-5",
-    "title": "Match: Mexico vs South Africa - Who will be Player of the Match?",
-    "matchTime": "12-06-2026, 12:30 AM",
-    "lockAt": "2026-06-12T00:30:00+05:30",
-    "status": "open",
-    "options": [
-      { "id": "opt1", "text": "Santiago Giménez" },
-      { "id": "opt2", "text": "Raúl Jiménez" },
-      { "id": "opt3", "text": "Hirving Lozano" },
-      { "id": "opt4", "text": "Percy Tau" },
-      { "id": "opt5", "text": "Teboho Mokoena" },
-      { "id": "opt6", "text": "Other" }
-    ]
-  },
-  {
-    "id": "kor-cze-1",
+    "id": "rep-cze-win",
     "title": "Match: Republic of Korea vs Czechia - Who will win?",
-    "matchTime": "12-06-2026, 7:30 AM",
-    "lockAt": "2026-06-12T07:30:00+05:30",
-    "status": "open",
+    "matchTime": "12-06-2026, 12:00 AM",
+    "lockAt": "2026-06-12T00:00:00+05:30",
+    "status": "closed",
     "options": [
-      { "id": "opt1", "text": "Republic of Korea" },
-      { "id": "opt2", "text": "Draw" },
-      { "id": "opt3", "text": "Czechia" }
+      {
+        "id": "opt1",
+        "text": "Republic of Korea"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Czechia"
+      }
     ]
   },
   {
-    "id": "kor-cze-2",
-    "title": "Match: Republic of Korea vs Czechia - Who will score first?",
-    "matchTime": "12-06-2026, 7:30 AM",
-    "lockAt": "2026-06-12T07:30:00+05:30",
+    "id": "can-bos-win",
+    "title": "Match: Canada vs Bosnia and Herzegovina - Who will win?",
+    "matchTime": "13-06-2026, 12:30 AM",
+    "lockAt": "2026-06-13T00:00:00+05:30",
     "status": "open",
     "options": [
-      { "id": "opt1", "text": "Republic of Korea" },
-      { "id": "opt2", "text": "Czechia" },
-      { "id": "opt3", "text": "No Goals" }
+      {
+        "id": "opt1",
+        "text": "Canada"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Bosnia and Herzegovina"
+      }
     ]
   },
   {
-    "id": "kor-cze-3",
-    "title": "Match: Republic of Korea vs Czechia - How many goals will Republic of Korea score?",
-    "matchTime": "12-06-2026, 7:30 AM",
-    "lockAt": "2026-06-12T07:30:00+05:30",
+    "id": "usa-par-win",
+    "title": "Match: USA vs Paraguay - Who will win?",
+    "matchTime": "13-06-2026, 6:30 AM",
+    "lockAt": "2026-06-13T00:00:00+05:30",
     "status": "open",
     "options": [
-      { "id": "opt1", "text": "0" },
-      { "id": "opt2", "text": "1" },
-      { "id": "opt3", "text": "2" },
-      { "id": "opt4", "text": "3+" }
+      {
+        "id": "opt1",
+        "text": "USA"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Paraguay"
+      }
     ]
   },
   {
-    "id": "kor-cze-4",
-    "title": "Match: Republic of Korea vs Czechia - How many goals will Czechia score?",
-    "matchTime": "12-06-2026, 7:30 AM",
-    "lockAt": "2026-06-12T07:30:00+05:30",
+    "id": "qat-swi-win",
+    "title": "Match: Qatar vs Switzerland - Who will win?",
+    "matchTime": "14-06-2026, 12:30 AM",
+    "lockAt": "2026-06-14T00:00:00+05:30",
     "status": "open",
     "options": [
-      { "id": "opt1", "text": "0" },
-      { "id": "opt2", "text": "1" },
-      { "id": "opt3", "text": "2" },
-      { "id": "opt4", "text": "3+" }
+      {
+        "id": "opt1",
+        "text": "Qatar"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Switzerland"
+      }
     ]
   },
   {
-    "id": "kor-cze-5",
-    "title": "Match: Republic of Korea vs Czechia - Who will be Player of the Match?",
-    "matchTime": "12-06-2026, 7:30 AM",
-    "lockAt": "2026-06-12T07:30:00+05:30",
+    "id": "bra-mor-win",
+    "title": "Match: Brazil vs Morocco - Who will win?",
+    "matchTime": "14-06-2026, 3:30 AM",
+    "lockAt": "2026-06-14T00:00:00+05:30",
     "status": "open",
     "options": [
-      { "id": "opt1", "text": "Son Heung-min" },
-      { "id": "opt2", "text": "Lee Kang-in" },
-      { "id": "opt3", "text": "Hwang Hee-chan" },
-      { "id": "opt4", "text": "Patrik Schick" },
-      { "id": "opt5", "text": "Tomáš Souček" },
-      { "id": "opt6", "text": "Other" }
+      {
+        "id": "opt1",
+        "text": "Brazil"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Morocco"
+      }
+    ]
+  },
+  {
+    "id": "hai-sco-win",
+    "title": "Match: Haiti vs Scotland - Who will win?",
+    "matchTime": "14-06-2026, 6:30 AM",
+    "lockAt": "2026-06-14T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Haiti"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Scotland"
+      }
+    ]
+  },
+  {
+    "id": "aus-tur-win",
+    "title": "Match: Australia vs Turkey - Who will win?",
+    "matchTime": "14-06-2026, 9:30 AM",
+    "lockAt": "2026-06-14T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Australia"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Turkey"
+      }
+    ]
+  },
+  {
+    "id": "ger-cur-win",
+    "title": "Match: Germany vs Curacao - Who will win?",
+    "matchTime": "14-06-2026, 10:30 PM",
+    "lockAt": "2026-06-14T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Germany"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Curacao"
+      }
+    ]
+  },
+  {
+    "id": "net-jap-win",
+    "title": "Match: Netherlands vs Japan - Who will win?",
+    "matchTime": "15-06-2026, 1:30 AM",
+    "lockAt": "2026-06-15T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Netherlands"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Japan"
+      }
+    ]
+  },
+  {
+    "id": "ivo-ecu-win",
+    "title": "Match: Ivory Coast vs Ecuador - Who will win?",
+    "matchTime": "15-06-2026, 4:30 AM",
+    "lockAt": "2026-06-15T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Ivory Coast"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Ecuador"
+      }
+    ]
+  },
+  {
+    "id": "swe-tun-win",
+    "title": "Match: Sweden vs Tunisia - Who will win?",
+    "matchTime": "15-06-2026, 7:30 AM",
+    "lockAt": "2026-06-15T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Sweden"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Tunisia"
+      }
+    ]
+  },
+  {
+    "id": "spa-cap-win",
+    "title": "Match: Spain vs Cape Verde - Who will win?",
+    "matchTime": "15-06-2026, 9:30 PM",
+    "lockAt": "2026-06-15T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Spain"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Cape Verde"
+      }
+    ]
+  },
+  {
+    "id": "bel-egy-win",
+    "title": "Match: Belgium vs Egypt - Who will win?",
+    "matchTime": "16-06-2026, 12:30 AM",
+    "lockAt": "2026-06-16T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Belgium"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Egypt"
+      }
+    ]
+  },
+  {
+    "id": "sau-uru-win",
+    "title": "Match: Saudi Arabia vs Uruguay - Who will win?",
+    "matchTime": "16-06-2026, 3:30 AM",
+    "lockAt": "2026-06-16T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Saudi Arabia"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Uruguay"
+      }
+    ]
+  },
+  {
+    "id": "ira-new-win",
+    "title": "Match: Iran vs New Zealand - Who will win?",
+    "matchTime": "16-06-2026, 6:30 AM",
+    "lockAt": "2026-06-16T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Iran"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "New Zealand"
+      }
+    ]
+  },
+  {
+    "id": "fra-sen-win",
+    "title": "Match: France vs Senegal - Who will win?",
+    "matchTime": "17-06-2026, 12:30 AM",
+    "lockAt": "2026-06-17T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "France"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Senegal"
+      }
+    ]
+  },
+  {
+    "id": "ira-nor-win",
+    "title": "Match: Iraq vs Norway - Who will win?",
+    "matchTime": "17-06-2026, 3:30 AM",
+    "lockAt": "2026-06-17T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Iraq"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Norway"
+      }
+    ]
+  },
+  {
+    "id": "arg-alg-win",
+    "title": "Match: Argentina vs Algeria - Who will win?",
+    "matchTime": "17-06-2026, 6:30 AM",
+    "lockAt": "2026-06-17T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Argentina"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Algeria"
+      }
+    ]
+  },
+  {
+    "id": "aus-jor-win",
+    "title": "Match: Austria vs Jordan - Who will win?",
+    "matchTime": "17-06-2026, 9:30 AM",
+    "lockAt": "2026-06-17T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Austria"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Jordan"
+      }
+    ]
+  },
+  {
+    "id": "por-con-win",
+    "title": "Match: Portugal vs Congo DR - Who will win?",
+    "matchTime": "17-06-2026, 10:30 PM",
+    "lockAt": "2026-06-17T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Portugal"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Congo DR"
+      }
+    ]
+  },
+  {
+    "id": "eng-cro-win",
+    "title": "Match: England vs Croatia - Who will win?",
+    "matchTime": "18-06-2026, 1:30 AM",
+    "lockAt": "2026-06-18T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "England"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Croatia"
+      }
+    ]
+  },
+  {
+    "id": "gha-pan-win",
+    "title": "Match: Ghana vs Panama - Who will win?",
+    "matchTime": "18-06-2026, 4:30 AM",
+    "lockAt": "2026-06-18T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Ghana"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Panama"
+      }
+    ]
+  },
+  {
+    "id": "uzb-col-win",
+    "title": "Match: Uzbekistan vs Colombia - Who will win?",
+    "matchTime": "18-06-2026, 7:30 AM",
+    "lockAt": "2026-06-18T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Uzbekistan"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Colombia"
+      }
+    ]
+  },
+  {
+    "id": "cze-sou-win",
+    "title": "Match: Czechia vs South Africa - Who will win?",
+    "matchTime": "18-06-2026, 9:30 PM",
+    "lockAt": "2026-06-18T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Czechia"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "South Africa"
+      }
+    ]
+  },
+  {
+    "id": "swi-bos-win",
+    "title": "Match: Switzerland vs Bosnia and Herzegovina - Who will win?",
+    "matchTime": "19-06-2026, 12:30 AM",
+    "lockAt": "2026-06-19T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Switzerland"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Bosnia and Herzegovina"
+      }
+    ]
+  },
+  {
+    "id": "can-qat-win",
+    "title": "Match: Canada vs Qatar - Who will win?",
+    "matchTime": "19-06-2026, 3:30 AM",
+    "lockAt": "2026-06-19T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Canada"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Qatar"
+      }
+    ]
+  },
+  {
+    "id": "mex-rep-win",
+    "title": "Match: Mexico vs Republic of Korea - Who will win?",
+    "matchTime": "19-06-2026, 6:30 AM",
+    "lockAt": "2026-06-19T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Mexico"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Republic of Korea"
+      }
+    ]
+  },
+  {
+    "id": "usa-aus-win",
+    "title": "Match: USA vs Australia - Who will win?",
+    "matchTime": "20-06-2026, 12:30 AM",
+    "lockAt": "2026-06-20T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "USA"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Australia"
+      }
+    ]
+  },
+  {
+    "id": "sco-mor-win",
+    "title": "Match: Scotland vs Morocco - Who will win?",
+    "matchTime": "20-06-2026, 3:30 AM",
+    "lockAt": "2026-06-20T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Scotland"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Morocco"
+      }
+    ]
+  },
+  {
+    "id": "bra-hai-win",
+    "title": "Match: Brazil vs Haiti - Who will win?",
+    "matchTime": "20-06-2026, 6:00 AM",
+    "lockAt": "2026-06-20T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Brazil"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Haiti"
+      }
+    ]
+  },
+  {
+    "id": "tur-par-win",
+    "title": "Match: Turkey vs Paraguay - Who will win?",
+    "matchTime": "20-06-2026, 8:30 AM",
+    "lockAt": "2026-06-20T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Turkey"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Paraguay"
+      }
+    ]
+  },
+  {
+    "id": "net-swe-win",
+    "title": "Match: Netherlands vs Sweden - Who will win?",
+    "matchTime": "20-06-2026, 10:30 PM",
+    "lockAt": "2026-06-20T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Netherlands"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Sweden"
+      }
+    ]
+  },
+  {
+    "id": "ger-ivo-win",
+    "title": "Match: Germany vs Ivory Coast - Who will win?",
+    "matchTime": "21-06-2026, 1:30 AM",
+    "lockAt": "2026-06-21T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Germany"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Ivory Coast"
+      }
+    ]
+  },
+  {
+    "id": "ecu-cur-win",
+    "title": "Match: Ecuador vs Curacao - Who will win?",
+    "matchTime": "21-06-2026, 5:30 AM",
+    "lockAt": "2026-06-21T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Ecuador"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Curacao"
+      }
+    ]
+  },
+  {
+    "id": "tun-jap-win",
+    "title": "Match: Tunisia vs Japan - Who will win?",
+    "matchTime": "21-06-2026, 9:30 AM",
+    "lockAt": "2026-06-21T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Tunisia"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Japan"
+      }
+    ]
+  },
+  {
+    "id": "spa-sau-win",
+    "title": "Match: Spain vs Saudi Arabia - Who will win?",
+    "matchTime": "21-06-2026, 9:30 PM",
+    "lockAt": "2026-06-21T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Spain"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Saudi Arabia"
+      }
+    ]
+  },
+  {
+    "id": "bel-ira-win",
+    "title": "Match: Belgium vs Iran - Who will win?",
+    "matchTime": "22-06-2026, 12:30 AM",
+    "lockAt": "2026-06-22T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Belgium"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Iran"
+      }
+    ]
+  },
+  {
+    "id": "uru-cap-win",
+    "title": "Match: Uruguay vs Cape Verde - Who will win?",
+    "matchTime": "22-06-2026, 3:30 AM",
+    "lockAt": "2026-06-22T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Uruguay"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Cape Verde"
+      }
+    ]
+  },
+  {
+    "id": "new-egy-win",
+    "title": "Match: New Zealand vs Egypt - Who will win?",
+    "matchTime": "22-06-2026, 6:30 AM",
+    "lockAt": "2026-06-22T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "New Zealand"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Egypt"
+      }
+    ]
+  },
+  {
+    "id": "arg-aus-win",
+    "title": "Match: Argentina vs Austria - Who will win?",
+    "matchTime": "22-06-2026, 10:30 PM",
+    "lockAt": "2026-06-22T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Argentina"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Austria"
+      }
+    ]
+  },
+  {
+    "id": "fra-ira-win",
+    "title": "Match: France vs Iraq - Who will win?",
+    "matchTime": "23-06-2026, 2:30 AM",
+    "lockAt": "2026-06-23T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "France"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Iraq"
+      }
+    ]
+  },
+  {
+    "id": "nor-sen-win",
+    "title": "Match: Norway vs Senegal - Who will win?",
+    "matchTime": "23-06-2026, 5:30 AM",
+    "lockAt": "2026-06-23T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Norway"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Senegal"
+      }
+    ]
+  },
+  {
+    "id": "jor-alg-win",
+    "title": "Match: Jordan vs Algeria - Who will win?",
+    "matchTime": "23-06-2026, 8:30 AM",
+    "lockAt": "2026-06-23T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Jordan"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Algeria"
+      }
+    ]
+  },
+  {
+    "id": "por-uzb-win",
+    "title": "Match: Portugal vs Uzbekistan - Who will win?",
+    "matchTime": "23-06-2026, 10:30 PM",
+    "lockAt": "2026-06-23T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Portugal"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Uzbekistan"
+      }
+    ]
+  },
+  {
+    "id": "eng-gha-win",
+    "title": "Match: England vs Ghana - Who will win?",
+    "matchTime": "24-06-2026, 1:30 AM",
+    "lockAt": "2026-06-24T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "England"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Ghana"
+      }
+    ]
+  },
+  {
+    "id": "pan-cro-win",
+    "title": "Match: Panama vs Croatia - Who will win?",
+    "matchTime": "24-06-2026, 4:30 AM",
+    "lockAt": "2026-06-24T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Panama"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Croatia"
+      }
+    ]
+  },
+  {
+    "id": "col-con-win",
+    "title": "Match: Colombia vs Congo DR - Who will win?",
+    "matchTime": "24-06-2026, 7:30 AM",
+    "lockAt": "2026-06-24T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Colombia"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Congo DR"
+      }
+    ]
+  },
+  {
+    "id": "swi-can-win",
+    "title": "Match: Switzerland vs Canada - Who will win?",
+    "matchTime": "25-06-2026, 12:30 AM",
+    "lockAt": "2026-06-25T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Switzerland"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Canada"
+      }
+    ]
+  },
+  {
+    "id": "bos-qat-win",
+    "title": "Match: Bosnia and Herzegovina vs Qatar - Who will win?",
+    "matchTime": "25-06-2026, 12:30 AM",
+    "lockAt": "2026-06-25T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Bosnia and Herzegovina"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Qatar"
+      }
+    ]
+  },
+  {
+    "id": "sco-bra-win",
+    "title": "Match: Scotland vs Brazil - Who will win?",
+    "matchTime": "25-06-2026, 3:30 AM",
+    "lockAt": "2026-06-25T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Scotland"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Brazil"
+      }
+    ]
+  },
+  {
+    "id": "mor-hai-win",
+    "title": "Match: Morocco vs Haiti - Who will win?",
+    "matchTime": "25-06-2026, 3:30 AM",
+    "lockAt": "2026-06-25T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Morocco"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Haiti"
+      }
+    ]
+  },
+  {
+    "id": "cze-mex-win",
+    "title": "Match: Czechia vs Mexico - Who will win?",
+    "matchTime": "25-06-2026, 6:30 AM",
+    "lockAt": "2026-06-25T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Czechia"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Mexico"
+      }
+    ]
+  },
+  {
+    "id": "sou-rep-win",
+    "title": "Match: South Africa vs Republic of Korea - Who will win?",
+    "matchTime": "25-06-2026, 6:30 AM",
+    "lockAt": "2026-06-25T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "South Africa"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Republic of Korea"
+      }
+    ]
+  },
+  {
+    "id": "cur-ivo-win",
+    "title": "Match: Curacao vs Ivory Coast - Who will win?",
+    "matchTime": "26-06-2026, 1:30 AM",
+    "lockAt": "2026-06-26T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Curacao"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Ivory Coast"
+      }
+    ]
+  },
+  {
+    "id": "ecu-ger-win",
+    "title": "Match: Ecuador vs Germany - Who will win?",
+    "matchTime": "26-06-2026, 1:30 AM",
+    "lockAt": "2026-06-26T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Ecuador"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Germany"
+      }
+    ]
+  },
+  {
+    "id": "jap-swe-win",
+    "title": "Match: Japan vs Sweden - Who will win?",
+    "matchTime": "26-06-2026, 4:30 AM",
+    "lockAt": "2026-06-26T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Japan"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Sweden"
+      }
+    ]
+  },
+  {
+    "id": "tun-net-win",
+    "title": "Match: Tunisia vs Netherlands - Who will win?",
+    "matchTime": "26-06-2026, 4:30 AM",
+    "lockAt": "2026-06-26T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Tunisia"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Netherlands"
+      }
+    ]
+  },
+  {
+    "id": "tur-usa-win",
+    "title": "Match: Turkey vs USA - Who will win?",
+    "matchTime": "26-06-2026, 7:30 AM",
+    "lockAt": "2026-06-26T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Turkey"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "USA"
+      }
+    ]
+  },
+  {
+    "id": "par-aus-win",
+    "title": "Match: Paraguay vs Australia - Who will win?",
+    "matchTime": "26-06-2026, 7:30 AM",
+    "lockAt": "2026-06-26T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Paraguay"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Australia"
+      }
+    ]
+  },
+  {
+    "id": "nor-fra-win",
+    "title": "Match: Norway vs France - Who will win?",
+    "matchTime": "27-06-2026, 12:30 AM",
+    "lockAt": "2026-06-27T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Norway"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "France"
+      }
+    ]
+  },
+  {
+    "id": "sen-ira-win",
+    "title": "Match: Senegal vs Iraq - Who will win?",
+    "matchTime": "27-06-2026, 12:30 AM",
+    "lockAt": "2026-06-27T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Senegal"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Iraq"
+      }
+    ]
+  },
+  {
+    "id": "uru-spa-win",
+    "title": "Match: Uruguay vs Spain - Who will win?",
+    "matchTime": "27-06-2026, 5:30 AM",
+    "lockAt": "2026-06-27T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Uruguay"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Spain"
+      }
+    ]
+  },
+  {
+    "id": "cap-sau-win",
+    "title": "Match: Cape Verde vs Saudi Arabia - Who will win?",
+    "matchTime": "27-06-2026, 5:30 AM",
+    "lockAt": "2026-06-27T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Cape Verde"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Saudi Arabia"
+      }
+    ]
+  },
+  {
+    "id": "egy-ira-win",
+    "title": "Match: Egypt vs Iran - Who will win?",
+    "matchTime": "27-06-2026, 8:30 AM",
+    "lockAt": "2026-06-27T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Egypt"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Iran"
+      }
+    ]
+  },
+  {
+    "id": "new-bel-win",
+    "title": "Match: New Zealand vs Belgium - Who will win?",
+    "matchTime": "27-06-2026, 8:30 AM",
+    "lockAt": "2026-06-27T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "New Zealand"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Belgium"
+      }
+    ]
+  },
+  {
+    "id": "pan-eng-win",
+    "title": "Match: Panama vs England - Who will win?",
+    "matchTime": "28-06-2026, 2:30 AM",
+    "lockAt": "2026-06-28T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Panama"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "England"
+      }
+    ]
+  },
+  {
+    "id": "cro-gha-win",
+    "title": "Match: Croatia vs Ghana - Who will win?",
+    "matchTime": "28-06-2026, 2:30 AM",
+    "lockAt": "2026-06-28T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Croatia"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Ghana"
+      }
+    ]
+  },
+  {
+    "id": "con-uzb-win",
+    "title": "Match: Congo DR vs Uzbekistan - Who will win?",
+    "matchTime": "28-06-2026, 5:00 AM",
+    "lockAt": "2026-06-28T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Congo DR"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Uzbekistan"
+      }
+    ]
+  },
+  {
+    "id": "col-por-win",
+    "title": "Match: Colombia vs Portugal - Who will win?",
+    "matchTime": "28-06-2026, 5:00 AM",
+    "lockAt": "2026-06-28T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Colombia"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Portugal"
+      }
+    ]
+  },
+  {
+    "id": "jor-arg-win",
+    "title": "Match: Jordan vs Argentina - Who will win?",
+    "matchTime": "28-06-2026, 7:30 AM",
+    "lockAt": "2026-06-28T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Jordan"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Argentina"
+      }
+    ]
+  },
+  {
+    "id": "alg-aus-win",
+    "title": "Match: Algeria vs Austria - Who will win?",
+    "matchTime": "28-06-2026, 7:30 AM",
+    "lockAt": "2026-06-28T00:00:00+05:30",
+    "status": "open",
+    "options": [
+      {
+        "id": "opt1",
+        "text": "Algeria"
+      },
+      {
+        "id": "opt2",
+        "text": "Draw"
+      },
+      {
+        "id": "opt3",
+        "text": "Austria"
+      }
     ]
   }
 ]
