@@ -144,6 +144,7 @@ export function Analytics() {
           </div>
         </div>
       </div>
+      </div>
     </Layout>
   );
 }
