@@ -72,7 +72,7 @@ function loadAccuracyScores() {
         const email = row['Email'];
         const score = parseInt(row['Accuracy Points'], 10);
         if (email && !isNaN(score)) {
-          accuracyMap[email] = score;
+          accuracyMap[email] = score === 0 ? 100 : score;
         }
       })
       .on('end', () => {
