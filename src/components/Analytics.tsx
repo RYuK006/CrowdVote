@@ -8,22 +8,24 @@ export function Analytics() {
 
   return (
     <Layout user={auth.currentUser}>
-      <div className="h-full flex flex-col relative pb-20 px-4 sm:px-8 max-w-7xl mx-auto w-full group">
+      <div className="h-full flex flex-col pb-20 px-4 sm:px-8 max-w-7xl mx-auto w-full group">
         
-        {/* Work in Progress Overlay */}
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-[var(--bg-primary)]/40 backdrop-blur-md rounded-3xl m-4">
-          <div className="glass px-8 py-6 rounded-3xl border border-emerald-500/30 flex flex-col items-center bg-black/40 text-center space-y-3 shadow-2xl">
-            <Cpu className="w-10 h-10 text-emerald-500 animate-pulse" />
-            <h2 className="text-2xl font-bold tracking-tighter text-[var(--text-primary)]">Work In Progress</h2>
-            <p className="text-[var(--text-secondary)] font-mono text-xs uppercase tracking-widest">
-              AI Command Center is currently under development.
-            </p>
+        {/* Masked Content Container */}
+        <div className="relative">
+          {/* Work in Progress Overlay */}
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-[var(--bg-primary)]/40 backdrop-blur-md rounded-3xl m-4">
+            <div className="glass px-8 py-6 rounded-3xl border border-emerald-500/30 flex flex-col items-center bg-black/40 text-center space-y-3 shadow-2xl">
+              <Cpu className="w-10 h-10 text-emerald-500 animate-pulse" />
+              <h2 className="text-2xl font-bold tracking-tighter text-[var(--text-primary)]">Work In Progress</h2>
+              <p className="text-[var(--text-secondary)] font-mono text-xs uppercase tracking-widest">
+                AI Command Center is currently under development.
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Faded Content */}
-        <div className="pt-8 pb-12 space-y-4 opacity-40 pointer-events-none select-none">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          {/* Faded Content */}
+          <div className="pt-8 pb-12 space-y-4 opacity-40 pointer-events-none select-none">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-emerald-500 font-bold">
                 <Cpu className="w-6 h-6" />
@@ -140,7 +142,6 @@ export function Analytics() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </Layout>

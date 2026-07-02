@@ -62,6 +62,28 @@ try {
 
 const CURRENT_PHASE: "pre_election" | "campaign" | "final" | "exit" = "pre_election";
 
+let accuracyMap: Record<string, number> = {};
+function loadAccuracyScores() {
+  const targetPath = path.join(__dirname, '..', 'result.csv');
+  if (fs.existsSync(targetPath)) {
+    fs.createReadStream(targetPath)
+      .pipe(csvParser())
+      .on('data', (row: any) => {
+        const email = row['Email'];
+        const score = parseInt(row['Accuracy Points'], 10);
+        if (email && !isNaN(score)) {
+          accuracyMap[email] = score;
+        }
+      })
+      .on('end', () => {
+        console.log(`Loaded ${Object.keys(accuracyMap).length} accuracy scores from result.csv`);
+      });
+  } else {
+    console.warn("⚠️ result.csv not found at", targetPath);
+  }
+}
+loadAccuracyScores();
+
 async function initData() {
   if (!db) {
     console.log("Database not initialized. Skipping poll sync.");
@@ -157,7 +179,12 @@ app.get("/api/polls/:id", async (req, res) => {
         const usersSnap = await db.collection("users").get();
         usersSnap.docs.forEach((d: any) => {
           const u = d.data();
-          userScores[d.id] = (u.points || 0) + (u.score || 0);
+          const email = u.email;
+          if (email && accuracyMap[email] !== undefined) {
+            userScores[d.id] = accuracyMap[email];
+          } else {
+            userScores[d.id] = 100;
+          }
         });
       }
 
