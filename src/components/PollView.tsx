@@ -116,6 +116,8 @@ export function PollView() {
     );
   }
 
+  const totalPollScore = poll?.optionScores ? Object.values(poll.optionScores).reduce((a, b) => a + b, 0) : 0;
+
   return (
     <Layout user={auth.currentUser}>
       <div className="h-full flex flex-col relative pb-20 px-4 sm:px-8 max-w-4xl mx-auto w-full">
@@ -171,7 +173,7 @@ export function PollView() {
                                       <h5 className="text-lg font-bold tracking-tight leading-snug text-[var(--text-primary)]">{option.text || option.name}</h5>
                                       {poll.optionScores !== undefined && (
                                         <div className="text-xs font-mono text-[var(--text-secondary)] mt-1 font-bold">
-                                          Total Score: {(poll.optionScores[option.id] || 0).toLocaleString()}
+                                          Weight: {totalPollScore > 0 ? (((poll.optionScores[option.id] || 0) / totalPollScore) * 100).toFixed(1) : "0.0"}%
                                         </div>
                                       )}
                                   </div>
