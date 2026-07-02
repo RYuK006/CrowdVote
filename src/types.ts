@@ -23,7 +23,7 @@ export interface Poll {
   options: PollOption[];
   lockAt?: string;
   matchTime?: string;
-  optionCounts?: Record<string, number>;
+  optionScores?: Record<string, number>;
 }
 
 export interface Vote {

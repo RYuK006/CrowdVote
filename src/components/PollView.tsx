@@ -169,9 +169,9 @@ export function PollView() {
                               <div className="flex items-center gap-3 w-full">
                                   <div className="flex-1 min-w-0 pb-1 pl-2">
                                       <h5 className="text-lg font-bold tracking-tight leading-snug text-[var(--text-primary)]">{option.text || option.name}</h5>
-                                      {poll.optionCounts !== undefined && (
+                                      {poll.optionScores !== undefined && (
                                         <div className="text-xs font-mono text-[var(--text-secondary)] mt-1 font-bold">
-                                          {(poll.optionCounts[option.id] || 0)} user{((poll.optionCounts[option.id] || 0) === 1) ? '' : 's'} picked this
+                                          Total Score: {(poll.optionScores[option.id] || 0).toLocaleString()}
                                         </div>
                                       )}
                                   </div>

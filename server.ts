@@ -149,13 +149,26 @@ app.get("/api/polls/:id", async (req, res) => {
       const pollData = docSnap.data();
       
       const votesSnap = await db.collection("global_votes").where("pollId", "==", req.params.id).get();
-      const optionCounts: Record<string, number> = {};
+      
+      const userIds = [...new Set(votesSnap.docs.map((doc: any) => doc.data().userId))];
+      const userScores: Record<string, number> = {};
+      
+      if (userIds.length > 0) {
+        const usersSnap = await db.collection("users").get();
+        usersSnap.docs.forEach((d: any) => {
+          const u = d.data();
+          userScores[d.id] = (u.points || 0) + (u.score || 0);
+        });
+      }
+
+      const optionScores: Record<string, number> = {};
       votesSnap.docs.forEach((doc: any) => {
         const vote = doc.data();
-        optionCounts[vote.selectedOption] = (optionCounts[vote.selectedOption] || 0) + 1;
+        const userScore = userScores[vote.userId] || 0;
+        optionScores[vote.selectedOption] = (optionScores[vote.selectedOption] || 0) + userScore;
       });
 
-      res.json({ id: docSnap.id, ...pollData, optionCounts });
+      res.json({ id: docSnap.id, ...pollData, optionScores });
     } else {
       res.status(404).json({ error: "Poll not found" });
     }
