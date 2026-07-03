@@ -430,7 +430,7 @@ app.get("/api/admin/metrics", authenticateToken, requireAdmin, async (req: any, 
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
     const usersSnap = await db.collection("users").count().get();
-    const predsSnap = await db.collection("global_predictions").count().get();
+    const predsSnap = await db.collection("global_votes").count().get();
     
     // Get stats per day (Last 7 days)
     const sevenDaysAgo = new Date();
@@ -464,17 +464,16 @@ app.get("/api/admin/nodes", authenticateToken, requireAdmin, async (req: any, re
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
     const usersSnap = await db.collection("users").limit(100).get();
-    const nodes = await Promise.all(usersSnap.docs.map(async (uDoc) => {
+    const nodes = usersSnap.docs.map((uDoc) => {
       const userData = uDoc.data();
-      const predCountSnap = await db.collection("global_predictions").where("userId", "==", uDoc.id).count().get();
       return {
         uid: uDoc.id,
         displayName: userData.displayName || "Anonymous Agent",
         email: userData.email || "No Email",
-        predictionCount: predCountSnap.data().count,
+        predictionCount: userData.predictionCount || 0,
         createdAt: userData.createdAt
       };
-    }));
+    });
     res.json(nodes);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -484,7 +483,7 @@ app.get("/api/admin/nodes", authenticateToken, requireAdmin, async (req: any, re
 app.get("/api/admin/predictions/recent", authenticateToken, requireAdmin, async (req: any, res: any) => {
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
-    const snap = await db.collection("global_predictions")
+    const snap = await db.collection("global_votes")
       .orderBy("timestamp", "desc")
       .limit(20)
       .get();
