@@ -520,16 +520,20 @@ app.get("/api/admin/export", authenticateToken, requireAdmin, async (req: any, r
     
     const usersSnap = await db.collection("users").get();
     const usersMap = new Map();
-    usersSnap.docs.forEach(doc => usersMap.set(doc.id, doc.data().displayName || doc.data().email || doc.id));
+    usersSnap.docs.forEach(doc => usersMap.set(doc.id, doc.data()));
 
     const pollsSnap = await db.collection("world_cup_polls").get();
     const pollsMap = new Map();
     pollsSnap.docs.forEach(doc => pollsMap.set(doc.id, doc.data()));
 
-    let csv = "UserName,PollName,SelectedOption,Confidence,Timestamp\n";
+    let csv = "UserName,Email,AccuracyScore,PollName,SelectedOption,Timestamp\n";
     snap.docs.forEach(doc => {
       const d = doc.data();
-      const userName = usersMap.get(d.userId) || d.userId;
+      const user = usersMap.get(d.userId) || {};
+      const userName = user.displayName || user.email || d.userId;
+      const userEmail = user.email || "Unknown";
+      const accuracyScore = user.accuracyScore !== undefined ? user.accuracyScore : 100;
+      
       const poll = pollsMap.get(d.pollId);
       const pollName = poll ? poll.title : d.pollId;
       let optionName = d.selectedOption;
@@ -539,10 +543,11 @@ app.get("/api/admin/export", authenticateToken, requireAdmin, async (req: any, r
       }
       
       const safeUserName = `"${String(userName).replace(/"/g, '""')}"`;
+      const safeEmail = `"${String(userEmail).replace(/"/g, '""')}"`;
       const safePollName = `"${String(pollName).replace(/"/g, '""')}"`;
       const safeOptionName = `"${String(optionName).replace(/"/g, '""')}"`;
 
-      csv += `${safeUserName},${safePollName},${safeOptionName},${d.confidence},${d.timestamp}\n`;
+      csv += `${safeUserName},${safeEmail},${accuracyScore},${safePollName},${safeOptionName},${d.timestamp}\n`;
     });
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename=crowdvote_export.csv');
