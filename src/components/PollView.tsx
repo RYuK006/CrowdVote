@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, Info, Lock, Trophy, RefreshCw, Database } from "lucide-react";
+import { ChevronLeft, Info, Lock, Trophy, RefreshCw, Database, Sparkles, ExternalLink, Flame } from "lucide-react";
 import { cn } from "../lib/utils";
 import { auth } from "../firebase";
 import { Layout } from "./Layout";
 import { useTheme } from "../context/ThemeContext";
 import { Poll } from "../types";
+import { RoastRoomCouncil } from "./RoastRoomCouncil";
 
 export function PollView() {
   const { theme } = useTheme();
@@ -98,8 +99,10 @@ export function PollView() {
   if (loading) {
     return (
       <Layout user={auth.currentUser}>
-        <div className="flex items-center justify-center h-full text-emerald-500 font-mono tracking-widest uppercase text-sm animate-pulse">
-          Loading Poll Data...
+        <div className="flex items-center justify-center h-full">
+          <div className="animate-pulse font-mono text-sm tracking-widest text-[var(--text-secondary)]">
+            FETCHING SWARM NODE...
+          </div>
         </div>
       </Layout>
     );
@@ -117,6 +120,7 @@ export function PollView() {
   }
 
   const totalPollScore = poll?.optionScores ? Object.values(poll.optionScores).reduce((a, b) => a + b, 0) : 0;
+  const isSponsored = Boolean(poll.isSponsored);
 
   return (
     <Layout user={auth.currentUser}>
@@ -128,15 +132,72 @@ export function PollView() {
           <ChevronLeft className="w-4 h-4" /> Back to Polls
         </button>
 
-        <div className="glass p-8 sm:p-12 rounded-[40px] border border-[var(--glass-border)] bg-[var(--glass-bg)] shadow-xl mt-4">
-          <div className="space-y-4 mb-10">
-            <div className="inline-block px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-500 font-extrabold uppercase tracking-widest">
-              {poll.category || "General Poll"}
+        {/* Sponsored Banner if applicable */}
+        {isSponsored && (
+          <div className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border border-amber-500/30 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-amber-500 text-black">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono uppercase tracking-widest font-extrabold text-amber-400">
+                    Sponsored Prediction Poll
+                  </span>
+                  <span className="font-bold text-sm text-white">
+                    {poll.sponsorName}
+                  </span>
+                </div>
+                {poll.sponsorReward && (
+                  <p className="text-xs font-mono text-amber-300 font-semibold mt-0.5">
+                    🎁 Reward: {poll.sponsorReward}
+                  </p>
+                )}
+              </div>
             </div>
+
+            {poll.sponsorUrl && (
+              <a
+                href={poll.sponsorUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-mono font-bold flex items-center gap-1.5 transition-colors border border-amber-500/30 whitespace-nowrap"
+              >
+                Visit Partner <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Main Poll Card */}
+        <div className={cn(
+          "glass p-8 sm:p-12 rounded-[40px] border shadow-xl mt-2",
+          isSponsored
+            ? "border-amber-500/30 bg-gradient-to-b from-amber-500/5 via-[var(--glass-bg)] to-transparent"
+            : "border-[var(--glass-border)] bg-[var(--glass-bg)]"
+        )}>
+          <div className="space-y-4 mb-10">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className={cn(
+                "inline-block px-3 py-1 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-widest border",
+                isSponsored
+                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                  : "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
+              )}>
+                {poll.category || "General Poll"}
+              </span>
+
+              {poll.tags && poll.tags.map((tag: string) => (
+                <span key={tag} className="text-[9px] font-mono text-[var(--text-secondary)] px-2 py-0.5 rounded-full bg-black/10">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+
             <h1 className="text-3xl sm:text-5xl font-bold tracking-tighter text-[var(--text-primary)]">{poll.title}</h1>
             {poll.matchTime && (
               <p className="text-emerald-500 font-mono text-sm font-bold uppercase tracking-widest">
-                Match Time: {poll.matchTime}
+                Scheduled: {poll.matchTime}
               </p>
             )}
             <p className="text-[var(--text-secondary)] text-lg">{poll.description}</p>
@@ -150,7 +211,7 @@ export function PollView() {
               )}>Choose Your Option</h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {poll.options.map((option, idx) => {
+                  {poll.options.map((option) => {
                       const isSelected = vote?.selectedOption === option.id;
                       const isExpired = poll.lockAt ? new Date() > new Date(poll.lockAt) : false;
                       const isDisabled = locked || poll.status === "closed" || isExpired;
@@ -163,28 +224,31 @@ export function PollView() {
                                   "p-5 rounded-[24px] border transition-all duration-500 text-left relative overflow-hidden group flex flex-col gap-4 shadow-sm",
                                   isSelected
                                       ? "bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
-                                      : "bg-[var(--glass-bg)] border-[var(--glass-border)] hover:border-emerald-500/30",
-                                  isDisabled && "opacity-80 cursor-not-allowed"
+                                      : isDisabled
+                                      ? "opacity-60 cursor-not-allowed bg-black/5 border-[var(--glass-border)]"
+                                      : "bg-black/5 hover:bg-black/10 border-[var(--glass-border)] hover:border-emerald-500/30"
                               )}
                           >
-                              <div className="absolute top-0 left-0 w-1.5 h-full transition-transform duration-500 bg-[var(--glass-border)] group-hover:bg-emerald-500/50" />
-                              <div className="flex items-center gap-3 w-full">
-                                  <div className="flex-1 min-w-0 pb-1 pl-2">
-                                      <h5 className="text-lg font-bold tracking-tight leading-snug text-[var(--text-primary)]">{option.text || option.name}</h5>
-                                      {poll.optionScores !== undefined && (
-                                        <div className="text-xs font-mono text-[var(--text-secondary)] mt-1 font-bold">
-                                          Weight: {totalPollScore > 0 ? (((poll.optionScores[option.id] || 0) / totalPollScore) * 100).toFixed(1) : "0.0"}%
-                                        </div>
-                                      )}
-                                  </div>
+                              <div className="flex items-center justify-between w-full">
+                                  <span className="font-bold text-lg text-[var(--text-primary)] leading-tight">{option.text || option.name}</span>
+                                  {isSelected && (
+                                      <div className="w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" />
+                                  )}
                               </div>
-                              {isSelected && (
-                                  <div className="absolute top-1/2 -translate-y-1/2 right-6">
-                                      <motion.div 
-                                         layoutId="active-dot"
-                                         className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,1)]" 
-                                      />
+
+                              {totalPollScore > 0 && poll.optionScores && (
+                                <div className="w-full space-y-1 mt-auto">
+                                  <div className="flex justify-between text-[10px] font-mono text-[var(--text-secondary)]">
+                                    <span>Consensus Weight</span>
+                                    <span>{Math.round(((poll.optionScores[option.id] || 0) / totalPollScore) * 100)}%</span>
                                   </div>
+                                  <div className="w-full h-1.5 rounded-full bg-black/10 overflow-hidden">
+                                    <div
+                                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                                      style={{ width: `${Math.round(((poll.optionScores[option.id] || 0) / totalPollScore) * 100)}%` }}
+                                    />
+                                  </div>
+                                </div>
                               )}
                           </button>
                       );
@@ -192,41 +256,43 @@ export function PollView() {
               </div>
             </div>
 
+            {/* Confidence Slider */}
             {vote?.selectedOption && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-                <div className="flex items-center justify-between">
-                    <h4 className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-[0.4em] font-extrabold">Your Conviction Level</h4>
-                    <div className="flex items-end gap-3">
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4 p-6 rounded-3xl bg-[var(--glass-border)]/30 border border-[var(--glass-border)]"
+              >
+                <div className="flex justify-between items-center">
+                    <div>
+                      <h4 className="text-xs font-mono uppercase tracking-widest font-extrabold text-[var(--text-primary)]">Confidence Level</h4>
+                      <p className="text-xs text-[var(--text-secondary)] font-medium">Higher confidence magnifies your accuracy weight in swarm consensus.</p>
+                    </div>
+                    <div className="text-right">
                       <span className={cn(
                         "text-[10px] font-mono uppercase font-extrabold mb-1",
                         isDark ? "text-emerald-500" : "text-emerald-700"
                       )}>
                         { vote.confidence < 40 ? "LOW" : vote.confidence < 80 ? "MEDIUM" : "HIGH" }
                       </span>
-                      <span className={cn(
-                        "text-3xl sm:text-4xl font-bold font-mono tracking-tighter italic",
-                        isDark ? "text-emerald-500" : "text-emerald-700"
-                      )}>{vote.confidence}%</span>
+                      <div className="text-3xl font-bold font-mono tracking-tighter text-emerald-500">{vote.confidence}%</div>
                     </div>
                 </div>
-                <div className="relative group">
-                    <input 
-                        type="range"
-                        min="10"
-                        max="100"
-                        step="5"
-                        value={vote.confidence}
-                        onChange={(e) => handleConfidence(parseInt(e.target.value))}
-                        disabled={locked || poll.status === "closed"}
-                        className={cn(
-                            "w-full h-3 rounded-full appearance-none cursor-pointer accent-emerald-500 disabled:opacity-20 transition-all font-bold",
-                            isDark ? "bg-white/10" : "bg-black/10"
-                        )}
-                    />
-                </div>
+
+                <input 
+                  type="range"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value={vote.confidence}
+                  onChange={(e) => handleConfidence(parseInt(e.target.value))}
+                  disabled={locked || poll.status === "closed"}
+                  className="w-full h-3 rounded-full appearance-none cursor-pointer accent-emerald-500 disabled:opacity-20 transition-all font-bold bg-black/10"
+                />
               </motion.div>
             )}
 
+            {/* Lock in Vote Button */}
             <div className="pt-4">
                 {(() => {
                   const isExpired = poll.lockAt ? new Date() > new Date(poll.lockAt) : false;
@@ -234,9 +300,9 @@ export function PollView() {
                   if (locked) {
                     return (
                       <div className="w-full py-8 sm:py-10 rounded-[32px] bg-emerald-500/10 border border-emerald-500/30 flex flex-col items-center justify-center gap-2">
-                          <Lock className="w-8 h-8 text-emerald-700 mb-2" />
-                          <span className="text-xl sm:text-2xl font-bold text-emerald-700 tracking-[0.2em] uppercase italic">Vote Submitted</span>
-                          <p className="text-[10px] font-mono text-emerald-800 uppercase tracking-[0.2em] font-extrabold">Synched to Neural Mesh</p>
+                          <Lock className="w-8 h-8 text-emerald-600 mb-2" />
+                          <span className="text-xl sm:text-2xl font-bold text-emerald-600 tracking-[0.2em] uppercase italic">Vote Submitted</span>
+                          <p className="text-[10px] font-mono text-emerald-700 uppercase tracking-[0.2em] font-extrabold">Synched to Neural Mesh</p>
                       </div>
                     );
                   }
@@ -244,7 +310,7 @@ export function PollView() {
                     return (
                       <div className="w-full py-8 sm:py-10 rounded-[32px] bg-gray-500/10 border border-gray-500/30 flex flex-col items-center justify-center gap-2">
                           <Lock className="w-8 h-8 text-gray-500 mb-2" />
-                          <span className="text-xl sm:text-2xl font-bold text-gray-500 tracking-[0.2em] uppercase italic">MATCH STARTED</span>
+                          <span className="text-xl sm:text-2xl font-bold text-gray-500 tracking-[0.2em] uppercase italic">TIME EXPIRED</span>
                           <p className="text-[10px] font-mono text-gray-500 uppercase tracking-[0.2em] font-extrabold">Poll Locked</p>
                       </div>
                     );
@@ -256,10 +322,7 @@ export function PollView() {
                         className={cn(
                             "w-full py-6 sm:py-8 rounded-[32px] font-bold text-xl transition-all duration-300 flex items-center justify-center gap-4 relative overflow-hidden group active:scale-[0.98]",
                             !vote?.selectedOption || saving || poll.status === "closed"
-                                ? cn(
-                                    "bg-[var(--glass-bg)] border-2 border-dashed opacity-60 grayscale cursor-not-allowed",
-                                    isDark ? "border-[var(--glass-border)] text-[var(--text-secondary)]" : "border-slate-400 text-slate-700 font-extrabold"
-                                  )
+                                ? "bg-[var(--glass-bg)] border-2 border-dashed opacity-60 grayscale cursor-not-allowed border-[var(--glass-border)] text-[var(--text-secondary)]"
                                 : "bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 text-white shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] hover:scale-[1.01] ring-1 ring-white/20"
                         )}
                     >
@@ -267,10 +330,7 @@ export function PollView() {
                             <RefreshCw className="w-7 h-7 animate-spin" />
                         ) : (
                             <>
-                                <Database className={cn(
-                                    "w-6 h-6 transition-transform duration-300",
-                                    vote?.selectedOption ? "group-hover:scale-110" : ""
-                                )} />
+                                <Database className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
                                 {poll.status === "closed" ? "POLL CLOSED" : "LOCK IN VOTE"}
                             </>
                         )}
@@ -278,6 +338,7 @@ export function PollView() {
                   );
                 })()}
             </div>
+
             {message && (
                 <div className={cn(
                     "p-4 rounded-xl text-center text-sm font-bold animate-in fade-in slide-in-from-bottom-2",
@@ -288,6 +349,9 @@ export function PollView() {
             )}
           </div>
         </div>
+
+        {/* Roast Room Council Debate Section */}
+        <RoastRoomCouncil poll={poll} />
       </div>
     </Layout>
   );
