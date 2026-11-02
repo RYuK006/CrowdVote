@@ -985,6 +985,397 @@ app.get("/api/chat/messages/:partnerId", authenticateToken, async (req: any, res
   }
 });
 
+
+// ==========================================
+// SOCIAL SYSTEM: FOLLOWERS, FOLLOWING & FRIENDS
+// ==========================================
+
+function getFriendDocId(uidA: string, uidB: string): string {
+  return [uidA, uidB].sort().join("_");
+}
+
+// 1. Follow a user
+app.post("/api/user/follow/:targetUid", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const targetUid = req.params.targetUid;
+
+    if (uid === targetUid) {
+      return res.status(400).json({ error: "Cannot follow yourself" });
+    }
+
+    const followDocId = `${uid}_${targetUid}`;
+    await db.collection("follows").doc(followDocId).set({
+      followerId: uid,
+      followingId: targetUid,
+      createdAt: new Date().toISOString()
+    });
+
+    // Check if target follows user back (mutual friendship)
+    const reverseFollowSnap = await db.collection("follows").doc(`${targetUid}_${uid}`).get();
+    const isFriend = reverseFollowSnap.exists;
+
+    if (isFriend) {
+      const friendDocId = getFriendDocId(uid, targetUid);
+      await db.collection("friends").doc(friendDocId).set({
+        user1: [uid, targetUid].sort()[0],
+        user2: [uid, targetUid].sort()[1],
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+    }
+
+    res.json({ success: true, isFollowing: true, isFriend });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 2. Unfollow a user
+app.post("/api/user/unfollow/:targetUid", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const targetUid = req.params.targetUid;
+
+    const followDocId = `${uid}_${targetUid}`;
+    await db.collection("follows").doc(followDocId).delete();
+
+    // If mutual friendship existed, remove it
+    const friendDocId = getFriendDocId(uid, targetUid);
+    await db.collection("friends").doc(friendDocId).delete().catch(() => {});
+
+    res.json({ success: true, isFollowing: false, isFriend: false });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 3. Get social profile stats and relationship for any user
+app.get("/api/user/:targetUid/social-profile", async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const targetUid = req.params.targetUid;
+    
+    // Optional viewer auth
+    let viewerUid: string | null = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const decoded = await admin.auth().verifyIdToken(authHeader.split("Bearer ")[1]);
+        viewerUid = decoded.uid;
+      } catch {}
+    }
+
+    // Fetch user basic profile
+    const userDoc = await db.collection("users").doc(targetUid).get();
+    const userData = userDoc.exists ? userDoc.data() : null;
+
+    // Fetch followers & following count
+    const [followersSnap, followingSnap, friendsSnap] = await Promise.all([
+      db.collection("follows").where("followingId", "==", targetUid).get(),
+      db.collection("follows").where("followerId", "==", targetUid).get(),
+      db.collection("friends").where("user1", "==", targetUid).get()
+    ]);
+    const friendsSnap2 = await db.collection("friends").where("user2", "==", targetUid).get();
+    const friendsCount = friendsSnap.size + friendsSnap2.size;
+
+    let isFollowing = false;
+    let isFollowedBy = false;
+    let isFriend = false;
+    let friendRequestStatus = "none";
+
+    if (viewerUid && viewerUid !== targetUid) {
+      const [fwdSnap, revSnap, fReqSent, fReqRecv] = await Promise.all([
+        db.collection("follows").doc(`${viewerUid}_${targetUid}`).get(),
+        db.collection("follows").doc(`${targetUid}_${viewerUid}`).get(),
+        db.collection("friend_requests").doc(`${viewerUid}_${targetUid}`).get(),
+        db.collection("friend_requests").doc(`${targetUid}_${viewerUid}`).get()
+      ]);
+
+      isFollowing = fwdSnap.exists;
+      isFollowedBy = revSnap.exists;
+      isFriend = isFollowing && isFollowedBy;
+
+      if (isFriend) {
+        friendRequestStatus = "accepted";
+      } else if (fReqSent.exists && fReqSent.data()?.status === "pending") {
+        friendRequestStatus = "pending_sent";
+      } else if (fReqRecv.exists && fReqRecv.data()?.status === "pending") {
+        friendRequestStatus = "pending_received";
+      }
+    }
+
+    // Fetch user's created polls
+    const pollsSnap = await db.collection("world_cup_polls")
+      .where("createdBy", "==", targetUid)
+      .limit(30)
+      .get();
+    const createdPolls = pollsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    res.json({
+      user: userData || { uid: targetUid, displayName: "Prediction Node" },
+      stats: {
+        followersCount: followersSnap.size,
+        followingCount: followingSnap.size,
+        friendsCount,
+        isFollowing,
+        isFollowedBy,
+        isFriend,
+        friendRequestStatus
+      },
+      createdPolls
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 4. Get list of followers
+app.get("/api/user/:targetUid/followers", async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const targetUid = req.params.targetUid;
+    let viewerUid = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const decoded = await admin.auth().verifyIdToken(authHeader.split("Bearer ")[1]);
+        viewerUid = decoded.uid;
+      } catch {}
+    }
+
+    const followsSnap = await db.collection("follows").where("followingId", "==", targetUid).limit(100).get();
+    const followerIds = followsSnap.docs.map(d => d.data().followerId);
+
+    if (followerIds.length === 0) return res.json([]);
+
+    const usersSnap = await Promise.all(
+      followerIds.slice(0, 50).map(id => db.collection("users").doc(id).get())
+    );
+
+    const followers = await Promise.all(
+      usersSnap.map(async (doc) => {
+        const d = doc.exists ? doc.data() : { uid: doc.id, displayName: "Predictor" };
+        let isFollowing = false;
+        let isFriend = false;
+        if (viewerUid && viewerUid !== doc.id) {
+          const check = await db.collection("follows").doc(`${viewerUid}_${doc.id}`).get();
+          isFollowing = check.exists;
+          if (isFollowing) {
+            const rev = await db.collection("follows").doc(`${doc.id}_${viewerUid}`).get();
+            isFriend = rev.exists;
+          }
+        }
+        return {
+          uid: doc.id,
+          displayName: d?.displayName || "Prediction Node",
+          email: d?.email || "",
+          accuracy: d?.accuracy || 100,
+          isFollowing,
+          isFriend
+        };
+      })
+    );
+
+    res.json(followers);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 5. Get list of following
+app.get("/api/user/:targetUid/following", async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const targetUid = req.params.targetUid;
+    let viewerUid = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const decoded = await admin.auth().verifyIdToken(authHeader.split("Bearer ")[1]);
+        viewerUid = decoded.uid;
+      } catch {}
+    }
+
+    const followsSnap = await db.collection("follows").where("followerId", "==", targetUid).limit(100).get();
+    const followingIds = followsSnap.docs.map(d => d.data().followingId);
+
+    if (followingIds.length === 0) return res.json([]);
+
+    const usersSnap = await Promise.all(
+      followingIds.slice(0, 50).map(id => db.collection("users").doc(id).get())
+    );
+
+    const following = await Promise.all(
+      usersSnap.map(async (doc) => {
+        const d = doc.exists ? doc.data() : { uid: doc.id, displayName: "Predictor" };
+        let isFollowing = false;
+        let isFriend = false;
+        if (viewerUid && viewerUid !== doc.id) {
+          const check = await db.collection("follows").doc(`${viewerUid}_${doc.id}`).get();
+          isFollowing = check.exists;
+          if (isFollowing) {
+            const rev = await db.collection("follows").doc(`${doc.id}_${viewerUid}`).get();
+            isFriend = rev.exists;
+          }
+        }
+        return {
+          uid: doc.id,
+          displayName: d?.displayName || "Prediction Node",
+          email: d?.email || "",
+          accuracy: d?.accuracy || 100,
+          isFollowing,
+          isFriend
+        };
+      })
+    );
+
+    res.json(following);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 6. Get mutual friends list
+app.get("/api/user/:targetUid/friends", async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const targetUid = req.params.targetUid;
+    const [snap1, snap2] = await Promise.all([
+      db.collection("friends").where("user1", "==", targetUid).limit(50).get(),
+      db.collection("friends").where("user2", "==", targetUid).limit(50).get()
+    ]);
+
+    const friendIds = [];
+    snap1.docs.forEach(d => friendIds.push(d.data().user2));
+    snap2.docs.forEach(d => friendIds.push(d.data().user1));
+
+    if (friendIds.length === 0) return res.json([]);
+
+    const usersSnap = await Promise.all(
+      friendIds.map(id => db.collection("users").doc(id).get())
+    );
+
+    const friends = usersSnap.map(doc => {
+      const d = doc.exists ? doc.data() : { uid: doc.id, displayName: "Friend" };
+      return {
+        uid: doc.id,
+        displayName: d?.displayName || "Friend Node",
+        email: d?.email || "",
+        accuracy: d?.accuracy || 100,
+        isFriend: true,
+        isFollowing: true
+      };
+    });
+
+    res.json(friends);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 7. Send friend request
+app.post("/api/user/friend-request/:targetUid", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const targetUid = req.params.targetUid;
+
+    if (uid === targetUid) return res.status(400).json({ error: "Cannot send friend request to yourself" });
+
+    const requestId = `${uid}_${targetUid}`;
+    const newRequest = {
+      id: requestId,
+      fromUid: uid,
+      fromName: req.user.name || req.user.email?.split("@")[0] || "User",
+      fromEmail: req.user.email || "",
+      toUid: targetUid,
+      status: "pending",
+      createdAt: new Date().toISOString()
+    };
+
+    await db.collection("friend_requests").doc(requestId).set(newRequest);
+    res.json({ success: true, request: newRequest });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 8. Respond to friend request (accept / decline)
+app.post("/api/user/friend-request/:fromUid/respond", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid; // respondent
+    const fromUid = req.params.fromUid; // requester
+    const { action } = req.body; // "accept" | "decline"
+
+    const requestId = `${fromUid}_${uid}`;
+    const reqRef = db.collection("friend_requests").doc(requestId);
+    const reqSnap = await reqRef.get();
+
+    if (!reqSnap.exists) {
+      return res.status(404).json({ error: "Friend request not found" });
+    }
+
+    if (action === "accept") {
+      // 1. Establish mutual follows & friend record
+      await Promise.all([
+        db.collection("follows").doc(`${fromUid}_${uid}`).set({
+          followerId: fromUid,
+          followingId: uid,
+          createdAt: new Date().toISOString()
+        }),
+        db.collection("follows").doc(`${uid}_${fromUid}`).set({
+          followerId: uid,
+          followingId: fromUid,
+          createdAt: new Date().toISOString()
+        }),
+        db.collection("friends").doc(getFriendDocId(uid, fromUid)).set({
+          user1: [uid, fromUid].sort()[0],
+          user2: [uid, fromUid].sort()[1],
+          createdAt: new Date().toISOString()
+        })
+      ]);
+
+      await reqRef.update({ status: "accepted", acceptedAt: new Date().toISOString() });
+      res.json({ success: true, status: "accepted", isFriend: true });
+    } else {
+      await reqRef.update({ status: "declined", declinedAt: new Date().toISOString() });
+      res.json({ success: true, status: "declined", isFriend: false });
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 9. Get friend requests for current user
+app.get("/api/user/friend-requests", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const [incomingSnap, outgoingSnap] = await Promise.all([
+      db.collection("friend_requests")
+        .where("toUid", "==", uid)
+        .where("status", "==", "pending")
+        .limit(30)
+        .get(),
+      db.collection("friend_requests")
+        .where("fromUid", "==", uid)
+        .where("status", "==", "pending")
+        .limit(30)
+        .get()
+    ]);
+
+    const incoming = incomingSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const outgoing = outgoingSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    res.json({ incoming, outgoing });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- VITE MIDDLEWARE ---
 // In production on Vercel, static files are handled by vercel.json rewrites.
 const distPath = path.join(process.cwd(), "dist");
