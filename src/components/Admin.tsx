@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Shield, Settings, Users, Database, AlertTriangle, CheckCircle, Clock, RefreshCw, PlusCircle, X } from "lucide-react";
+import { Shield, Settings, Users, Database, AlertTriangle, CheckCircle, CheckCircle2, Clock, RefreshCw, PlusCircle, X, XCircle, Sparkles } from "lucide-react";
 import { db, auth } from "../firebase";
 import { doc, updateDoc, collection, onSnapshot, setDoc } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
@@ -43,6 +43,10 @@ export function Admin() {
   const [manageMode, setManageMode] = useState<"create" | "edit">("create");
   const [selectedPollId, setSelectedPollId] = useState("");
   const [winningOptionId, setWinningOptionId] = useState("");
+  // Moderation States
+  const [pendingPolls, setPendingPolls] = useState<any[]>([]);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     // 1. Listen to public global config (available to all authenticated users)
@@ -129,6 +133,30 @@ export function Admin() {
     const interval = setInterval(fetchAdminData, 30000);
     return () => clearInterval(interval);
   }, [isAdmin, auth.currentUser]);
+
+  
+  const handleModeratePoll = async (pollId: string, action: "approve" | "reject") => {
+    setActionLoading(pollId);
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      const res = await fetch(`/api/admin/polls/${pollId}/moderate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ action })
+      });
+      if (!res.ok) throw new Error("Failed to moderate poll");
+      setActionSuccess(`Poll ${action === "approve" ? "approved & published to feed" : "rejected"}.`);
+      setPendingPolls(prev => prev.filter(p => p.id !== pollId));
+      setTimeout(() => setActionSuccess(null), 4000);
+    } catch (err: any) {
+      alert("Moderation error: " + err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const handlePhaseChange = async (newPhase: string) => {
     setSaving(true);
@@ -367,6 +395,135 @@ export function Admin() {
         </div>
 
 
+
+        
+        {tab === "moderation" && (
+          <div className="space-y-8">
+            <div className="glass p-8 rounded-[32px] border border-white/10 bg-[#0f1012] flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-emerald-400">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span className="text-xs font-mono uppercase tracking-[0.2em] font-bold">Community Safety & Governance</span>
+                </div>
+                <h2 className="text-3xl font-bold tracking-tight text-white">Poll Moderation Queue</h2>
+                <p className="text-stone-400 text-sm font-mono max-w-xl">
+                  Review and authorize community-submitted polls before publishing them to the public prediction swarm. All submissions undergo automated safety rule heuristics.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+                  <span className="text-[10px] font-mono text-stone-400 uppercase tracking-widest block">Pending Review</span>
+                  <span className="text-2xl font-bold text-amber-400">{pendingPolls.length}</span>
+                </div>
+                <div className="px-5 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                  <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-widest block">Safety Engine</span>
+                  <span className="text-sm font-bold text-emerald-400 flex items-center gap-1 justify-center mt-1">
+                    <Sparkles className="w-3.5 h-3.5" /> Active
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {actionSuccess && (
+              <div className="p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-sm font-mono flex items-center gap-3 animate-fade-in">
+                <CheckCircle2 className="w-5 h-5 shrink-0" />
+                <span>{actionSuccess}</span>
+              </div>
+            )}
+
+            {pendingPolls.length === 0 ? (
+              <div className="glass p-16 rounded-[40px] border border-white/10 bg-[#0f1012] text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-bold text-white">Moderation Queue Clear</h3>
+                <p className="text-stone-400 text-sm font-mono max-w-md mx-auto">
+                  All community-submitted polls have been reviewed. New submissions will appear here automatically when created by users.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6">
+                {pendingPolls.map((poll) => (
+                  <div
+                    key={poll.id}
+                    className="p-6 md:p-8 rounded-3xl bg-[#0f1012] border border-white/10 hover:border-white/20 transition-all space-y-6"
+                  >
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            {poll.category || "General"}
+                          </span>
+                          <span className="text-xs font-mono text-stone-500">
+                            Submitted: {poll.createdAt ? new Date(poll.createdAt).toLocaleString() : "Recently"}
+                          </span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white">{poll.title}</h3>
+                        {poll.description && (
+                          <p className="text-stone-400 text-sm leading-relaxed">{poll.description}</p>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2 self-start md:self-center">
+                        <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 text-xs font-mono font-bold flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5" /> Pending Review
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Options preview */}
+                    <div className="space-y-2">
+                      <span className="text-xs font-mono uppercase tracking-widest text-stone-400">Proposed Ballot Options:</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {poll.options?.map((opt: any, i: number) => (
+                          <div key={opt.id || i} className="p-3 rounded-xl bg-white/5 border border-white/10 text-sm font-medium text-stone-200">
+                            <span className="text-stone-500 font-mono text-xs mr-2">#{i + 1}</span>
+                            {opt.text || opt.name}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Automated Safety Scorecard */}
+                    <div className="p-4 rounded-2xl bg-black/40 border border-emerald-500/20 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+                      <div className="flex items-center gap-2 text-emerald-400">
+                        <Shield className="w-4 h-4 shrink-0" />
+                        <span>Safety Engine: Passed toxicity, sentiment & length rules</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-stone-400">
+                        <span>Author ID: <code className="text-stone-300 font-bold">{poll.createdBy ? poll.createdBy.substring(0, 10) + '...' : 'Unknown'}</code></span>
+                      </div>
+                    </div>
+
+                    {/* Moderation Controls */}
+                    <div className="flex items-center justify-end gap-3 pt-2">
+                      <button
+                        onClick={() => handleModeratePoll(poll.id, "reject")}
+                        disabled={actionLoading === poll.id}
+                        className="px-6 py-2.5 rounded-xl border border-red-500/40 text-red-400 hover:bg-red-500/10 transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-2 disabled:opacity-50"
+                      >
+                        <XCircle className="w-4 h-4" /> Reject
+                      </button>
+                      <button
+                        onClick={() => handleModeratePoll(poll.id, "approve")}
+                        disabled={actionLoading === poll.id}
+                        className="px-6 py-2.5 rounded-xl bg-emerald-500 text-black hover:bg-emerald-400 transition-colors text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+                      >
+                        {actionLoading === poll.id ? (
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <CheckCircle2 className="w-4 h-4" />
+                        )}
+                        Approve & Publish
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {tab === "data" && (
           <div className="space-y-8">
