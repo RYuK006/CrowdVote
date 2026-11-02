@@ -53,6 +53,7 @@ export default function App() {
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/profile" element={user ? <Profile /> : <Navigate to="/signin" />} />
+              <Route path="/profile/:uid" element={user ? <Profile /> : <Navigate to="/signin" />} />
               <Route path="/chat" element={user ? <ChatDirect /> : <Navigate to="/signin" />} />
               <Route path="/direct" element={user ? <ChatDirect /> : <Navigate to="/signin" />} />
               <Route path="/messages" element={user ? <ChatDirect /> : <Navigate to="/signin" />} />
