@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
   Heart, MessageCircle, Send, Bookmark, MoreHorizontal, 
@@ -26,32 +26,73 @@ export function InstagramPostCard({
   const [hasVoted, setHasVoted] = useState(initialHasVoted);
   const [selectedOption, setSelectedOption] = useState<string | undefined>(initialUserVoteOption);
   const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(Math.floor(Math.random() * 850) + 120);
+  const [likesCount, setLikesCount] = useState(Math.floor(Math.random() * 540) + 95);
   const [isSaved, setIsSaved] = useState(false);
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [commentInput, setCommentInput] = useState("");
-  const [comments, setComments] = useState<string[]>([
-    "High variance thesis right here.",
-    "Already priced in by consensus.",
+  const [comments, setComments] = useState<any[]>([
+    {
+      authorHandle: "quantum_oracle",
+      authorName: "Quantum Oracle",
+      text: "Consensus matrix indicates asymmetric upside on early settlement."
+    },
+    {
+      authorHandle: "alpha_macro",
+      authorName: "Alpha Macro",
+      text: "Liquidity depth is tracking within standard variance boundaries."
+    }
   ]);
   const [isVoting, setIsVoting] = useState(false);
 
   // Derive author handle and subtitle
-  const authorHandle = poll.createdBy
+  const authorHandle = (poll as any).authorHandle || (poll.createdBy
     ? `node_${poll.createdBy.slice(0, 6)}`
-    : "joel.k.jose";
+    : "consensus_node");
+  const authorName = (poll as any).authorName || authorHandle;
+  const authorAvatar = (poll as any).authorAvatar || `https://api.dicebear.com/7.x/identicon/svg?seed=${authorHandle}`;
+
   const subtitle = poll.category
-    ? `${poll.category} • Consensus Matrix`
-    : "Vrinda Shameek, Harib Hussain • Kanneeril";
+    ? `${poll.category} • High Variance Consensus`
+    : "Prediction Matrix • Active Consensus";
 
   const totalVotes = Object.values(poll.votes || {}).reduce((acc: number, curr: any) => {
     return acc + (typeof curr === "number" ? curr : (curr?.totalVotes || 0));
-  }, 0) || Math.floor(Math.random() * 400) + 60;
+  }, 0) || Math.floor(Math.random() * 380) + 50;
 
-  const handleLike = () => {
+  // Load existing comments if any
+  useEffect(() => {
+    fetch(`/api/polls/${poll.id}/comments`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setComments(data);
+        }
+      })
+      .catch(() => {});
+  }, [poll.id]);
+
+  const handleLike = async () => {
     setIsLiked(!isLiked);
-    setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    setLikesCount(prev => (isLiked ? prev - 1 : prev + 1));
+
+    if (currentUser) {
+      try {
+        const token = await currentUser.getIdToken();
+        const res = await fetch(`/api/polls/${poll.id}/like`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (typeof data.likesCount === "number") {
+            setLikesCount(data.likesCount);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to like poll:", err);
+      }
+    }
   };
 
   const handleShare = () => {
@@ -61,11 +102,34 @@ export function InstagramPostCard({
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  const handlePostComment = (e: React.FormEvent) => {
+  const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentInput.trim()) return;
-    setComments((prev) => [...prev, commentInput.trim()]);
+
+    const newCommentObj = {
+      authorHandle: currentUser?.email ? currentUser.email.split("@")[0] : "predictor",
+      authorName: currentUser?.displayName || "Forecasting Node",
+      text: commentInput.trim()
+    };
+
+    setComments(prev => [...prev, newCommentObj]);
     setCommentInput("");
+
+    if (currentUser) {
+      try {
+        const token = await currentUser.getIdToken();
+        await fetch(`/api/polls/${poll.id}/comment`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ text: newCommentObj.text })
+        });
+      } catch (err) {
+        console.error("Failed to submit comment:", err);
+      }
+    }
   };
 
   const handleOptionClick = async (optionId: string) => {
@@ -87,7 +151,7 @@ export function InstagramPostCard({
   return (
     <article className="w-full bg-[#000000] border-b border-[#262626] sm:border sm:rounded-2xl overflow-hidden mb-6 text-white select-none">
       {/* 1. Post Header */}
-      <div className="flex items-center justify-between px-3 py-3">
+      <div className="flex items-center justify-between px-3.5 py-3">
         <div className="flex items-center gap-3">
           <Link
             to={poll.createdBy ? `/profile/${poll.createdBy}` : "/profile"}
@@ -95,9 +159,12 @@ export function InstagramPostCard({
           >
             <div className="w-8 h-8 rounded-full bg-black p-0.5 overflow-hidden">
               <img
-                src={`https://api.dicebear.com/7.x/identicon/svg?seed=${authorHandle}`}
-                alt={authorHandle}
+                src={authorAvatar}
+                alt={authorName}
                 className="w-full h-full rounded-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${authorHandle}`;
+                }}
               />
             </div>
           </Link>
@@ -109,7 +176,7 @@ export function InstagramPostCard({
               >
                 {authorHandle}
               </Link>
-              <span className="text-stone-500 text-xs">• 1w</span>
+              <span className="text-stone-500 text-xs">• 3d</span>
             </div>
             <span className="text-[11px] text-stone-400 truncate max-w-[280px]">
               {subtitle}
@@ -127,7 +194,7 @@ export function InstagramPostCard({
 
       {/* 2. Media / Poll Canvas Area */}
       <div className="relative w-full aspect-square sm:aspect-[4/3] bg-gradient-to-b from-[#141416] via-[#09090b] to-[#040405] border-y border-[#262626] flex flex-col justify-between p-5 overflow-hidden">
-        {/* Subtle background mesh decoration */}
+        {/* Subtle background neural mesh decoration */}
         <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]" />
 
         {/* Top Badges */}
@@ -139,7 +206,7 @@ export function InstagramPostCard({
           {poll.isSponsored && (
             <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[10px] font-mono font-extrabold uppercase tracking-wider shadow-lg">
               <Sparkles className="w-3 h-3" />
-              {poll.sponsorName || "Sponsored"}
+              {poll.sponsorName || "Sponsored Bounty"}
             </span>
           )}
         </div>
@@ -154,7 +221,7 @@ export function InstagramPostCard({
           </Link>
           {poll.sponsorReward && (
             <div className="text-xs font-mono text-amber-400 font-semibold">
-              🎁 Sponsor Allocation: {poll.sponsorReward}
+              🎁 Bounty Allocation: {poll.sponsorReward}
             </div>
           )}
         </div>
@@ -165,7 +232,7 @@ export function InstagramPostCard({
             const optLabel = typeof opt === "string" ? opt : opt.label || opt.name || `Option ${index + 1}`;
             const optId = typeof opt === "string" ? opt : opt.id || String(index);
             const isSelected = selectedOption === optId;
-            const percentage = hasVoted ? (index === 0 ? 64 : index === 1 ? 28 : 8) : 0;
+            const percentage = hasVoted ? (index === 0 ? 58 : index === 1 ? 34 : 8) : 0;
 
             return (
               <button
@@ -252,10 +319,10 @@ export function InstagramPostCard({
       </div>
 
       {/* 4. Metadata & Caption */}
-      <div className="px-3 pb-3 space-y-1.5 text-xs">
+      <div className="px-3.5 pb-3 space-y-1.5 text-xs">
         {/* Likes Count */}
         <div className="font-bold text-white pt-1">
-          Liked by <span className="font-extrabold">skytsengel_006</span> and{" "}
+          Liked by <span className="font-extrabold">Quantum Oracle</span> and{" "}
           <span className="font-extrabold">{likesCount.toLocaleString()} others</span>
         </div>
 
@@ -277,24 +344,24 @@ export function InstagramPostCard({
           to={`/polls/${poll.id}`}
           className="text-stone-500 hover:text-stone-400 block pt-0.5"
         >
-          View all {comments.length + 14} comments
+          View all {comments.length} consensus comments
         </Link>
 
         {/* Latest Comments */}
         <div className="space-y-0.5 pt-0.5">
-          {comments.slice(-2).map((c, i) => (
+          {comments.slice(-2).map((c: any, i: number) => (
             <div key={i} className="text-stone-300 truncate">
               <span className="font-semibold text-white mr-1.5">
-                {i === 0 ? "stephin_shalu" : "vrinda_s"}
+                {c.authorHandle || c.authorName || "predictor"}
               </span>
-              <span>{c}</span>
+              <span>{c.text}</span>
             </div>
           ))}
         </div>
 
         {/* Timestamp */}
         <div className="text-[10px] font-mono text-stone-500 uppercase tracking-widest pt-1">
-          1 WEEK AGO
+          3 DAYS AGO • VERIFIED SWARM
         </div>
 
         {/* Inline Comment Input Box */}
@@ -304,7 +371,7 @@ export function InstagramPostCard({
         >
           <input
             type="text"
-            placeholder="Add a comment..."
+            placeholder="Add a consensus comment..."
             value={commentInput}
             onChange={(e) => setCommentInput(e.target.value)}
             className="bg-transparent text-xs text-white placeholder-stone-500 focus:outline-none flex-1 pr-2"
