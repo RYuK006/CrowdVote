@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Layout } from "./Layout";
 import { auth } from "../firebase";
-import { Lock, ShieldCheck, Send, User, Search, RefreshCw, Sparkles, MessageSquare, CheckCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Lock, ShieldCheck, Send, User, Search, RefreshCw, Sparkles, MessageSquare, CheckCheck, HeartHandshake } from "lucide-react";
 import { 
   getOrInitLocalKeys, 
   registerKeysWithServer, 
@@ -10,6 +11,7 @@ import {
   decryptReceivedMessage,
   EncryptedPayload
 } from "../lib/e2eeChat";
+import { cn } from "../lib/utils";
 
 interface ChatPartner {
   uid: string;
@@ -30,6 +32,8 @@ interface DecryptedMessage {
 
 export function ChatDirect() {
   const [partners, setPartners] = useState<ChatPartner[]>([]);
+  const [friendUids, setFriendUids] = useState<Set<string>>(new Set());
+  const [filterTab, setFilterTab] = useState<"all" | "friends">("all");
   const [selectedPartner, setSelectedPartner] = useState<ChatPartner | null>(null);
   const [messages, setMessages] = useState<DecryptedMessage[]>([]);
   const [inputText, setInputText] = useState("");
@@ -55,17 +59,24 @@ export function ChatDirect() {
     initCrypto();
   }, [auth.currentUser]);
 
-  // 2. Fetch users/partners list
+  // 2. Fetch users/partners list & mutual friends list
   useEffect(() => {
-    async function fetchPartners() {
+    async function fetchPartnersAndFriends() {
       if (!auth.currentUser) return;
       try {
         const token = await auth.currentUser.getIdToken();
-        const res = await fetch("/api/chat/partners", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
+        const [partnersRes, friendsRes] = await Promise.all([
+          fetch("/api/chat/partners", { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`/api/user/${auth.currentUser.uid}/friends`, { headers: { Authorization: `Bearer ${token}` } })
+        ]);
+
+        if (friendsRes.ok) {
+          const friendsData: any[] = await friendsRes.json();
+          setFriendUids(new Set(friendsData.map(f => f.uid)));
+        }
+
+        if (partnersRes.ok) {
+          const data = await partnersRes.json();
           setPartners(data);
           if (data.length > 0 && !selectedPartner) {
             setSelectedPartner(data[0]);
@@ -77,7 +88,7 @@ export function ChatDirect() {
         setLoading(false);
       }
     }
-    fetchPartners();
+    fetchPartnersAndFriends();
   }, [auth.currentUser]);
 
   // 3. Fetch and decrypt messages when active partner changes
@@ -159,14 +170,12 @@ export function ChatDirect() {
       if (keyRes.ok) {
         const keyBundle = await keyRes.json();
         const recipientKey = keyBundle.signedPreKey || keyBundle.identityKey;
-        // Client-side encryption via WebCrypto ECDH + AES-GCM (dual-encrypted for recipient & sender)
         payload = await encryptMessageForRecipient(recipientKey, plaintext, myKey);
       } else {
-        // Fallback self-ratchet encryption
         payload = await encryptMessageForRecipient(myKey, plaintext, myKey);
       }
 
-      // Optimistic update so message displays immediately in UI
+      // Optimistic update
       const localMsg: DecryptedMessage = {
         id: `local_${Date.now()}`,
         senderId: auth.currentUser.uid,
@@ -202,10 +211,12 @@ export function ChatDirect() {
     }
   };
 
-  const filteredPartners = partners.filter(p => 
-    p.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPartners = partners.filter(p => {
+    const matchesSearch = p.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = filterTab === "all" || friendUids.has(p.uid);
+    return matchesSearch && matchesFilter;
+  });
 
   return (
     <Layout user={auth.currentUser}>
@@ -234,9 +245,31 @@ export function ChatDirect() {
                   placeholder="Search user nodes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500 font-mono"
                 />
               </div>
+            </div>
+
+            {/* Sub-Tabs: All Nodes vs Friends */}
+            <div className="grid grid-cols-2 p-1 bg-black/40 border-b border-white/5 text-[11px] font-mono">
+              <button
+                onClick={() => setFilterTab("all")}
+                className={cn(
+                  "py-1.5 rounded-lg transition-colors font-bold",
+                  filterTab === "all" ? "bg-white/10 text-white" : "text-stone-400 hover:text-stone-200"
+                )}
+              >
+                All Nodes ({partners.length})
+              </button>
+              <button
+                onClick={() => setFilterTab("friends")}
+                className={cn(
+                  "py-1.5 rounded-lg transition-colors font-bold flex items-center justify-center gap-1",
+                  filterTab === "friends" ? "bg-emerald-500/20 text-emerald-400" : "text-stone-400 hover:text-stone-200"
+                )}
+              >
+                <HeartHandshake className="w-3 h-3" /> Friends ({partners.filter(p => friendUids.has(p.uid)).length})
+              </button>
             </div>
 
             {/* Partner list */}
@@ -246,12 +279,17 @@ export function ChatDirect() {
                   Loading secure contacts...
                 </div>
               ) : filteredPartners.length === 0 ? (
-                <div className="p-8 text-center text-xs font-mono text-stone-500">
-                  No contacts found.
+                <div className="p-8 text-center text-xs font-mono text-stone-500 space-y-1">
+                  <p>{filterTab === "friends" ? "No mutual friends yet." : "No contacts found."}</p>
+                  {filterTab === "friends" && (
+                    <span className="text-[10px] text-emerald-400/80 block">Follow nodes back to become mutual friends!</span>
+                  )}
                 </div>
               ) : (
                 filteredPartners.map((partner) => {
                   const isSelected = selectedPartner?.uid === partner.uid;
+                  const isFriend = friendUids.has(partner.uid);
+
                   return (
                     <button
                       key={partner.uid}
@@ -264,7 +302,12 @@ export function ChatDirect() {
                     >
                       {/* Avatar with emerald ring */}
                       <div className="relative">
-                        <div className="w-10 h-10 rounded-full bg-stone-900 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold text-sm">
+                        <div className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm",
+                          isFriend
+                            ? "bg-gradient-to-tr from-emerald-400 to-teal-300 text-black shadow-sm"
+                            : "bg-stone-900 border border-emerald-500/40 text-emerald-400"
+                        )}>
                           {partner.displayName ? partner.displayName.charAt(0).toUpperCase() : "U"}
                         </div>
                         <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#0f1012]" />
@@ -272,11 +315,16 @@ export function ChatDirect() {
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-semibold text-white truncate">
+                          <span className="text-sm font-semibold text-white truncate flex items-center gap-1.5">
                             {partner.displayName || "Prediction Node"}
+                            {isFriend && (
+                              <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 text-[8px] font-mono font-bold border border-emerald-500/20">
+                                Friend
+                              </span>
+                            )}
                           </span>
                         </div>
-                        <p className="text-[11px] text-stone-400 truncate">
+                        <p className="text-[11px] text-stone-400 truncate font-mono">
                           {partner.email || "End-to-End Encrypted"}
                         </p>
                       </div>
@@ -298,10 +346,17 @@ export function ChatDirect() {
                   </div>
                   <div>
                     <h3 className="font-bold text-white text-sm flex items-center gap-2">
-                      {selectedPartner.displayName || "Prediction Node"}
-                      <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        Node Active
-                      </span>
+                      <Link
+                        to={`/profile/${selectedPartner.uid}`}
+                        className="hover:underline flex items-center gap-1.5 text-white"
+                      >
+                        {selectedPartner.displayName || "Prediction Node"}
+                        {friendUids.has(selectedPartner.uid) && (
+                          <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                            <HeartHandshake className="w-2.5 h-2.5" /> Friend
+                          </span>
+                        )}
+                      </Link>
                     </h3>
                     <p className="text-[10px] font-mono text-stone-400 flex items-center gap-1">
                       <Lock className="w-3 h-3 text-emerald-400" />
@@ -311,6 +366,14 @@ export function ChatDirect() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <Link
+                    to={`/profile/${selectedPartner.uid}`}
+                    className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-emerald-500/30 text-stone-400 hover:text-white transition-colors text-xs font-mono"
+                    title="View Profile"
+                  >
+                    <User className="w-4 h-4" />
+                  </Link>
+
                   <button
                     onClick={() => fetchMessages()}
                     className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-emerald-500/30 text-stone-400 hover:text-white transition-colors"
@@ -373,7 +436,7 @@ export function ChatDirect() {
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Type an end-to-end encrypted message..."
-                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500 transition-colors font-mono"
                   />
                   <button
                     type="submit"
@@ -392,7 +455,7 @@ export function ChatDirect() {
               </div>
               <h3 className="text-xl font-bold text-white">Your Encrypted Messages</h3>
               <p className="text-sm font-mono text-stone-400 max-w-sm">
-                Select a prediction node from the contacts list to establish a secure end-to-end encrypted channel.
+                Select a prediction node or mutual friend from the contacts list to establish a secure end-to-end encrypted channel.
               </p>
             </div>
           )}
