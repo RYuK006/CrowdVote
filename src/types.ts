@@ -19,7 +19,7 @@ export interface Poll {
   id: string;
   title: string;
   description?: string;
-  status: "active" | "closed" | "open";
+  status: "active" | "closed" | "open" | "pending_approval" | "rejected";
   category?: string;
   options: PollOption[];
   lockAt?: string;
