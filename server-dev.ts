@@ -867,21 +867,46 @@ app.get("/api/chat/partners", authenticateToken, async (req: any, res: any) => {
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
     const uid = req.user.uid;
-    const usersSnap = await db.collection("users").limit(50).get();
-    const partners = usersSnap.docs
-      .filter(doc => doc.id !== uid)
-      .map(doc => {
-        const data = doc.data();
-        return {
+    const partnerMap = new Map<string, any>();
+
+    // 1. Fetch users with active registered E2EE public keys
+    const keysSnap = await db.collection("user_public_keys").limit(50).get();
+    for (const doc of keysSnap.docs) {
+      if (doc.id === uid) continue;
+      const data = doc.data();
+      partnerMap.set(doc.id, {
+        uid: doc.id,
+        displayName: data.displayName || "Prediction Node",
+        email: data.email || "",
+        accuracy: 100,
+        hasRegisteredKey: true,
+        updatedAt: data.updatedAt
+      });
+    }
+
+    // 2. Fetch users from the users collection
+    const usersSnap = await db.collection("users").limit(100).get();
+    for (const doc of usersSnap.docs) {
+      if (doc.id === uid) continue;
+      const data = doc.data();
+      const existing = partnerMap.get(doc.id);
+      if (existing) {
+        if (data.displayName) existing.displayName = data.displayName;
+        if (data.email) existing.email = data.email;
+        if (data.accuracy) existing.accuracy = data.accuracy;
+      } else {
+        partnerMap.set(doc.id, {
           uid: doc.id,
           displayName: data.displayName || data.email?.split("@")[0] || "Prediction Node",
           email: data.email || "",
           accuracy: data.accuracy || 100,
           rank: data.rank || 1,
           createdAt: data.createdAt
-        };
-      });
+        });
+      }
+    }
 
+    const partners = Array.from(partnerMap.values());
     res.json(partners);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -893,13 +918,22 @@ app.post("/api/chat/messages", authenticateToken, async (req: any, res: any) => 
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
     const uid = req.user.uid;
-    const { recipientId, ciphertext, iv, ephemeralPublicKey, timestamp } = req.body;
+    const { 
+      recipientId, 
+      ciphertext, 
+      iv, 
+      ephemeralPublicKey, 
+      senderCiphertext, 
+      senderIv, 
+      senderEphemeralPublicKey, 
+      timestamp 
+    } = req.body;
 
     if (!recipientId || !ciphertext || !iv || !ephemeralPublicKey) {
       return res.status(400).json({ error: "Missing required encrypted message payload fields" });
     }
 
-    const messageData = {
+    const messageData: any = {
       senderId: uid,
       recipientId,
       ciphertext,
@@ -907,6 +941,10 @@ app.post("/api/chat/messages", authenticateToken, async (req: any, res: any) => 
       ephemeralPublicKey,
       timestamp: timestamp || new Date().toISOString()
     };
+
+    if (senderCiphertext) messageData.senderCiphertext = senderCiphertext;
+    if (senderIv) messageData.senderIv = senderIv;
+    if (senderEphemeralPublicKey) messageData.senderEphemeralPublicKey = senderEphemeralPublicKey;
 
     const docRef = await db.collection("encrypted_messages").add(messageData);
     res.json({ success: true, id: docRef.id, message: "Encrypted payload relayed" });
