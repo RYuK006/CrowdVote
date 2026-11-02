@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ListPlus, ArrowRight, ShieldCheck, CheckCircle2, Search, Sparkles, Flame, Tag, ExternalLink } from "lucide-react";
+import { ListPlus, ArrowRight, ShieldCheck, CheckCircle2, Search, Sparkles, Flame, Tag, ExternalLink, Plus, MessageCircle, Heart, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Layout } from "./Layout";
 import { auth } from "../firebase";
@@ -19,6 +19,18 @@ const CATEGORIES = [
   "Science"
 ];
 
+
+const STORIES = [
+  { id: "self", name: "Your Node", role: "Submit Poll", icon: "➕", isUser: true, border: "border-dashed border-emerald-500/60" },
+  { id: "graham", name: "Paul Graham", role: "YC Founder", icon: "🏛️", unread: true },
+  { id: "bezos", name: "Jeff Bezos", role: "Amazon", icon: "📦", unread: true },
+  { id: "musk", name: "Elon Musk", role: "Tesla & X", icon: "⚡", unread: true },
+  { id: "hormozi", name: "Alex Hormozi", role: "Acquisition", icon: "🏋️", unread: true },
+  { id: "naval", name: "Naval", role: "AngelList", icon: "🧠", unread: true },
+  { id: "sanchez", name: "Codie Sanchez", role: "Contrarian", icon: "📊", unread: true },
+  { id: "buffett", name: "Warren Buffett", role: "Berkshire", icon: "💵", unread: true },
+];
+
 export function PollsList() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +39,7 @@ export function PollsList() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [activeStory, setActiveStory] = useState<any | null>(null);
 
   const fetchPolls = (cat: string, search: string, pageNum: number, replace: boolean = true) => {
     setLoading(true);
@@ -116,7 +129,84 @@ export function PollsList() {
             </div>
           </div>
 
-          {/* Category Filter Pills */}
+          
+        {/* Instagram-Style Swarm Stories Tray */}
+        <div className="relative py-2 border-y border-white/5">
+          <div className="flex items-center gap-5 overflow-x-auto pb-2 scrollbar-none">
+            {STORIES.map((story) => (
+              <button
+                key={story.id}
+                onClick={() => {
+                  if (story.isUser) {
+                    // Trigger global create modal by dispatching custom event or selecting category
+                    setSelectedCategory("All");
+                  } else {
+                    setActiveStory(story);
+                  }
+                }}
+                className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none"
+              >
+                <div className={cn(
+                  "p-[2.5px] rounded-full transition-transform duration-300 group-hover:scale-105",
+                  story.isUser
+                    ? "bg-emerald-500/20 border-2 border-dashed border-emerald-500/60"
+                    : "bg-gradient-to-tr from-emerald-500 via-teal-400 to-lime-400 shadow-md shadow-emerald-500/20"
+                )}>
+                  <div className="w-14 h-14 rounded-full bg-[#0a0a0c] p-1 flex items-center justify-center text-xl">
+                    <span className="transform transition-transform group-hover:scale-110">{story.icon}</span>
+                  </div>
+                </div>
+                <span className="text-[11px] font-medium text-stone-300 max-w-[68px] truncate text-center group-hover:text-emerald-400 transition-colors">
+                  {story.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Advisor Story Dialog */}
+        {activeStory && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="max-w-md w-full bg-[#0f1012] border border-emerald-500/30 rounded-3xl p-6 space-y-5 shadow-2xl relative">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-2xl">
+                    {activeStory.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-base text-white">{activeStory.name}</h4>
+                    <span className="text-[11px] font-mono text-emerald-400">{activeStory.role} • 2h ago</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setActiveStory(null)}
+                  className="text-stone-400 hover:text-white p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-3 font-mono text-xs leading-relaxed text-stone-300 bg-black/40 p-4 rounded-2xl border border-white/5">
+                <span className="text-emerald-400 font-bold uppercase tracking-wider block">Today's Contrarian Prediction Thesis:</span>
+                <p>
+                  "The crowd constantly underprices structural second-order effects. In high-variance polls, asymmetric upside lies in betting where capital has not yet discovered the moat."
+                </p>
+              </div>
+
+              <button
+                onClick={() => {
+                  setSelectedCategory("Startups & Roasts");
+                  setActiveStory(null);
+                }}
+                className="w-full py-3 rounded-xl bg-emerald-500 text-black font-bold text-xs uppercase tracking-wider hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20"
+              >
+                View Roasted Polls
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Category Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto py-2 scrollbar-none">
             {CATEGORIES.map((cat) => {
               const isActive = selectedCategory === cat;
