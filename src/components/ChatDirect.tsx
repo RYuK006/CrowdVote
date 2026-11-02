@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Layout } from "./Layout";
 import { auth } from "../firebase";
-import { Lock, ShieldCheck, Send, User, Search, RefreshCw, Sparkles, MessageSquare } from "lucide-react";
+import { Lock, ShieldCheck, Send, User, Search, RefreshCw, Sparkles, MessageSquare, CheckCheck } from "lucide-react";
 import { 
   getOrInitLocalKeys, 
   registerKeysWithServer, 
@@ -101,10 +101,12 @@ export function ChatDirect() {
                 ciphertext: msg.ciphertext,
                 iv: msg.iv,
                 ephemeralPublicKey: msg.ephemeralPublicKey,
-                timestamp: msg.timestamp
-              });
+                senderCiphertext: msg.senderCiphertext,
+                senderIv: msg.senderIv,
+                senderEphemeralPublicKey: msg.senderEphemeralPublicKey
+              }, isSelf);
             } else {
-              text = msg.text || "[Legacy unencrypted message]";
+              text = msg.text || "[Unencrypted payload]";
             }
             return {
               id: msg.id,
@@ -126,7 +128,7 @@ export function ChatDirect() {
 
   useEffect(() => {
     fetchMessages();
-    const interval = setInterval(fetchMessages, 4000); // Polling relay mailbox
+    const interval = setInterval(fetchMessages, 3500); // Polling relay mailbox
     return () => clearInterval(interval);
   }, [selectedPartner, auth.currentUser]);
 
@@ -145,6 +147,8 @@ export function ChatDirect() {
 
     try {
       const token = await auth.currentUser.getIdToken();
+      const myBundle = await exportPublicBundle();
+      const myKey = myBundle.signedPreKey || myBundle.identityKey;
 
       // Fetch recipient's public prekey bundle from server
       const keyRes = await fetch(`/api/chat/keys/${selectedPartner.uid}`, {
@@ -154,16 +158,27 @@ export function ChatDirect() {
       let payload: EncryptedPayload;
       if (keyRes.ok) {
         const keyBundle = await keyRes.json();
-        // Client-side encryption via WebCrypto ECDH + AES-GCM
-        payload = await encryptMessageForRecipient(keyBundle.signedPreKey || keyBundle.identityKey, plaintext);
+        const recipientKey = keyBundle.signedPreKey || keyBundle.identityKey;
+        // Client-side encryption via WebCrypto ECDH + AES-GCM (dual-encrypted for recipient & sender)
+        payload = await encryptMessageForRecipient(recipientKey, plaintext, myKey);
       } else {
         // Fallback self-ratchet encryption
-        const myBundle = await exportPublicBundle();
-        payload = await encryptMessageForRecipient(myBundle.signedPreKey, plaintext);
+        payload = await encryptMessageForRecipient(myKey, plaintext, myKey);
       }
 
+      // Optimistic update so message displays immediately in UI
+      const localMsg: DecryptedMessage = {
+        id: `local_${Date.now()}`,
+        senderId: auth.currentUser.uid,
+        recipientId: selectedPartner.uid,
+        text: plaintext,
+        timestamp: payload.timestamp,
+        isSelf: true
+      };
+      setMessages(prev => [...prev, localMsg]);
+
       // Relay ciphertext to server
-      const sendRes = await fetch("/api/chat/messages", {
+      await fetch("/api/chat/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -174,24 +189,12 @@ export function ChatDirect() {
           ciphertext: payload.ciphertext,
           iv: payload.iv,
           ephemeralPublicKey: payload.ephemeralPublicKey,
+          senderCiphertext: payload.senderCiphertext,
+          senderIv: payload.senderIv,
+          senderEphemeralPublicKey: payload.senderEphemeralPublicKey,
           timestamp: payload.timestamp
         })
       });
-
-      if (sendRes.ok) {
-        // Append locally for instant feedback
-        setMessages(prev => [
-          ...prev,
-          {
-            id: `local_${Date.now()}`,
-            senderId: auth.currentUser!.uid,
-            recipientId: selectedPartner.uid,
-            text: plaintext,
-            timestamp: payload.timestamp,
-            isSelf: true
-          }
-        ]);
-      }
     } catch (err) {
       console.error("Error sending encrypted message:", err);
     } finally {
@@ -206,7 +209,7 @@ export function ChatDirect() {
 
   return (
     <Layout user={auth.currentUser}>
-      <div className="h-[calc(100vh-2rem)] flex flex-col max-w-6xl mx-auto w-full px-2 sm:px-6 py-4">
+      <div className="h-[calc(100vh-6rem)] flex flex-col max-w-6xl mx-auto w-full px-2 sm:px-6 py-2">
         {/* Instagram Direct Window Container */}
         <div className="flex-1 flex rounded-[32px] border border-white/10 bg-[#0a0a0c] shadow-2xl overflow-hidden relative">
           
@@ -259,28 +262,22 @@ export function ChatDirect() {
                           : "hover:bg-white/5"
                       }`}
                     >
+                      {/* Avatar with emerald ring */}
                       <div className="relative">
-                        <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 p-0.5">
-                          <div className="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
-                            {partner.avatar ? (
-                              <img src={partner.avatar} alt={partner.displayName} className="w-full h-full object-cover" />
-                            ) : (
-                              <User className="w-5 h-5 text-emerald-400" />
-                            )}
-                          </div>
+                        <div className="w-10 h-10 rounded-full bg-stone-900 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold text-sm">
+                          {partner.displayName ? partner.displayName.charAt(0).toUpperCase() : "U"}
                         </div>
-                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-black absolute bottom-0 right-0" />
+                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#0f1012]" />
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-xs text-white truncate">{partner.displayName}</span>
-                          {partner.accuracyScore && (
-                            <span className="text-[10px] font-mono text-emerald-400">{partner.accuracyScore}%</span>
-                          )}
+                          <span className="text-sm font-semibold text-white truncate">
+                            {partner.displayName || "Prediction Node"}
+                          </span>
                         </div>
-                        <p className="text-[10px] font-mono text-stone-400 truncate">
-                          {partner.email || "Verified Predictor"}
+                        <p className="text-[11px] text-stone-400 truncate">
+                          {partner.email || "End-to-End Encrypted"}
                         </p>
                       </div>
                     </button>
@@ -290,106 +287,112 @@ export function ChatDirect() {
             </div>
           </div>
 
-          {/* Right Panel: Active Chat Thread */}
+          {/* Right Panel: Active Chat Stream */}
           {selectedPartner ? (
-            <div className="flex-1 flex flex-col bg-[#070708]">
+            <div className="flex-1 flex flex-col bg-[#0a0a0c]">
               {/* Chat Header */}
-              <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#0b0c0e]">
+              <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#0f1012]/80 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
-                    <User className="w-5 h-5 text-emerald-400" />
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold">
+                    {selectedPartner.displayName ? selectedPartner.displayName.charAt(0).toUpperCase() : "U"}
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-white flex items-center gap-1.5">
-                      {selectedPartner.displayName}
-                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    </h4>
-                    <span className="text-[10px] font-mono text-stone-400">
-                      {selectedPartner.email || "Active User"}
-                    </span>
+                    <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                      {selectedPartner.displayName || "Prediction Node"}
+                      <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        Node Active
+                      </span>
+                    </h3>
+                    <p className="text-[10px] font-mono text-stone-400 flex items-center gap-1">
+                      <Lock className="w-3 h-3 text-emerald-400" />
+                      Double Ratchet E2EE • Zero-Knowledge Server Relay
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono flex items-center gap-1.5">
-                    <Lock className="w-3 h-3" />
-                    <span>Signal Protocol E2EE</span>
-                  </div>
+                  <button
+                    onClick={() => fetchMessages()}
+                    className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-emerald-500/30 text-stone-400 hover:text-white transition-colors"
+                    title="Refresh stream"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
-              {/* Encryption Banner */}
-              <div className="px-6 py-2 bg-emerald-950/20 border-b border-emerald-500/10 text-[11px] font-mono text-emerald-400/80 flex items-center justify-center gap-2 text-center">
-                <Lock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span>End-to-End Encrypted: Private keys reside strictly in browser IndexedDB. Zero plaintext stored on relay server.</span>
-              </div>
+              {/* Messages Area */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                {/* Security Announcement Banner */}
+                <div className="p-4 rounded-2xl bg-[#0f1012] border border-emerald-500/20 text-center space-y-1.5 max-w-md mx-auto my-2">
+                  <div className="flex items-center justify-center gap-1.5 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">
+                    <ShieldCheck className="w-4 h-4" /> Signal Protocol Verification
+                  </div>
+                  <p className="text-[11px] font-mono text-stone-400 leading-relaxed">
+                    Messages are encrypted locally on your device with WebCrypto ECDH + AES-256-GCM. The CrowdVote relay server cannot inspect the plaintext contents of this conversation.
+                  </p>
+                </div>
 
-              {/* Messages Stream */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3.5 custom-scrollbar">
                 {messages.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center text-center space-y-3 text-stone-500">
-                    <div className="p-4 rounded-3xl bg-white/5 border border-white/10">
-                      <MessageSquare className="w-8 h-8 text-emerald-400" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-white">No messages yet</p>
-                      <p className="text-xs font-mono text-stone-400">Start an end-to-end encrypted conversation with {selectedPartner.displayName}</p>
-                    </div>
+                  <div className="h-48 flex flex-col items-center justify-center text-stone-500 space-y-2">
+                    <MessageSquare className="w-8 h-8 opacity-40 text-emerald-500" />
+                    <p className="text-xs font-mono">No messages yet. Send an encrypted message to initiate ratchet session.</p>
                   </div>
                 ) : (
-                  messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex flex-col ${msg.isSelf ? "items-end" : "items-start"}`}
-                    >
+                  messages.map((msg, index) => {
+                    return (
                       <div
-                        className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                          msg.isSelf
-                            ? "bg-emerald-600 text-white rounded-br-sm shadow-md"
-                            : "bg-[#1c1d22] text-stone-200 rounded-bl-sm border border-white/5"
-                        }`}
+                        key={msg.id || index}
+                        className={`flex flex-col ${msg.isSelf ? "items-end" : "items-start"}`}
                       >
-                        {msg.text}
+                        <div
+                          className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                            msg.isSelf
+                              ? "bg-emerald-500 text-black font-medium rounded-br-none shadow-lg shadow-emerald-500/10"
+                              : "bg-[#16181b] text-white border border-white/10 rounded-bl-none"
+                          }`}
+                        >
+                          <p className="break-words">{msg.text}</p>
+                        </div>
+                        <div className="flex items-center gap-1 text-[9px] font-mono text-stone-500 mt-1 px-1">
+                          <span>{msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Just now"}</span>
+                          {msg.isSelf && <CheckCheck className="w-3 h-3 text-emerald-400 inline" />}
+                        </div>
                       </div>
-                      <span className="text-[9px] font-mono text-stone-500 mt-1 px-1">
-                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </span>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input Bar */}
-              <form onSubmit={handleSend} className="p-3.5 border-t border-white/10 bg-[#0d0e11] flex items-center gap-2.5">
-                <div className="relative flex-1">
+              {/* Chat Input Field */}
+              <form onSubmit={handleSend} className="p-3 border-t border-white/10 bg-[#0f1012]">
+                <div className="flex items-center gap-2">
                   <input
                     type="text"
-                    placeholder="Write encrypted message..."
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    className="w-full pl-4 pr-10 py-3 rounded-full bg-white/5 border border-white/10 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                    placeholder="Type an end-to-end encrypted message..."
+                    className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-emerald-500 transition-colors"
                   />
-                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-500" title="Protected by E2EE">
-                    <Lock className="w-4 h-4" />
-                  </div>
+                  <button
+                    type="submit"
+                    disabled={!inputText.trim() || sending}
+                    className="p-3 rounded-2xl bg-emerald-500 text-black hover:bg-emerald-400 disabled:opacity-40 disabled:hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-500/20"
+                  >
+                    <Send className="w-5 h-5" />
+                  </button>
                 </div>
-
-                <button
-                  type="submit"
-                  disabled={!inputText.trim() || sending}
-                  className="p-3 rounded-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed text-black font-bold transition-all shadow-lg shadow-emerald-500/20"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
               </form>
             </div>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-stone-500 space-y-3">
-              <Lock className="w-12 h-12 text-emerald-400" />
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-8 text-stone-500 space-y-4">
+              <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <Lock className="w-8 h-8" />
+              </div>
               <h3 className="text-xl font-bold text-white">Your Encrypted Messages</h3>
-              <p className="text-xs font-mono max-w-sm text-stone-400">
-                Select a user node to begin a private, cryptographic peer-to-peer session.
+              <p className="text-sm font-mono text-stone-400 max-w-sm">
+                Select a prediction node from the contacts list to establish a secure end-to-end encrypted channel.
               </p>
             </div>
           )}
