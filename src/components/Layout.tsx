@@ -1,9 +1,9 @@
 import React, { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
-  Home, Compass, Clapperboard, Send, Search, Heart, 
-  SquarePlus, Menu, Grid, Sun, Moon, ShieldCheck, 
-  ShieldAlert, LogOut, BarChart3, Settings, Trophy, X
+  BarChart3, Zap, Trophy, TrendingUp, Send, Search, Bell, 
+  Plus, Sun, Moon, ShieldCheck, ShieldAlert, LogOut, User, 
+  Menu, X, Sparkles, ChevronDown, CheckCircle2 
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { auth } from "../firebase";
@@ -12,7 +12,6 @@ import { useTheme } from "../context/ThemeContext";
 import { CreatePollModal } from "./CreatePollModal";
 import { InstagramSearchDrawer } from "./InstagramSearchDrawer";
 import { InstagramNotifications } from "./InstagramNotifications";
-import { FloatingChatPill } from "./FloatingChatPill";
 
 interface LayoutProps {
   children: ReactNode;
@@ -27,305 +26,302 @@ export function Layout({ children, user }: LayoutProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const isAdminRoute = location.pathname.startsWith("/admin") && location.pathname !== "/admin-login";
 
+  const navLinks = [
+    { label: "Markets", path: "/polls", icon: BarChart3 },
+    { label: "Forecast Briefs", path: "/reels", icon: Zap },
+    { label: "Leaderboard", path: "/leaderboard", icon: Trophy },
+    { label: "Swarm Analytics", path: "/analytics", icon: TrendingUp },
+  ];
+
   return (
-    <div className="flex min-h-screen bg-[#000000] text-white selection:bg-emerald-500/20 font-sans">
-      {/* 1. Left Slim Navigation Rail (Instagram Web Desktop) */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 z-40 w-[72px] bg-[#000000] border-r border-[#262626] flex-col justify-between items-center py-6 select-none">
-        {/* Top Logo (Camera / Brand Emblem) */}
-        <div className="flex flex-col items-center">
-          <Link
-            to="/polls"
-            className="w-11 h-11 rounded-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-transform group"
-            title="CrowdVote Home"
-          >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-lime-400 p-[1.5px] shadow-lg shadow-emerald-500/10">
+    <div className="min-h-screen bg-[#060709] text-white selection:bg-emerald-500/25 font-sans flex flex-col">
+      {/* 1. Universal Top Cyber-Terminal Navigation Bar */}
+      <header className="sticky top-0 z-40 w-full h-16 bg-[#090b0e]/95 border-b border-[#181b22] backdrop-blur-xl px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        {/* Left: Brand Identity & Live Status */}
+        <div className="flex items-center gap-6">
+          <Link to="/polls" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-lime-400 p-[1.5px] shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
               <div className="w-full h-full rounded-[10px] bg-black flex items-center justify-center">
-                <ShieldCheck className="w-5 h-5 text-emerald-400 group-hover:rotate-12 transition-transform" />
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
               </div>
             </div>
+            <div className="flex flex-col">
+              <span className="font-extrabold text-base tracking-tight text-white flex items-center gap-1">
+                CrowdVote <span className="text-emerald-400 font-mono text-xs uppercase tracking-widest font-black">AI</span>
+              </span>
+              <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-mono text-stone-400 tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                CONSENSUS MESH ACTIVE
+              </span>
+            </div>
           </Link>
+
+          {/* Desktop Primary Navigation Tabs */}
+          <nav className="hidden md:flex items-center gap-1 ml-4 border-l border-[#1f232b] pl-4">
+            {navLinks.map((item) => {
+              const isActive = location.pathname === item.path || 
+                (item.path === "/reels" && location.pathname === "/leaderboard") ||
+                (item.path === "/polls" && location.pathname === "/");
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    "px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2",
+                    isActive
+                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm"
+                      : "text-stone-400 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <item.icon className={cn("w-3.5 h-3.5", isActive ? "text-emerald-400" : "text-stone-500")} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Center Primary Icons Stack */}
-        <nav className="flex flex-col items-center gap-6 my-auto">
-          {/* Home */}
-          <Link
-            to="/polls"
-            title="Home"
-            className={cn(
-              "p-2.5 rounded-xl hover:bg-white/10 transition-all hover:scale-110 active:scale-95",
-              location.pathname === "/polls" || location.pathname === "/" ? "text-white" : "text-stone-400 hover:text-white"
-            )}
+        {/* Center: Quick Command / Search Bar */}
+        <div className="hidden lg:flex items-center flex-1 max-w-md mx-6">
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="w-full px-4 py-2 rounded-xl bg-[#111318] hover:bg-[#161920] border border-[#20242e] hover:border-emerald-500/40 text-stone-400 text-xs flex items-center justify-between transition-all group"
           >
-            <Home className={cn("w-6 h-6", (location.pathname === "/polls" || location.pathname === "/") && "stroke-[2.5] text-emerald-400")} />
-          </Link>
+            <div className="flex items-center gap-2.5">
+              <Search className="w-4 h-4 text-stone-500 group-hover:text-emerald-400 transition-colors" />
+              <span>Search markets, forecasters, topics...</span>
+            </div>
+            <kbd className="px-2 py-0.5 rounded bg-black/40 border border-white/10 text-[10px] font-mono text-stone-400">
+              ⌘K
+            </kbd>
+          </button>
+        </div>
 
-          {/* Reels / Top Predictions (Clapperboard icon) */}
-          <Link
-            to="/reels"
-            title="Reels & Top Predictions"
-            className={cn(
-              "p-2.5 rounded-xl hover:bg-white/10 transition-all hover:scale-110 active:scale-95",
-              location.pathname === "/reels" || location.pathname === "/leaderboard" ? "text-white" : "text-stone-400 hover:text-white"
-            )}
+        {/* Right Action Cluster */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Mobile Search Button */}
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="lg:hidden p-2 rounded-xl text-stone-400 hover:text-white hover:bg-white/5"
+            title="Search"
           >
-            <Clapperboard className={cn("w-6 h-6", (location.pathname === "/reels" || location.pathname === "/leaderboard") && "stroke-[2.5] text-emerald-400")} />
-          </Link>
+            <Search className="w-5 h-5" />
+          </button>
 
-          {/* Messages / Direct (With Red Badge 6) */}
+          {/* Create Market CTA */}
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span className="hidden sm:inline">New Market</span>
+          </button>
+
+          {/* Direct Messages (E2EE Chat) */}
           <Link
             to="/chat"
-            title="Direct Messages"
             className={cn(
-              "relative p-2.5 rounded-xl hover:bg-white/10 transition-all hover:scale-110 active:scale-95",
-              location.pathname.startsWith("/chat") ? "text-white" : "text-stone-400 hover:text-white"
+              "relative p-2 rounded-xl border transition-colors",
+              location.pathname.startsWith("/chat")
+                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
+                : "bg-[#111318] border-[#20242e] text-stone-400 hover:text-white hover:border-white/20"
             )}
+            title="Encrypted Messenger"
           >
-            <Send className={cn("w-6 h-6 -rotate-12", location.pathname.startsWith("/chat") && "stroke-[2.5] text-emerald-400")} />
-            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-extrabold leading-none shadow-md">
-              6
+            <Send className="w-4 h-4 -rotate-12" />
+            <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-red-500 text-white text-[9px] font-extrabold leading-none">
+              4
             </span>
           </Link>
 
-          {/* Search */}
+          {/* Activity / Notifications Bell */}
           <button
-            onClick={() => {
-              setIsSearchOpen(true);
-              setIsNotificationsOpen(false);
-              setIsMoreMenuOpen(false);
-            }}
-            title="Search"
+            onClick={() => setIsNotificationsOpen(true)}
             className={cn(
-              "p-2.5 rounded-xl hover:bg-white/10 transition-all hover:scale-110 active:scale-95",
-              isSearchOpen ? "text-emerald-400" : "text-stone-400 hover:text-white"
+              "relative p-2 rounded-xl border transition-colors",
+              isNotificationsOpen
+                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
+                : "bg-[#111318] border-[#20242e] text-stone-400 hover:text-white hover:border-white/20"
             )}
+            title="Consensus Activity"
           >
-            <Search className="w-6 h-6" />
-          </button>
-
-          {/* Notifications (With Red Badge 1) */}
-          <button
-            onClick={() => {
-              setIsNotificationsOpen(true);
-              setIsSearchOpen(false);
-              setIsMoreMenuOpen(false);
-            }}
-            title="Notifications"
-            className={cn(
-              "relative p-2.5 rounded-xl hover:bg-white/10 transition-all hover:scale-110 active:scale-95",
-              isNotificationsOpen ? "text-emerald-400" : "text-stone-400 hover:text-white"
-            )}
-          >
-            <Heart className="w-6 h-6" />
-            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-extrabold leading-none shadow-md">
+            <Bell className="w-4 h-4" />
+            <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-emerald-500 text-black text-[9px] font-extrabold leading-none">
               1
             </span>
           </button>
 
-          {/* Create Poll */}
+          {/* Appearance Toggle */}
           <button
-            onClick={() => {
-              setIsCreateOpen(true);
-              setIsMoreMenuOpen(false);
-            }}
-            title="Create Poll"
-            className="p-2.5 rounded-xl hover:bg-white/10 text-stone-400 hover:text-white transition-all hover:scale-110 active:scale-95"
+            onClick={toggleTheme}
+            className="p-2 rounded-xl bg-[#111318] border border-[#20242e] text-stone-400 hover:text-white transition-colors"
+            title="Toggle Appearance"
           >
-            <SquarePlus className="w-6 h-6" />
+            {theme === "light" ? <Moon className="w-4 h-4 text-emerald-400" /> : <Sun className="w-4 h-4 text-emerald-400" />}
           </button>
 
-          {/* Profile Avatar */}
-          <Link
-            to="/profile"
-            title="Profile"
-            className={cn(
-              "p-1 rounded-full border-2 transition-all hover:scale-110 active:scale-95",
-              location.pathname.startsWith("/profile") ? "border-emerald-500" : "border-transparent hover:border-white/40"
+          {/* User Profile Pill & Dropdown */}
+          <div className="relative">
+            {user ? (
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 p-1 pl-2 rounded-xl bg-[#111318] border border-[#20242e] hover:border-emerald-500/40 transition-all"
+              >
+                <div className="flex flex-col text-right hidden sm:block">
+                  <span className="text-xs font-bold text-white truncate max-w-[100px]">
+                    {user.displayName || "Node Forecaster"}
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-400 font-semibold">
+                    98.4% Accuracy
+                  </span>
+                </div>
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/30 overflow-hidden">
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    user.displayName?.charAt(0) || "U"
+                  )}
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-stone-400" />
+              </button>
+            ) : (
+              <Link
+                to="/signin"
+                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+              >
+                Sign In
+              </Link>
             )}
-          >
-            <div className="w-7 h-7 rounded-full bg-stone-900 overflow-hidden flex items-center justify-center">
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-xs font-bold text-emerald-400">
-                  {user?.displayName?.charAt(0) || "U"}
-                </span>
-              )}
-            </div>
-          </Link>
-        </nav>
 
-        {/* Bottom Icons (More Menu & App Switcher) */}
-        <div className="flex flex-col items-center gap-4 relative">
-          {/* More Popover Dropdown */}
-          {isMoreMenuOpen && (
-            <div 
-              className="absolute left-16 bottom-2 w-60 bg-[#18181b] border border-[#2c2c30] rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-left-2 duration-150 divide-y divide-white/5"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="space-y-1 pb-1">
-                <button
-                  onClick={() => {
-                    toggleTheme();
-                    setIsMoreMenuOpen(false);
-                  }}
-                  className="w-full p-2.5 rounded-xl hover:bg-white/10 flex items-center gap-3 text-xs font-semibold text-stone-200 transition-colors"
-                >
-                  {theme === "light" ? <Moon className="w-4 h-4 text-emerald-400" /> : <Sun className="w-4 h-4 text-emerald-400" />}
-                  <span>Switch Appearance ({theme === "light" ? "Dark" : "Light"})</span>
-                </button>
+            {/* Profile Dropdown Menu */}
+            {isUserMenuOpen && (
+              <div 
+                className="absolute right-0 top-12 w-56 bg-[#111318] border border-[#20242e] rounded-2xl shadow-2xl p-2 z-50 divide-y divide-white/5 animate-in fade-in zoom-in-95 duration-150"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="p-2 space-y-0.5">
+                  <span className="text-xs font-bold text-white block truncate">
+                    {user?.displayName || "Forecasting Node"}
+                  </span>
+                  <span className="text-[10px] font-mono text-stone-400 block truncate">
+                    {user?.email}
+                  </span>
+                </div>
 
-                <Link
-                  to="/reels"
-                  onClick={() => setIsMoreMenuOpen(false)}
-                  className="w-full p-2.5 rounded-xl hover:bg-white/10 flex items-center gap-3 text-xs font-semibold text-stone-200 transition-colors"
-                >
-                  <Trophy className="w-4 h-4 text-amber-400" />
-                  <span>Leaderboard Elite Matrix</span>
-                </Link>
+                <div className="py-1 space-y-1">
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="w-full px-3 py-2 rounded-xl hover:bg-white/5 flex items-center gap-2.5 text-xs text-stone-300 hover:text-white transition-colors"
+                  >
+                    <User className="w-4 h-4 text-emerald-400" />
+                    <span>Forecaster Dossier</span>
+                  </Link>
 
-                <Link
-                  to="/analytics"
-                  onClick={() => setIsMoreMenuOpen(false)}
-                  className="w-full p-2.5 rounded-xl hover:bg-white/10 flex items-center gap-3 text-xs font-semibold text-stone-200 transition-colors"
-                >
-                  <BarChart3 className="w-4 h-4 text-stone-400" />
-                  <span>Meta Analytics</span>
-                </Link>
+                  <Link
+                    to="/leaderboard"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="w-full px-3 py-2 rounded-xl hover:bg-white/5 flex items-center gap-2.5 text-xs text-stone-300 hover:text-white transition-colors"
+                  >
+                    <Trophy className="w-4 h-4 text-amber-400" />
+                    <span>Global Rankings</span>
+                  </Link>
 
-                <Link
-                  to="/admin"
-                  onClick={() => setIsMoreMenuOpen(false)}
-                  className="w-full p-2.5 rounded-xl hover:bg-white/10 flex items-center gap-3 text-xs font-semibold text-stone-200 transition-colors"
-                >
-                  <ShieldAlert className="w-4 h-4 text-red-400" />
-                  <span>Admin Authority</span>
-                </Link>
-              </div>
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="w-full px-3 py-2 rounded-xl hover:bg-white/5 flex items-center gap-2.5 text-xs text-stone-300 hover:text-white transition-colors"
+                  >
+                    <ShieldAlert className="w-4 h-4 text-red-400" />
+                    <span>Admin Authority</span>
+                  </Link>
+                </div>
 
-              <div className="pt-1">
-                {user ? (
+                <div className="pt-1">
                   <button
                     onClick={() => {
-                      setIsMoreMenuOpen(false);
+                      setIsUserMenuOpen(false);
                       signOut(auth);
                     }}
-                    className="w-full p-2.5 rounded-xl hover:bg-red-500/10 text-red-400 flex items-center gap-3 text-xs font-semibold transition-colors"
+                    className="w-full px-3 py-2 rounded-xl hover:bg-red-500/10 text-red-400 flex items-center gap-2.5 text-xs font-semibold transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Log Out</span>
+                    <span>Disconnect Node</span>
                   </button>
-                ) : (
-                  <Link
-                    to="/signin"
-                    onClick={() => setIsMoreMenuOpen(false)}
-                    className="w-full p-2.5 rounded-xl hover:bg-emerald-500/10 text-emerald-400 flex items-center gap-3 text-xs font-semibold transition-colors"
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Log In</span>
-                  </Link>
-                )}
+                </div>
               </div>
-            </div>
-          )}
-
-          {/* More Hamburger Menu */}
-          <button
-            onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-            title="More Options"
-            className={cn(
-              "p-2.5 rounded-xl hover:bg-white/10 transition-all hover:scale-110 active:scale-95",
-              isMoreMenuOpen ? "text-emerald-400" : "text-stone-400 hover:text-white"
             )}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-
-          {/* Grid / Threads Icon */}
-          <Link
-            to="/docs"
-            title="Protocol Documentation"
-            className="p-2.5 rounded-xl hover:bg-white/10 text-stone-400 hover:text-white transition-all hover:scale-110 active:scale-95"
-          >
-            <Grid className="w-6 h-6" />
-          </Link>
+          </div>
         </div>
-      </aside>
+      </header>
 
-      {/* 2. Main Content Container */}
-      <main className="flex-1 lg:ml-[72px] min-h-screen overflow-y-auto pb-16 lg:pb-0 bg-[#000000]">
+      {/* 2. Main Content Canvas */}
+      <main className="flex-1 w-full pb-20 md:pb-8">
         {children}
       </main>
 
-      {/* 3. Floating Messages Pill in Bottom Right (Exact Replica of Screenshot) */}
-      <FloatingChatPill unreadCount={6} />
-
-      {/* 4. Instagram Mobile Bottom Bar */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#000000]/95 border-t border-[#262626] backdrop-blur-xl flex items-center justify-around py-3 px-2">
+      {/* 3. Mobile Bottom Navigation Deck */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#090b0e]/95 border-t border-[#181b22] backdrop-blur-xl px-4 py-2 flex items-center justify-around">
         <Link
           to="/polls"
           className={cn(
-            "p-1 transition-colors",
-            location.pathname === "/polls" ? "text-emerald-400" : "text-stone-400"
+            "flex flex-col items-center gap-1 p-1 transition-colors",
+            location.pathname === "/polls" || location.pathname === "/" ? "text-emerald-400" : "text-stone-400"
           )}
         >
-          <Home className="w-6 h-6" />
+          <BarChart3 className="w-5 h-5" />
+          <span className="text-[10px] font-semibold">Markets</span>
         </Link>
 
         <Link
           to="/reels"
           className={cn(
-            "p-1 transition-colors",
+            "flex flex-col items-center gap-1 p-1 transition-colors",
             location.pathname === "/reels" ? "text-emerald-400" : "text-stone-400"
           )}
         >
-          <Clapperboard className="w-6 h-6" />
+          <Zap className="w-5 h-5" />
+          <span className="text-[10px] font-semibold">Briefs</span>
         </Link>
 
         <button
           onClick={() => setIsCreateOpen(true)}
-          className="p-1 text-stone-400 hover:text-white transition-colors"
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-500 text-black shadow-lg shadow-emerald-500/30 -mt-4 active:scale-95"
         >
-          <SquarePlus className="w-6 h-6" />
+          <Plus className="w-5 h-5 stroke-[3]" />
         </button>
 
         <Link
           to="/chat"
           className={cn(
-            "relative p-1 transition-colors",
+            "relative flex flex-col items-center gap-1 p-1 transition-colors",
             location.pathname.startsWith("/chat") ? "text-emerald-400" : "text-stone-400"
           )}
         >
-          <Send className="w-6 h-6 -rotate-12" />
-          <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[9px] font-extrabold leading-none">
-            6
-          </span>
+          <Send className="w-5 h-5" />
+          <span className="text-[10px] font-semibold">Direct</span>
+          <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-red-500" />
         </Link>
 
         <Link
           to="/profile"
           className={cn(
-            "p-0.5 rounded-full border",
-            location.pathname.startsWith("/profile") ? "border-emerald-400" : "border-transparent"
+            "flex flex-col items-center gap-1 p-1 transition-colors",
+            location.pathname.startsWith("/profile") ? "text-emerald-400" : "text-stone-400"
           )}
         >
-          <div className="w-6 h-6 rounded-full bg-stone-900 overflow-hidden flex items-center justify-center">
-            {user?.photoURL ? (
-              <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-[10px] font-bold text-emerald-400">
-                {user?.displayName?.charAt(0) || "U"}
-              </span>
-            )}
-          </div>
+          <User className="w-5 h-5" />
+          <span className="text-[10px] font-semibold">Profile</span>
         </Link>
-      </div>
+      </nav>
 
-      {/* 5. Modals & Drawers */}
+      {/* 4. Global Modals & Drawers */}
       <CreatePollModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
