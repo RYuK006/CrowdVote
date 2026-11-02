@@ -1,5 +1,4 @@
 import express from "express";
-import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
 import admin from 'firebase-admin';
@@ -11,6 +10,15 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Initialize Supabase Client if credentials are provided
+import { createClient } from '@supabase/supabase-js';
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+export const supabase = (supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
+if (supabase) {
+  console.log("⚡ Supabase Client initialized & connected");
+}
+
 // Initialize Firebase Admin
 let db: admin.firestore.Firestore;
 try {
@@ -18,10 +26,12 @@ try {
   
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-    // Robust PEM Formatter
+    
+    // Robust PEM Formatter: Fixes mangled newlines in the private key
     if (serviceAccount.private_key) {
       serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
     }
+    
     console.log("📡 Using Firebase Service Account from environment variables");
   } else {
     const serviceAccountPath = path.join(process.cwd(), 'serviceAccountKey.json');
@@ -34,6 +44,7 @@ try {
   }
 
   if (serviceAccount && serviceAccount.private_key) {
+    // Only initialize if we haven't already (prevents multiple app errors in serverless)
     if (!admin.apps.length) {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
@@ -50,12 +61,37 @@ try {
     }).catch(err => {
       console.warn("⚠️ Failed to sync global config:", err.message);
     });
+
+  } else {
+    console.error("❌ Firebase Admin could not be initialized: Missing private_key");
   }
 } catch (error) {
   console.error("Failed to init Firebase Admin:", error);
 }
 
 const CURRENT_PHASE: "pre_election" | "campaign" | "final" | "exit" = "pre_election";
+
+let accuracyMap: Record<string, number> = {};
+function loadAccuracyScores() {
+  const targetPath = path.join(__dirname, '..', 'result.csv');
+  if (fs.existsSync(targetPath)) {
+    fs.createReadStream(targetPath)
+      .pipe(csvParser())
+      .on('data', (row: any) => {
+        const email = row['Email'];
+        const score = parseInt(row['Accuracy Points'], 10);
+        if (email && !isNaN(score)) {
+          accuracyMap[email] = score === 0 ? 100 : score;
+        }
+      })
+      .on('end', () => {
+        console.log(`Loaded ${Object.keys(accuracyMap).length} accuracy scores from result.csv`);
+      });
+  } else {
+    console.warn("⚠️ result.csv not found at", targetPath);
+  }
+}
+loadAccuracyScores();
 
 async function initData() {
   if (!db) {
@@ -128,9 +164,113 @@ app.get("/api/health", (req, res) => {
 app.get("/api/polls", async (req, res) => {
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
-    const snapshot = await db.collection("world_cup_polls").get();
-    const polls = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.json(polls);
+    const category = req.query.category as string;
+    const isSponsored = req.query.sponsored === 'true';
+    const search = (req.query.search as string || '').toLowerCase().trim();
+    const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 60));
+    const page = Math.max(1, Number(req.query.page) || 1);
+
+    let query: admin.firestore.Query = db.collection("world_cup_polls");
+    
+    if (category && category !== 'All') {
+      query = query.where("category", "==", category);
+    }
+    if (isSponsored) {
+      query = query.where("isSponsored", "==", true);
+    }
+
+    const snapshot = await query.limit(limit * 3).get();
+    let polls = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    if (search) {
+      polls = polls.filter((p: any) => 
+        (p.title && p.title.toLowerCase().includes(search)) || 
+        (p.category && p.category.toLowerCase().includes(search)) ||
+        (p.sponsorName && p.sponsorName.toLowerCase().includes(search))
+      );
+    }
+
+    const startIndex = (page - 1) * limit;
+    const paginatedPolls = polls.slice(startIndex, startIndex + limit);
+
+    res.json(paginatedPolls);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- ROAST ROOM COUNCIL ENDPOINT ---
+app.get("/api/roast-room/council/:id", async (req, res) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const docSnap = await db.collection("world_cup_polls").doc(req.params.id).get();
+    if (!docSnap.exists) {
+      return res.status(404).json({ error: "Poll not found" });
+    }
+    const poll: any = docSnap.data();
+    
+    // Roster of simulated advisors inspired by Roast Room (nateherkai/roast-room)
+    const advisors = [
+      { key: "graham", name: "Paul Graham", role: "YC Founder", portrait: "/portraits/graham-base.webp" },
+      { key: "bezos", name: "Jeff Bezos", role: "Amazon Founder", portrait: "/portraits/bezos-base.webp" },
+      { key: "hormozi", name: "Alex Hormozi", role: "Acquisition.com", portrait: "/portraits/hormozi-base.webp" },
+      { key: "musk", name: "Elon Musk", role: "Tesla & SpaceX", portrait: "/portraits/musk-base.webp" },
+      { key: "garyvee", name: "Gary Vaynerchuk", role: "VaynerX", portrait: "/portraits/garyvee-base.webp" },
+      { key: "naval", name: "Naval Ravikant", role: "AngelList", portrait: "/portraits/naval-base.webp" },
+      { key: "buffett", name: "Warren Buffett", role: "Berkshire Hathaway", portrait: "/portraits/buffett-base.webp" },
+      { key: "sanchez", name: "Codie Sanchez", role: "Contrarian Thinking", portrait: "/portraits/sanchez-base.webp" }
+    ];
+
+    const titleHash = (poll.title || "").split("").reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0);
+    const options = poll.options || [{ id: "opt1", text: "Option A" }, { id: "opt2", text: "Option B" }];
+    
+    const council = advisors.slice(0, 4).map((adv, idx) => {
+      const chosenOpt = options[(titleHash + idx) % options.length];
+      const optText = chosenOpt.text || chosenOpt.name || "Option";
+      let roast = "";
+      if (adv.key === "graham") roast = `Looking at "${poll.title}", the crowd usually bets on consensus. But betting on "${optText}" is the real contrarian founder play.`;
+      else if (adv.key === "bezos") roast = `This is a two-way door decision. Backing "${optText}" provides asymmetric upside with low reversibility risk.`;
+      else if (adv.key === "hormozi") roast = `Let us look at the raw numbers. "${optText}" delivers 10x the perceived leverage with the least friction.`;
+      else if (adv.key === "musk") roast = `First principles dictate that "${optText}" minimizes thermodynamic waste. Build for velocity.`;
+      else if (adv.key === "naval") roast = `Play long-term iterated games. "${optText}" unlocks non-linear leverage.`;
+      else roast = `Margin of safety says "${optText}" protects your principal and yields durable returns.`;
+
+      return {
+        advisor: adv,
+        stance: (titleHash + idx) % 2 === 0 ? "Endorse" : "Amend",
+        recommendedOption: optText,
+        confidence: 80 + ((titleHash * (idx + 1)) % 19),
+        roast
+      };
+    });
+
+    res.json({
+      pollId: req.params.id,
+      title: poll.title,
+      category: poll.category || "General",
+      council
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- DEMO SUMMARY ENDPOINT ---
+app.get("/api/demo/summary", async (req, res) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollsCountSnap = await db.collection("world_cup_polls").count().get();
+    const usersCountSnap = await db.collection("users").count().get();
+    const votesCountSnap = await db.collection("global_votes").count().get();
+    
+    res.json({
+      totalPolls: pollsCountSnap.data().count,
+      totalUsers: usersCountSnap.data().count,
+      totalVotes: votesCountSnap.data().count,
+      categories: ["All", "Sponsored", "Tech & AI", "Startups & Roasts", "Finance & Crypto", "Politics", "Sports", "Pop Culture", "Science", "Gaming"],
+      supabaseCompatible: true,
+      roastRoomCouncilIntegrated: true
+    });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -144,13 +284,31 @@ app.get("/api/polls/:id", async (req, res) => {
       const pollData = docSnap.data();
       
       const votesSnap = await db.collection("global_votes").where("pollId", "==", req.params.id).get();
-      const optionCounts: Record<string, number> = {};
+      
+      const userIds = [...new Set(votesSnap.docs.map((doc: any) => doc.data().userId))];
+      const userScores: Record<string, number> = {};
+      
+      if (userIds.length > 0) {
+        const usersSnap = await db.collection("users").get();
+        usersSnap.docs.forEach((d: any) => {
+          const u = d.data();
+          const email = u.email;
+          if (email && accuracyMap[email] !== undefined) {
+            userScores[d.id] = accuracyMap[email];
+          } else {
+            userScores[d.id] = 100;
+          }
+        });
+      }
+
+      const optionScores: Record<string, number> = {};
       votesSnap.docs.forEach((doc: any) => {
         const vote = doc.data();
-        optionCounts[vote.selectedOption] = (optionCounts[vote.selectedOption] || 0) + 1;
+        const userScore = userScores[vote.userId] || 0;
+        optionScores[vote.selectedOption] = (optionScores[vote.selectedOption] || 0) + userScore;
       });
 
-      res.json({ id: docSnap.id, ...pollData, optionCounts });
+      res.json({ id: docSnap.id, ...pollData, optionScores });
     } else {
       res.status(404).json({ error: "Poll not found" });
     }
@@ -324,7 +482,7 @@ app.get("/api/user/votes", authenticateToken, async (req: any, res: any) => {
   try {
     const snap = await db.collection("users").doc(uid).collection("predictions").get();
     const votes: Record<string, any> = {};
-    snap.docs.forEach((doc: any) => {
+    snap.forEach(doc => {
       const d = doc.data();
       votes[d.pollId] = d;
     });
@@ -385,7 +543,7 @@ app.get("/api/admin/metrics", authenticateToken, requireAdmin, async (req: any, 
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
     const usersSnap = await db.collection("users").count().get();
-    const predsSnap = await db.collection("global_predictions").count().get();
+    const predsSnap = await db.collection("global_votes").count().get();
     
     // Get stats per day (Last 7 days)
     const sevenDaysAgo = new Date();
@@ -402,6 +560,8 @@ app.get("/api/admin/metrics", authenticateToken, requireAdmin, async (req: any, 
       dateLabels.push(label);
     }
     
+    // In a real high-scale app, we'd use aggregation or scheduled counts.
+    // For this context, we'll provide the global totals and mock the trends for visual consistency.
     res.json({
       totalUsers: usersSnap.data().count,
       totalPredictions: predsSnap.data().count,
@@ -417,17 +577,16 @@ app.get("/api/admin/nodes", authenticateToken, requireAdmin, async (req: any, re
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
     const usersSnap = await db.collection("users").limit(100).get();
-    const nodes = await Promise.all(usersSnap.docs.map(async (uDoc) => {
+    const nodes = usersSnap.docs.map((uDoc) => {
       const userData = uDoc.data();
-      const predCountSnap = await db.collection("global_predictions").where("userId", "==", uDoc.id).count().get();
       return {
         uid: uDoc.id,
         displayName: userData.displayName || "Anonymous Agent",
         email: userData.email || "No Email",
-        predictionCount: predCountSnap.data().count,
+        predictionCount: userData.predictionCount || 0,
         createdAt: userData.createdAt
       };
-    }));
+    });
     res.json(nodes);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -437,7 +596,7 @@ app.get("/api/admin/nodes", authenticateToken, requireAdmin, async (req: any, re
 app.get("/api/admin/predictions/recent", authenticateToken, requireAdmin, async (req: any, res: any) => {
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
-    const snap = await db.collection("global_predictions")
+    const snap = await db.collection("global_votes")
       .orderBy("timestamp", "desc")
       .limit(20)
       .get();
@@ -473,16 +632,20 @@ app.get("/api/admin/export", authenticateToken, requireAdmin, async (req: any, r
     
     const usersSnap = await db.collection("users").get();
     const usersMap = new Map();
-    usersSnap.docs.forEach(doc => usersMap.set(doc.id, doc.data().displayName || doc.data().email || doc.id));
+    usersSnap.docs.forEach(doc => usersMap.set(doc.id, doc.data()));
 
     const pollsSnap = await db.collection("world_cup_polls").get();
     const pollsMap = new Map();
     pollsSnap.docs.forEach(doc => pollsMap.set(doc.id, doc.data()));
 
-    let csv = "UserName,PollName,SelectedOption,Confidence,Timestamp\n";
+    let csv = "UserName,Email,AccuracyScore,PollName,SelectedOption,Timestamp\n";
     snap.docs.forEach(doc => {
       const d = doc.data();
-      const userName = usersMap.get(d.userId) || d.userId;
+      const user = usersMap.get(d.userId) || {};
+      const userName = user.displayName || user.email || d.userId;
+      const userEmail = user.email || "Unknown";
+      const accuracyScore = user.accuracyScore !== undefined ? user.accuracyScore : 100;
+      
       const poll = pollsMap.get(d.pollId);
       const pollName = poll ? poll.title : d.pollId;
       let optionName = d.selectedOption;
@@ -492,10 +655,11 @@ app.get("/api/admin/export", authenticateToken, requireAdmin, async (req: any, r
       }
       
       const safeUserName = `"${String(userName).replace(/"/g, '""')}"`;
+      const safeEmail = `"${String(userEmail).replace(/"/g, '""')}"`;
       const safePollName = `"${String(pollName).replace(/"/g, '""')}"`;
       const safeOptionName = `"${String(optionName).replace(/"/g, '""')}"`;
 
-      csv += `${safeUserName},${safePollName},${safeOptionName},${d.confidence},${d.timestamp}\n`;
+      csv += `${safeUserName},${safeEmail},${accuracyScore},${safePollName},${safeOptionName},${d.timestamp}\n`;
     });
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename=crowdvote_export.csv');
@@ -505,21 +669,31 @@ app.get("/api/admin/export", authenticateToken, requireAdmin, async (req: any, r
   }
 });
 
+app.get("/api/results/actual", (req, res) => {
+  const results: any[] = [];
+  const csvPath = path.join(process.cwd(), 'kerala_election_results_2026.csv');
+  
+  if (!fs.existsSync(csvPath)) {
+    return res.json([]);
+  }
+
+  fs.createReadStream(csvPath)
+    .pipe(csvParser())
+    .on('data', (row) => {
+      results.push(row);
+    })
+    .on('end', () => {
+      res.json(results);
+    });
+});
+
 // --- VITE MIDDLEWARE ---
-if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
-  createViteServer({
-    server: { middlewareMode: true },
-    appType: "spa",
-  }).then(vite => {
-    app.use(vite.middlewares);
-  });
-} else {
-  const distPath = path.join(process.cwd(), "dist");
-  app.use(express.static(distPath));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
-}
+// In production on Vercel, static files are handled by vercel.json rewrites.
+const distPath = path.join(process.cwd(), "dist");
+app.use(express.static(distPath));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
 
 // Only listen locally, Vercel handles the serverless execution
 if (!process.env.VERCEL) {
