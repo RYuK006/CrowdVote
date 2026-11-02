@@ -7,6 +7,8 @@ export interface User {
   rank?: number;
   role: "user" | "admin" | "demo_curator";
   createdAt: string;
+  bio?: string;
+  avatar?: string;
 }
 
 export interface PollOption {
@@ -33,6 +35,7 @@ export interface Poll {
   councilVerdict?: string;
   tags?: string[];
   createdBy?: string;
+  createdByName?: string;
 }
 
 export interface Vote {
@@ -45,4 +48,36 @@ export interface Vote {
 
 export interface GlobalConfig {
   phase: string;
+}
+
+export interface SocialProfile {
+  followersCount: number;
+  followingCount: number;
+  friendsCount: number;
+  isFollowing?: boolean;
+  isFollowedBy?: boolean;
+  isFriend?: boolean;
+  friendRequestStatus?: "none" | "pending_sent" | "pending_received" | "accepted";
+}
+
+export interface FriendRequest {
+  id: string;
+  fromUid: string;
+  fromName: string;
+  fromEmail?: string;
+  toUid: string;
+  toName: string;
+  status: "pending" | "accepted" | "declined";
+  createdAt: string;
+}
+
+export interface FollowUser {
+  uid: string;
+  displayName: string;
+  email?: string;
+  accuracy?: number;
+  avatar?: string;
+  isFollowing?: boolean;
+  isFriend?: boolean;
+  followedAt?: string;
 }
