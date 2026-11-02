@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { User, Sparkles } from "lucide-react";
+import { ShieldCheck, Sparkles, UserCheck, UserPlus } from "lucide-react";
 import { cn } from "../lib/utils";
 
 interface SuggestedUser {
@@ -13,50 +13,50 @@ interface SuggestedUser {
   isFollowing?: boolean;
 }
 
-const DEFAULT_SUGGESTIONS: SuggestedUser[] = [
+const FALLBACK_SUGGESTIONS: SuggestedUser[] = [
   {
-    uid: "tisha_sara",
-    handle: "Dr. Tisha Sara Titus",
-    displayName: "Tisha Sara",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&h=120&q=80",
-    subtitle: "Followed by white_devil_006",
-    accuracy: 97.4,
+    uid: "node_quantum_oracle",
+    handle: "quantum_oracle",
+    displayName: "Quantum Oracle",
+    avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&h=150&q=80",
+    subtitle: "Grandmaster • 98.4% Accuracy",
+    accuracy: 98.4,
     isFollowing: false,
   },
   {
-    uid: "stephin_shalu",
-    handle: "Stephin V Shalu",
-    displayName: "Stephin Shalu",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=80",
-    subtitle: "Followed by pre_lives + 18 m",
-    accuracy: 94.8,
+    uid: "node_polity_matrix",
+    handle: "polity_matrix",
+    displayName: "Polity Matrix",
+    avatar: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=150&h=150&q=80",
+    subtitle: "Grandmaster • 97.9% Accuracy",
+    accuracy: 97.9,
     isFollowing: false,
   },
   {
-    uid: "jiyaaa_node",
-    handle: "jiyaaa",
-    displayName: "Jiya Thomas",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&h=120&q=80",
-    subtitle: "Followed by manu_thomas_n",
+    uid: "node_alpha_macro",
+    handle: "alpha_macro",
+    displayName: "Alpha Macro",
+    avatar: "https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=150&h=150&q=80",
+    subtitle: "Grandmaster • 97.2% Accuracy",
+    accuracy: 97.2,
+    isFollowing: false,
+  },
+  {
+    uid: "node_cyber_pulse",
+    handle: "cyber_pulse",
+    displayName: "Cyber Pulse",
+    avatar: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=150&h=150&q=80",
+    subtitle: "Master • 96.5% Accuracy",
+    accuracy: 96.5,
+    isFollowing: false,
+  },
+  {
+    uid: "node_crypto_sentinel",
+    handle: "crypto_sentinel",
+    displayName: "Crypto Sentinel",
+    avatar: "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&w=150&h=150&q=80",
+    subtitle: "Master • 96.1% Accuracy",
     accuracy: 96.1,
-    isFollowing: false,
-  },
-  {
-    uid: "clement_bab",
-    handle: "Clement Bab",
-    displayName: "Clement B",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&h=120&q=80",
-    subtitle: "Followed by renny_gc + 2 m",
-    accuracy: 92.5,
-    isFollowing: false,
-  },
-  {
-    uid: "sumi_sudhi",
-    handle: "sumi sudhi",
-    displayName: "Sumi Sudhi",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=80",
-    subtitle: "Followed by aa_lwynn_ + 7 m",
-    accuracy: 95.0,
     isFollowing: false,
   },
 ];
@@ -70,8 +70,31 @@ export function InstagramRightSidebar({
   currentUser,
   onOpenFollowersModal,
 }: InstagramRightSidebarProps) {
-  const [suggestions, setSuggestions] = useState<SuggestedUser[]>(DEFAULT_SUGGESTIONS);
+  const [suggestions, setSuggestions] = useState<SuggestedUser[]>(FALLBACK_SUGGESTIONS);
   const [loadingUid, setLoadingUid] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const headers: Record<string, string> = {};
+        if (currentUser) {
+          const token = await currentUser.getIdToken();
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+        const res = await fetch("/api/suggestions", { headers });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setSuggestions(data);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load suggestions:", err);
+      }
+    };
+
+    fetchSuggestions();
+  }, [currentUser]);
 
   const handleToggleFollow = async (targetUid: string) => {
     if (!currentUser) return;
@@ -104,8 +127,8 @@ export function InstagramRightSidebar({
 
   const currentHandle = currentUser?.email
     ? currentUser.email.split("@")[0]
-    : "skytsengel_006";
-  const currentDisplayName = currentUser?.displayName || "Aaron Alex Mathew";
+    : "prediction_node";
+  const currentDisplayName = currentUser?.displayName || "Forecasting Node";
 
   return (
     <div className="w-[324px] shrink-0 pt-6 px-3 select-none hidden lg:block">
@@ -141,14 +164,14 @@ export function InstagramRightSidebar({
           to="/profile"
           className="text-xs font-semibold text-emerald-400 hover:text-white transition-colors"
         >
-          Switch
+          Profile
         </Link>
       </div>
 
       {/* Suggested Section Header */}
       <div className="flex items-center justify-between py-2 mb-2">
         <span className="text-sm font-bold text-stone-400">
-          Suggested for you
+          Suggested Forecasters
         </span>
         <button
           onClick={onOpenFollowersModal}
@@ -181,7 +204,7 @@ export function InstagramRightSidebar({
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-xs font-bold text-white truncate group-hover:text-emerald-400 transition-colors flex items-center gap-1">
-                  {user.handle}
+                  {user.displayName}
                 </span>
                 <span className="text-[11px] text-stone-400 truncate">
                   {user.subtitle}
@@ -209,29 +232,25 @@ export function InstagramRightSidebar({
         ))}
       </div>
 
-      {/* Instagram Meta Footer */}
+      {/* CrowdVote Protocol Footer */}
       <div className="mt-8 pt-4 space-y-4 text-[11px] text-stone-500">
         <div className="flex flex-wrap gap-x-2 gap-y-1">
-          <a href="#about" className="hover:underline">About</a>
+          <Link to="/docs" className="hover:underline">About</Link>
           <span>•</span>
-          <a href="#help" className="hover:underline">Help</a>
+          <Link to="/docs" className="hover:underline">Protocol</Link>
           <span>•</span>
-          <a href="#press" className="hover:underline">Press</a>
+          <Link to="/docs" className="hover:underline">API</Link>
           <span>•</span>
-          <a href="#api" className="hover:underline">API</a>
+          <Link to="/analytics" className="hover:underline">Analytics</Link>
           <span>•</span>
-          <a href="#jobs" className="hover:underline">Jobs</a>
+          <Link to="/leaderboard" className="hover:underline">Leaderboard</Link>
           <span>•</span>
           <a href="#privacy" className="hover:underline">Privacy</a>
           <span>•</span>
           <a href="#terms" className="hover:underline">Terms</a>
-          <span>•</span>
-          <a href="#locations" className="hover:underline">Locations</a>
-          <span>•</span>
-          <a href="#language" className="hover:underline">Language</a>
         </div>
         <div className="font-mono text-[10px] uppercase tracking-wider text-stone-600">
-          © 2026 CROWDVOTE FROM META
+          © 2026 CROWDVOTE AI • SWARM CONSENSUS PROTOCOL
         </div>
       </div>
     </div>
