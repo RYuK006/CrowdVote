@@ -182,6 +182,9 @@ app.get("/api/polls", async (req, res) => {
     const snapshot = await query.limit(limit * 3).get();
     let polls = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
+    // Exclude polls that are pending review or rejected from the public feed
+    polls = polls.filter((p: any) => !p.status || p.status === 'open' || p.status === 'active');
+
     if (search) {
       polls = polls.filter((p: any) => 
         (p.title && p.title.toLowerCase().includes(search)) || 
@@ -685,6 +688,263 @@ app.get("/api/results/actual", (req, res) => {
     .on('end', () => {
       res.json(results);
     });
+});
+
+
+// ==========================================
+// USER POLL CREATION & MODERATION PIPELINE
+// ==========================================
+
+// Submit a poll for admin approval with safety checks
+app.post("/api/user/polls", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const { title, description, category, options, tags } = req.body;
+    const uid = req.user.uid;
+
+    if (!title || typeof title !== "string" || title.trim().length < 5) {
+      return res.status(400).json({ error: "Title must be at least 5 characters long." });
+    }
+    if (!Array.isArray(options) || options.length < 2) {
+      return res.status(400).json({ error: "At least two options are required." });
+    }
+
+    // Server-side safety verification against toxicity, hate speech, spam
+    const prohibitedWords = ["hate", "kill", "terrorist", "scam", "nazi", "bomb", "fraud", "exploit"];
+    const contentCheck = `${title} ${description || ""} ${options.map((o: any) => o.text || o.name || "").join(" ")}`.toLowerCase();
+    for (const word of prohibitedWords) {
+      if (contentCheck.includes(word)) {
+        return res.status(400).json({ error: `Safety violation: Content contains prohibited term '${word}'` });
+      }
+    }
+
+    const pollId = `poll_user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const formattedOptions = options.map((opt: any, index: number) => ({
+      id: opt.id || `opt_${index + 1}`,
+      text: opt.text || opt.name || `Option ${index + 1}`
+    }));
+
+    const newPoll = {
+      id: pollId,
+      title: title.trim(),
+      description: (description || "").trim(),
+      category: category || "General",
+      options: formattedOptions,
+      tags: tags || [],
+      status: "pending_approval",
+      createdBy: uid,
+      createdByName: req.user.name || req.user.email || "Community Agent",
+      createdAt: new Date().toISOString(),
+      optionScores: {},
+      isSponsored: false
+    };
+
+    await db.collection("world_cup_polls").doc(pollId).set(newPoll);
+
+    res.json({
+      success: true,
+      poll: newPoll,
+      message: "Poll submitted for moderation review. Once approved, it will be published to the swarm feed."
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Retrieve polls submitted by current authenticated user
+app.get("/api/user/created-polls", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const snap = await db.collection("world_cup_polls").where("createdBy", "==", uid).get();
+    const polls = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.json(polls);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin: Query pending moderation queue
+app.get("/api/admin/pending-polls", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const snap = await db.collection("world_cup_polls")
+      .where("status", "==", "pending_approval")
+      .limit(100)
+      .get();
+    const pendingPolls = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json(pendingPolls);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin: Approve or Reject a user poll
+app.post("/api/admin/polls/:id/moderate", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.id;
+    const { action, reason } = req.body;
+
+    if (!["approve", "reject"].includes(action)) {
+      return res.status(400).json({ error: "Action must be 'approve' or 'reject'" });
+    }
+
+    const pollRef = db.collection("world_cup_polls").doc(pollId);
+    const pollSnap = await pollRef.get();
+    if (!pollSnap.exists) {
+      return res.status(404).json({ error: "Poll not found" });
+    }
+
+    const newStatus = action === "approve" ? "open" : "rejected";
+    await pollRef.update({
+      status: newStatus,
+      moderatedAt: new Date().toISOString(),
+      moderatedBy: req.user.email,
+      rejectionReason: reason || null
+    });
+
+    res.json({
+      success: true,
+      pollId,
+      status: newStatus,
+      message: `Poll has been ${action === "approve" ? "approved and published" : "rejected"}.`
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// END-TO-END ENCRYPTED (E2EE) CHAT RELAY
+// Zero-Knowledge Architecture (Signal Protocol)
+// ==========================================
+
+// Register client-generated public key bundle
+app.post("/api/chat/keys/register", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const { identityKey, signedPreKey, registrationId, timestamp } = req.body;
+
+    if (!identityKey) {
+      return res.status(400).json({ error: "identityKey is required" });
+    }
+
+    await db.collection("user_public_keys").doc(uid).set({
+      uid,
+      displayName: req.user.name || req.user.email?.split("@")[0] || "Prediction Node",
+      email: req.user.email || "",
+      identityKey,
+      signedPreKey: signedPreKey || null,
+      registrationId: registrationId || 1,
+      updatedAt: timestamp || new Date().toISOString()
+    }, { merge: true });
+
+    res.json({ success: true, message: "Public key bundle registered" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Retrieve public key bundle for a chat recipient
+app.get("/api/chat/keys/:userId", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const partnerId = req.params.userId;
+    const docSnap = await db.collection("user_public_keys").doc(partnerId).get();
+    if (!docSnap.exists) {
+      return res.status(404).json({ error: "User public key not found" });
+    }
+    res.json(docSnap.data());
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// List active potential chat partners
+app.get("/api/chat/partners", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const usersSnap = await db.collection("users").limit(50).get();
+    const partners = usersSnap.docs
+      .filter(doc => doc.id !== uid)
+      .map(doc => {
+        const data = doc.data();
+        return {
+          uid: doc.id,
+          displayName: data.displayName || data.email?.split("@")[0] || "Prediction Node",
+          email: data.email || "",
+          accuracy: data.accuracy || 100,
+          rank: data.rank || 1,
+          createdAt: data.createdAt
+        };
+      });
+
+    res.json(partners);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Relay zero-knowledge encrypted message
+app.post("/api/chat/messages", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const { recipientId, ciphertext, iv, ephemeralPublicKey, timestamp } = req.body;
+
+    if (!recipientId || !ciphertext || !iv || !ephemeralPublicKey) {
+      return res.status(400).json({ error: "Missing required encrypted message payload fields" });
+    }
+
+    const messageData = {
+      senderId: uid,
+      recipientId,
+      ciphertext,
+      iv,
+      ephemeralPublicKey,
+      timestamp: timestamp || new Date().toISOString()
+    };
+
+    const docRef = await db.collection("encrypted_messages").add(messageData);
+    res.json({ success: true, id: docRef.id, message: "Encrypted payload relayed" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Retrieve encrypted messages between current user and partner
+app.get("/api/chat/messages/:partnerId", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const partnerId = req.params.partnerId;
+
+    const [sentSnap, receivedSnap] = await Promise.all([
+      db.collection("encrypted_messages")
+        .where("senderId", "==", uid)
+        .where("recipientId", "==", partnerId)
+        .limit(100)
+        .get(),
+      db.collection("encrypted_messages")
+        .where("senderId", "==", partnerId)
+        .where("recipientId", "==", uid)
+        .limit(100)
+        .get()
+    ]);
+
+    const allMessages: any[] = [];
+    sentSnap.docs.forEach(d => allMessages.push({ id: d.id, ...d.data() }));
+    receivedSnap.docs.forEach(d => allMessages.push({ id: d.id, ...d.data() }));
+
+    allMessages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+    res.json(allMessages);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // --- VITE MIDDLEWARE ---
