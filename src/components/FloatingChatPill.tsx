@@ -1,40 +1,47 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MessageCircle, Send, X, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
-import { cn } from "../lib/utils";
+import { Send, X, ExternalLink } from "lucide-react";
 
 interface FloatingChatPillProps {
   unreadCount?: number;
 }
 
-const RECENT_NODES = [
+const PREDICTION_CONTACTS = [
   {
-    name: "Joel K Jose",
-    handle: "joel.k.jose",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80",
-    lastMsg: "Did you verify the new voting hash?",
-    time: "5m",
+    name: "Quantum Oracle",
+    handle: "quantum_oracle",
+    avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=100&h=100&q=80",
+    lastMsg: "Consensus probability shifted to 74% on autonomous reasoning.",
+    time: "3m",
     online: true,
   },
   {
-    name: "Vrinda Shameek",
-    handle: "vrinda_shameek",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&h=100&q=80",
-    lastMsg: "Consensus looking 70% positive!",
-    time: "22m",
+    name: "Alpha Macro",
+    handle: "alpha_macro",
+    avatar: "https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=100&h=100&q=80",
+    lastMsg: "Bond yields are pricing a 50bps terminal rate cut.",
+    time: "18m",
     online: true,
   },
   {
-    name: "Stephin Shalu",
-    handle: "stephin_shalu",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80",
-    lastMsg: "Double Ratchet key session refreshed.",
-    time: "1h",
+    name: "Cyber Pulse",
+    handle: "cyber_pulse",
+    avatar: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=100&h=100&q=80",
+    lastMsg: "Double Ratchet key session refreshed for node mesh.",
+    time: "45m",
+    online: true,
+  },
+  {
+    name: "Polity Matrix",
+    handle: "polity_matrix",
+    avatar: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=100&h=100&q=80",
+    lastMsg: "Constituency swing district consensus updated.",
+    time: "2h",
     online: false,
-  },
+  }
 ];
 
-export function FloatingChatPill({ unreadCount = 6 }: FloatingChatPillProps) {
+export function FloatingChatPill({ unreadCount = 4 }: FloatingChatPillProps) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -73,7 +80,7 @@ export function FloatingChatPill({ unreadCount = 6 }: FloatingChatPillProps) {
 
           {/* Quick Chat List */}
           <div className="max-h-80 overflow-y-auto divide-y divide-white/5">
-            {RECENT_NODES.map((node) => (
+            {PREDICTION_CONTACTS.map((node) => (
               <div
                 key={node.handle}
                 onClick={() => {
@@ -126,7 +133,7 @@ export function FloatingChatPill({ unreadCount = 6 }: FloatingChatPillProps) {
         </div>
       )}
 
-      {/* Floating Pill Button (Exact replica of Instagram screenshot) */}
+      {/* Floating Pill Button (Exact Layout) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="group flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#18181b]/95 hover:bg-[#202024] border border-[#2c2c30] text-white shadow-2xl backdrop-blur-xl transition-all duration-200 hover:scale-105 active:scale-95"
@@ -147,18 +154,18 @@ export function FloatingChatPill({ unreadCount = 6 }: FloatingChatPillProps) {
         {/* Stacked Circular Avatars */}
         <div className="flex items-center -space-x-2 overflow-hidden ml-1">
           <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=48&h=48&q=80"
-            alt="Node 1"
+            src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=48&h=48&q=80"
+            alt="Quantum Oracle"
             className="w-5 h-5 rounded-full object-cover border border-[#18181b]"
           />
           <img
-            src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=48&h=48&q=80"
-            alt="Node 2"
+            src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=48&h=48&q=80"
+            alt="Alpha Macro"
             className="w-5 h-5 rounded-full object-cover border border-[#18181b]"
           />
           <img
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=48&h=48&q=80"
-            alt="Node 3"
+            src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=48&h=48&q=80"
+            alt="Cyber Pulse"
             className="w-5 h-5 rounded-full object-cover border border-[#18181b]"
           />
         </div>
