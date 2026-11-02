@@ -1412,7 +1412,7 @@ app.get("/api/suggestions", async (req: any, res: any) => {
 
     const candidates = usersSnap.docs
       .map(d => ({ uid: d.id, ...d.data() }))
-      .filter((u: any) => u.uid !== viewerUid)
+      .filter((u: any) => u.uid !== viewerUid && !u.uid.startsWith("user_beta_") && !u.uid.startsWith("user_chat_") && !u.uid.startsWith("user_social_") && !u.uid.startsWith("user_alpha_"))
       .slice(0, 5);
 
     // Check if viewer follows any of these
