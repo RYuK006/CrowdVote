@@ -225,8 +225,8 @@ export function Reels() {
   return (
     <Layout user={auth.currentUser}>
       <div className="min-h-screen bg-[#000000] text-white flex flex-col items-center select-none py-2 px-2 sm:px-4">
-        {/* Top Dual Tab Switcher (Reels vs Leaderboard Elite) */}
-        <div className="flex items-center gap-2 mb-4 p-1 rounded-2xl bg-[#18181b] border border-[#262626] shadow-xl z-20">
+        {/* Top Dual Tab Switcher (Forecast Briefs vs Leaderboard Elite) */}
+        <div className="flex items-center gap-2 mb-4 p-1 rounded-2xl bg-[#111318] border border-[#20242e] shadow-xl z-20">
           <button
             onClick={() => setActiveTab("reels")}
             className={cn(
@@ -236,8 +236,8 @@ export function Reels() {
                 : "text-stone-400 hover:text-white"
             )}
           >
-            <span>🎬</span>
-            <span>Prediction Reels</span>
+            <Zap className="w-3.5 h-3.5 fill-current" />
+            <span>Forecast Briefs</span>
           </button>
 
           <button
@@ -249,8 +249,8 @@ export function Reels() {
                 : "text-stone-400 hover:text-white"
             )}
           >
-            <Trophy className="w-4 h-4 text-amber-300" />
-            <span>Leaderboard Elite</span>
+            <Trophy className="w-3.5 h-3.5" />
+            <span>Grandmaster Leaderboard</span>
           </button>
         </div>
 
@@ -713,3 +713,4 @@ export function Reels() {
     </Layout>
   );
 }
+
