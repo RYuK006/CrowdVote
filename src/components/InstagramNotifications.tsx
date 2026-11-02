@@ -87,14 +87,14 @@ export function InstagramNotifications({
           <div className="space-y-3">
             <div className="flex items-center justify-between px-2">
               <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">
-                Follow & Friend Requests ({requests.length})
+                Follow & Connection Requests ({requests.length})
               </span>
             </div>
 
             {requests.length === 0 ? (
               <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 text-center">
                 <span className="text-xs text-stone-400">
-                  No pending friend requests
+                  No pending connection requests
                 </span>
               </div>
             ) : (
@@ -106,14 +106,14 @@ export function InstagramNotifications({
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0 border border-emerald-500/40">
-                        {req.fromName?.charAt(0) || "U"}
+                        {req.fromName?.charAt(0) || "P"}
                       </div>
                       <div className="min-w-0">
                         <span className="text-xs font-bold text-white truncate block">
                           {req.fromName || req.fromUid}
                         </span>
                         <span className="text-[11px] text-stone-400">
-                          wants to connect as mutual friend
+                          wants to connect as mutual forecaster
                         </span>
                       </div>
                     </div>
@@ -143,7 +143,7 @@ export function InstagramNotifications({
           {/* Activity Timeline */}
           <div className="space-y-3">
             <span className="text-xs font-bold text-stone-400 uppercase tracking-wider px-2 block">
-              Recent Activity
+              Consensus Activity
             </span>
 
             <div className="space-y-2">
@@ -152,10 +152,10 @@ export function InstagramNotifications({
                   <Heart className="w-5 h-5 fill-red-500" />
                 </div>
                 <div className="flex-1 min-w-0 text-xs">
-                  <span className="font-bold text-white">joel.k.jose</span>
-                  <span className="text-stone-300"> liked your prediction in </span>
-                  <span className="font-semibold text-emerald-400">Kerala Assembly Polls</span>
-                  <span className="text-stone-500 text-[10px] block mt-0.5 font-mono">2h ago</span>
+                  <span className="font-bold text-white">Quantum Oracle</span>
+                  <span className="text-stone-300"> endorsed your prediction thesis in </span>
+                  <span className="font-semibold text-emerald-400">Autonomous Reasoning LLMs</span>
+                  <span className="text-stone-500 text-[10px] block mt-0.5 font-mono">1h ago</span>
                 </div>
               </div>
 
@@ -164,9 +164,9 @@ export function InstagramNotifications({
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0 text-xs">
-                  <span className="font-bold text-white">sumi_sudhi</span>
-                  <span className="text-stone-300"> started following your predictions.</span>
-                  <span className="text-stone-500 text-[10px] block mt-0.5 font-mono">1d ago</span>
+                  <span className="font-bold text-white">Polity Matrix</span>
+                  <span className="text-stone-300"> subscribed to your prediction feed.</span>
+                  <span className="text-stone-500 text-[10px] block mt-0.5 font-mono">5h ago</span>
                 </div>
                 <button
                   onClick={onOpenFollowersModal}
@@ -181,10 +181,10 @@ export function InstagramNotifications({
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0 text-xs">
-                  <span className="font-bold text-white">Consensus Matrix</span>
-                  <span className="text-stone-300"> updated your prediction accuracy score to </span>
-                  <span className="font-bold text-emerald-400">94.2%</span>
-                  <span className="text-stone-500 text-[10px] block mt-0.5 font-mono">2d ago</span>
+                  <span className="font-bold text-white">Consensus Protocol</span>
+                  <span className="text-stone-300"> calibrated your forecasting accuracy score to </span>
+                  <span className="font-bold text-emerald-400">96.8% (Master Tier)</span>
+                  <span className="text-stone-500 text-[10px] block mt-0.5 font-mono">1d ago</span>
                 </div>
               </div>
             </div>
