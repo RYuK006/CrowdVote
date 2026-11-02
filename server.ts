@@ -1376,6 +1376,155 @@ app.get("/api/user/friend-requests", authenticateToken, async (req: any, res: an
   }
 });
 
+// 10. Get prediction stories for top carousel
+app.get("/api/stories", async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const storiesSnap = await db.collection("stories")
+      .orderBy("createdAt", "desc")
+      .limit(16)
+      .get();
+
+    const stories = storiesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json(stories);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 11. Get suggested prediction nodes
+app.get("/api/suggestions", async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    let viewerUid: string | null = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const decoded = await admin.auth().verifyIdToken(authHeader.split("Bearer ")[1]);
+        viewerUid = decoded.uid;
+      } catch {}
+    }
+
+    const usersSnap = await db.collection("users")
+      .orderBy("accuracy", "desc")
+      .limit(20)
+      .get();
+
+    const candidates = usersSnap.docs
+      .map(d => ({ uid: d.id, ...d.data() }))
+      .filter((u: any) => u.uid !== viewerUid)
+      .slice(0, 5);
+
+    // Check if viewer follows any of these
+    let followsMap: Record<string, boolean> = {};
+    if (viewerUid && candidates.length > 0) {
+      const followDocs = await Promise.all(
+        candidates.map((c: any) => db.collection("follows").doc(`${viewerUid}_${c.uid}`).get())
+      );
+      followDocs.forEach(d => {
+        if (d.exists) {
+          const data = d.data();
+          followsMap[data.followingId] = true;
+        }
+      });
+    }
+
+    const formatted = candidates.map((u: any) => ({
+      uid: u.uid,
+      handle: u.handle || (u.email ? u.email.split("@")[0] : `node_${u.uid.slice(0, 6)}`),
+      displayName: u.displayName || "Prediction Node",
+      avatar: u.avatar || u.photoURL || `https://api.dicebear.com/7.x/identicon/svg?seed=${u.uid}`,
+      subtitle: `${u.tier || "Expert"} • ${u.accuracy || 95}% Accuracy`,
+      accuracy: u.accuracy || 95,
+      isFollowing: Boolean(followsMap[u.uid])
+    }));
+
+    res.json(formatted);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 12. Toggle like on a poll
+app.post("/api/polls/:pollId/like", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const pollId = req.params.pollId;
+    const likeDocId = `${uid}_${pollId}`;
+    const likeRef = db.collection("poll_likes").doc(likeDocId);
+    const likeSnap = await likeRef.get();
+
+    let isLiked = false;
+    if (likeSnap.exists) {
+      await likeRef.delete();
+      isLiked = false;
+    } else {
+      await likeRef.set({
+        uid,
+        pollId,
+        createdAt: new Date().toISOString()
+      });
+      isLiked = true;
+    }
+
+    // Get updated likes count
+    const countSnap = await db.collection("poll_likes").where("pollId", "==", pollId).get();
+    res.json({ success: true, isLiked, likesCount: countSnap.size });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 13. Get comments for a poll
+app.get("/api/polls/:pollId/comments", async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.pollId;
+    const commentsSnap = await db.collection("poll_comments")
+      .where("pollId", "==", pollId)
+      .orderBy("createdAt", "asc")
+      .limit(50)
+      .get();
+
+    const comments = commentsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json(comments);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 14. Post a comment to a poll
+app.post("/api/polls/:pollId/comment", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const pollId = req.params.pollId;
+    const { text } = req.body;
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: "Comment text is required" });
+    }
+
+    const userDoc = await db.collection("users").doc(uid).get();
+    const userData = userDoc.exists ? userDoc.data() : null;
+
+    const newComment = {
+      pollId,
+      uid,
+      authorHandle: userData?.handle || (userData?.email ? userData.email.split("@")[0] : `node_${uid.slice(0, 6)}`),
+      authorName: userData?.displayName || "Prediction Node",
+      authorAvatar: userData?.avatar || userData?.photoURL || `https://api.dicebear.com/7.x/identicon/svg?seed=${uid}`,
+      text: text.trim(),
+      createdAt: new Date().toISOString()
+    };
+
+    const docRef = await db.collection("poll_comments").add(newComment);
+    res.json({ success: true, id: docRef.id, ...newComment });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- VITE MIDDLEWARE ---
 // In production on Vercel, static files are handled by vercel.json rewrites.
 const distPath = path.join(process.cwd(), "dist");
