@@ -64,16 +64,16 @@ export function Layout({ children, user }: LayoutProps) {
             <Home className={cn("w-6 h-6", (location.pathname === "/polls" || location.pathname === "/") && "stroke-[2.5] text-emerald-400")} />
           </Link>
 
-          {/* Reels / Trending / Leaderboard */}
+          {/* Reels / Top Predictions (Clapperboard icon) */}
           <Link
-            to="/leaderboard"
-            title="Leaderboard & Top Predictions"
+            to="/reels"
+            title="Reels & Top Predictions"
             className={cn(
               "p-2.5 rounded-xl hover:bg-white/10 transition-all hover:scale-110 active:scale-95",
-              location.pathname === "/leaderboard" ? "text-white" : "text-stone-400 hover:text-white"
+              location.pathname === "/reels" || location.pathname === "/leaderboard" ? "text-white" : "text-stone-400 hover:text-white"
             )}
           >
-            <Clapperboard className={cn("w-6 h-6", location.pathname === "/leaderboard" && "stroke-[2.5] text-emerald-400")} />
+            <Clapperboard className={cn("w-6 h-6", (location.pathname === "/reels" || location.pathname === "/leaderboard") && "stroke-[2.5] text-emerald-400")} />
           </Link>
 
           {/* Messages / Direct (With Red Badge 6) */}
@@ -180,6 +180,15 @@ export function Layout({ children, user }: LayoutProps) {
                 </button>
 
                 <Link
+                  to="/reels"
+                  onClick={() => setIsMoreMenuOpen(false)}
+                  className="w-full p-2.5 rounded-xl hover:bg-white/10 flex items-center gap-3 text-xs font-semibold text-stone-200 transition-colors"
+                >
+                  <Trophy className="w-4 h-4 text-amber-400" />
+                  <span>Leaderboard Elite Matrix</span>
+                </Link>
+
+                <Link
                   to="/analytics"
                   onClick={() => setIsMoreMenuOpen(false)}
                   className="w-full p-2.5 rounded-xl hover:bg-white/10 flex items-center gap-3 text-xs font-semibold text-stone-200 transition-colors"
@@ -267,12 +276,15 @@ export function Layout({ children, user }: LayoutProps) {
           <Home className="w-6 h-6" />
         </Link>
 
-        <button
-          onClick={() => setIsSearchOpen(true)}
-          className="p-1 text-stone-400 hover:text-white transition-colors"
+        <Link
+          to="/reels"
+          className={cn(
+            "p-1 transition-colors",
+            location.pathname === "/reels" ? "text-emerald-400" : "text-stone-400"
+          )}
         >
-          <Search className="w-6 h-6" />
-        </button>
+          <Clapperboard className="w-6 h-6" />
+        </Link>
 
         <button
           onClick={() => setIsCreateOpen(true)}
