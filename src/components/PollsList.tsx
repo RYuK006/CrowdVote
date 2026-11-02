@@ -17,75 +17,96 @@ const CATEGORIES = [
   "Startups & Roasts",
   "Finance & Crypto",
   "Politics",
+  "Science",
   "Sports",
-  "Pop Culture",
 ];
 
-const INSTAGRAM_STORIES: StoryItem[] = [
+const FALLBACK_STORIES: StoryItem[] = [
   {
-    id: "a3_diaries",
-    name: "A3 Diaries",
-    handle: "a3_diaries_...",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80",
-    role: "Lead Election Forecaster",
-    timeAgo: "2h",
-    quote: "Consensus swings indicate a 12% probability shift in swing districts within the next 48 hours.",
-    category: "Politics",
-  },
-  {
-    id: "abhinand",
-    name: "Abhinand",
-    handle: "abhinand_...",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80",
-    role: "Quantitative Trader",
-    timeAgo: "4h",
-    quote: "Liquidity in high-spread prediction pairs is tightening before federal interest announcements.",
-    category: "Finance & Crypto",
-  },
-  {
-    id: "keril_eliza",
-    name: "Keril Eliza",
-    handle: "keril_eliza...",
-    avatar: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=150&h=150&q=80",
-    role: "AI Research Scientist",
-    timeAgo: "6h",
-    quote: "Synthetic reasoning benchmarks will surpass human consensus benchmarks by Q3 2026.",
+    id: "story_quantum_oracle",
+    name: "Quantum Oracle",
+    handle: "quantum_oracle",
+    avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Lead Forecaster • Quantum Probabilities",
+    timeAgo: "1h",
+    quote: "Market consensus is pricing a 74% probability of autonomous reasoning models achieving zero-shot coding milestones before Q3 2026.",
     category: "Tech & AI",
   },
   {
-    id: "e_va_aa",
-    name: "Eva",
-    handle: "e_va_aa",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
-    role: "Startup Mentor & Roaster",
-    timeAgo: "8h",
-    quote: "If your user acquisition unit economics depend on organic hype, you don't have a moat, you have a lottery ticket.",
+    id: "story_alpha_macro",
+    name: "Alpha Macro",
+    handle: "alpha_macro",
+    avatar: "https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Quantitative Economist",
+    timeAgo: "2h",
+    quote: "Central bank terminal rate cuts are already discounted by debt markets. Asymmetry lies in cross-currency carry spreads.",
+    category: "Finance & Crypto",
+  },
+  {
+    id: "story_cyber_pulse",
+    name: "Cyber Pulse",
+    handle: "cyber_pulse",
+    avatar: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Silicon & Systems Architect",
+    timeAgo: "3h",
+    quote: "Sub-2nm lithography yields are stabilizing faster than foundry guidance suggests. Silicon moats are shifting to optical interconnects.",
+    category: "Tech & AI",
+  },
+  {
+    id: "story_venture_roast",
+    name: "Venture Roast",
+    handle: "venture_roast",
+    avatar: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "No-Filter Startup Critic",
+    timeAgo: "5h",
+    quote: "90% of AI agent wrapper startups will run out of runway because their gross margin is subsidizing cloud compute rather than retention.",
     category: "Startups & Roasts",
   },
   {
-    id: "an_oo_s",
-    name: "Anoop S",
-    handle: "an_oo_s...",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&h=150&q=80",
-    role: "Sports Analytics Node",
-    timeAgo: "11h",
-    quote: "Expected goals (xG) differentials point toward a clean-sheet upset in this week's semi-finals.",
-    category: "Sports",
+    id: "story_polity_matrix",
+    name: "Polity Matrix",
+    handle: "polity_matrix",
+    avatar: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Electoral Demographer",
+    timeAgo: "7h",
+    quote: "Youth turnout divergence and economic sentiment volatility are shattering traditional sample polling in regional legislative races.",
+    category: "Politics",
   },
   {
-    id: "abin_vargzz",
-    name: "Abin Varghese",
-    handle: "abin_vargzz",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80",
-    role: "Macro Strategist",
-    timeAgo: "14h",
-    quote: "Decentralized prediction markets are replacing legacy opinion polling across three continents.",
-    category: "Pop Culture",
+    id: "story_bio_foresight",
+    name: "Bio Foresight",
+    handle: "bio_foresight",
+    avatar: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Biomedical Modeler",
+    timeAgo: "9h",
+    quote: "In-vivo gene editing trials for monogenic metabolic disorders are showing sustained enzyme restoration at 18-month checkups.",
+    category: "Science",
+  },
+  {
+    id: "story_crypto_sentinel",
+    name: "Crypto Sentinel",
+    handle: "crypto_sentinel",
+    avatar: "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "On-Chain Risk Auditor",
+    timeAgo: "12h",
+    quote: "Ethereum Layer 2 blobs gas compression is driving daily transaction count past 40 million without base-layer fee spikes.",
+    category: "Finance & Crypto",
+  },
+  {
+    id: "story_stellar_horizon",
+    name: "Stellar Horizon",
+    handle: "stellar_horizon",
+    avatar: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Aerospace Systems Analyst",
+    timeAgo: "15h",
+    quote: "Orbital propellant transfer demonstration success will unlock deep-space payload missions with 10x reduced launch cost per ton.",
+    category: "Science",
   },
 ];
 
 export function PollsList() {
   const [polls, setPolls] = useState<Poll[]>([]);
+  const [stories, setStories] = useState<StoryItem[]>(FALLBACK_STORIES);
   const [loading, setLoading] = useState(true);
   const [votes, setVotes] = useState<Record<string, any>>({});
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -98,6 +119,29 @@ export function PollsList() {
 
   // Followers Modal State
   const [isFollowersModalOpen, setIsFollowersModalOpen] = useState(false);
+
+  // Fetch stories from API
+  useEffect(() => {
+    fetch("/api/stories")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((d: any) => ({
+            id: d.id,
+            name: d.authorName || d.authorHandle,
+            handle: d.authorHandle || d.authorName,
+            avatar: d.avatar,
+            role: d.role || "Prediction Node",
+            timeAgo: d.timeAgo || "2h",
+            quote: d.quote,
+            category: d.category || "General",
+            pollId: d.pollId
+          }));
+          setStories(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const fetchPolls = (cat: string, pageNum: number, replace: boolean = true) => {
     setLoading(true);
@@ -180,7 +224,7 @@ export function PollsList() {
         {/* CENTER FEED COLUMN (Story Tray + Filters + Feed Posts)    */}
         {/* ========================================================= */}
         <div className="w-full max-w-[470px] sm:max-w-[500px] shrink-0 flex flex-col items-center">
-          {/* 1. Horizontal Stories Tray (Exact Replica of Screenshot) */}
+          {/* 1. Horizontal Stories Tray (Instagram Layout) */}
           <div className="relative w-full mb-6 pb-2 border-b border-[#262626]">
             <div
               ref={storyTrayRef}
@@ -196,12 +240,12 @@ export function PollsList() {
                     {auth.currentUser?.photoURL ? (
                       <img
                         src={auth.currentUser.photoURL}
-                        alt="Your story"
+                        alt="Your node"
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-base">
-                        {auth.currentUser?.displayName?.charAt(0) || "Y"}
+                        {auth.currentUser?.displayName?.charAt(0) || "P"}
                       </div>
                     )}
                   </div>
@@ -214,14 +258,14 @@ export function PollsList() {
                 </span>
               </button>
 
-              {/* Instagram Stories from Screenshot */}
-              {INSTAGRAM_STORIES.map((story, index) => (
+              {/* Dynamic Prediction Stories */}
+              {stories.map((story, index) => (
                 <button
                   key={story.id}
                   onClick={() => setSelectedStoryIndex(index)}
                   className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none"
                 >
-                  {/* Colorful Gradient Ring (Emerald-Teal-Lime Gradient) */}
+                  {/* Colorful Gradient Ring (Emerald-Teal-Lime) */}
                   <div className="p-[2.5px] rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-lime-400 group-hover:scale-105 transition-transform shadow-md shadow-emerald-500/10">
                     <div className="w-[62px] h-[62px] rounded-full bg-[#000000] p-0.5 flex items-center justify-center overflow-hidden">
                       <img
@@ -229,7 +273,7 @@ export function PollsList() {
                         alt={story.name}
                         className="w-full h-full rounded-full object-cover"
                         onError={(e) => {
-                          (e.target as HTMLElement).style.display = "none";
+                          (e.target as HTMLElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${story.handle}`;
                         }}
                       />
                     </div>
@@ -333,7 +377,7 @@ export function PollsList() {
       {/* Story Viewer Modal */}
       {selectedStoryIndex !== null && (
         <InstagramStoryModal
-          stories={INSTAGRAM_STORIES}
+          stories={stories}
           currentIndex={selectedStoryIndex}
           isOpen={selectedStoryIndex !== null}
           onClose={() => setSelectedStoryIndex(null)}
