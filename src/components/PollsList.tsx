@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { ListPlus, ArrowRight, ShieldCheck, CheckCircle2, Search, Sparkles, Flame, Tag, ExternalLink, Plus, MessageCircle, Heart, Share2 } from "lucide-react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { ChevronRight, Plus, Sparkles, Flame, Check } from "lucide-react";
 import { Layout } from "./Layout";
 import { auth } from "../firebase";
 import { Poll } from "../types";
 import { cn } from "../lib/utils";
+import { InstagramPostCard } from "./InstagramPostCard";
+import { InstagramRightSidebar } from "./InstagramRightSidebar";
+import { InstagramStoryModal, StoryItem } from "./InstagramStoryModal";
+import { FollowersModal } from "./FollowersModal";
 
 const CATEGORIES = [
   "All",
@@ -16,19 +19,69 @@ const CATEGORIES = [
   "Politics",
   "Sports",
   "Pop Culture",
-  "Science"
 ];
 
-
-const STORIES = [
-  { id: "self", name: "Your Node", role: "Submit Poll", icon: "➕", isUser: true, border: "border-dashed border-emerald-500/60" },
-  { id: "graham", name: "Paul Graham", role: "YC Founder", icon: "🏛️", unread: true },
-  { id: "bezos", name: "Jeff Bezos", role: "Amazon", icon: "📦", unread: true },
-  { id: "musk", name: "Elon Musk", role: "Tesla & X", icon: "⚡", unread: true },
-  { id: "hormozi", name: "Alex Hormozi", role: "Acquisition", icon: "🏋️", unread: true },
-  { id: "naval", name: "Naval", role: "AngelList", icon: "🧠", unread: true },
-  { id: "sanchez", name: "Codie Sanchez", role: "Contrarian", icon: "📊", unread: true },
-  { id: "buffett", name: "Warren Buffett", role: "Berkshire", icon: "💵", unread: true },
+const INSTAGRAM_STORIES: StoryItem[] = [
+  {
+    id: "a3_diaries",
+    name: "A3 Diaries",
+    handle: "a3_diaries_...",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Lead Election Forecaster",
+    timeAgo: "2h",
+    quote: "Consensus swings indicate a 12% probability shift in swing districts within the next 48 hours.",
+    category: "Politics",
+  },
+  {
+    id: "abhinand",
+    name: "Abhinand",
+    handle: "abhinand_...",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Quantitative Trader",
+    timeAgo: "4h",
+    quote: "Liquidity in high-spread prediction pairs is tightening before federal interest announcements.",
+    category: "Finance & Crypto",
+  },
+  {
+    id: "keril_eliza",
+    name: "Keril Eliza",
+    handle: "keril_eliza...",
+    avatar: "https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "AI Research Scientist",
+    timeAgo: "6h",
+    quote: "Synthetic reasoning benchmarks will surpass human consensus benchmarks by Q3 2026.",
+    category: "Tech & AI",
+  },
+  {
+    id: "e_va_aa",
+    name: "Eva",
+    handle: "e_va_aa",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Startup Mentor & Roaster",
+    timeAgo: "8h",
+    quote: "If your user acquisition unit economics depend on organic hype, you don't have a moat, you have a lottery ticket.",
+    category: "Startups & Roasts",
+  },
+  {
+    id: "an_oo_s",
+    name: "Anoop S",
+    handle: "an_oo_s...",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Sports Analytics Node",
+    timeAgo: "11h",
+    quote: "Expected goals (xG) differentials point toward a clean-sheet upset in this week's semi-finals.",
+    category: "Sports",
+  },
+  {
+    id: "abin_vargzz",
+    name: "Abin Varghese",
+    handle: "abin_vargzz",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&h=150&q=80",
+    role: "Macro Strategist",
+    timeAgo: "14h",
+    quote: "Decentralized prediction markets are replacing legacy opinion polling across three continents.",
+    category: "Pop Culture",
+  },
 ];
 
 export function PollsList() {
@@ -36,12 +89,17 @@ export function PollsList() {
   const [loading, setLoading] = useState(true);
   const [votes, setVotes] = useState<Record<string, any>>({});
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const [activeStory, setActiveStory] = useState<any | null>(null);
 
-  const fetchPolls = (cat: string, search: string, pageNum: number, replace: boolean = true) => {
+  // Story Viewer State
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState<number | null>(null);
+  const storyTrayRef = useRef<HTMLDivElement>(null);
+
+  // Followers Modal State
+  const [isFollowersModalOpen, setIsFollowersModalOpen] = useState(false);
+
+  const fetchPolls = (cat: string, pageNum: number, replace: boolean = true) => {
     setLoading(true);
     const params = new URLSearchParams();
     if (cat !== "All") {
@@ -51,9 +109,8 @@ export function PollsList() {
         params.set("category", cat);
       }
     }
-    if (search) params.set("search", search);
     params.set("page", String(pageNum));
-    params.set("limit", "48");
+    params.set("limit", "24");
 
     fetch(`/api/polls?${params.toString()}`)
       .then((res) => res.json())
@@ -64,7 +121,7 @@ export function PollsList() {
           } else {
             setPolls((prev) => [...prev, ...data]);
           }
-          setHasMore(data.length === 48);
+          setHasMore(data.length === 24);
         }
         setLoading(false);
       })
@@ -76,8 +133,8 @@ export function PollsList() {
 
   useEffect(() => {
     setPage(1);
-    fetchPolls(selectedCategory, searchQuery, 1, true);
-  }, [selectedCategory, searchQuery]);
+    fetchPolls(selectedCategory, 1, true);
+  }, [selectedCategory]);
 
   useEffect(() => {
     if (!auth.currentUser) return;
@@ -86,128 +143,116 @@ export function PollsList() {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
-        .then((data) => setVotes(data))
+        .then((data) => setVotes(data || {}))
         .catch(console.error);
     });
   }, [auth.currentUser]);
 
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchPolls(selectedCategory, searchQuery, nextPage, false);
+  const handleVote = async (pollId: string, optionId: string) => {
+    if (!auth.currentUser) return;
+    const token = await auth.currentUser.getIdToken();
+    await fetch(`/api/polls/${pollId}/vote`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ optionId }),
+    });
+
+    setVotes((prev) => ({
+      ...prev,
+      [pollId]: { optionId, votedAt: new Date().toISOString() },
+    }));
+  };
+
+  const handleScrollStoryRight = () => {
+    if (storyTrayRef.current) {
+      storyTrayRef.current.scrollBy({ left: 240, behavior: "smooth" });
+    }
   };
 
   return (
     <Layout user={auth.currentUser}>
-      <div className="h-full flex flex-col relative pb-20 px-4 sm:px-8 max-w-7xl mx-auto w-full">
-        {/* Header Section */}
-        <div className="pt-8 pb-8 space-y-4">
-          <div className="flex items-center gap-2 text-emerald-500">
-            <ListPlus className="w-5 h-5" />
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em] font-bold">Prediction Hub & Roast Room</span>
-          </div>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter text-[var(--text-primary)]">
-                Explore <span className="text-emerald-500 italic">Polls</span>
-              </h1>
-              <p className="text-[var(--text-secondary)] font-medium max-w-2xl mt-2">
-                Cast accuracy-weighted predictions across thousands of global topics. Consult the Roast Room council of simulated advisors or participate in boosted sponsored polls.
-              </p>
-            </div>
-            
-            {/* Search Input */}
-            <div className="relative min-w-[280px]">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-secondary)]" />
-              <input
-                type="text"
-                placeholder="Search thousands of topics..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-emerald-500 transition-colors"
-              />
-            </div>
-          </div>
-
-          
-        {/* Instagram-Style Swarm Stories Tray */}
-        <div className="relative py-2 border-y border-white/5">
-          <div className="flex items-center gap-5 overflow-x-auto pb-2 scrollbar-none">
-            {STORIES.map((story) => (
+      {/* Instagram 2-Column Responsive Layout */}
+      <div className="flex justify-center gap-10 xl:gap-14 px-2 sm:px-4 py-4 sm:py-6 max-w-[1020px] mx-auto min-h-screen">
+        {/* ========================================================= */}
+        {/* CENTER FEED COLUMN (Story Tray + Filters + Feed Posts)    */}
+        {/* ========================================================= */}
+        <div className="w-full max-w-[470px] sm:max-w-[500px] shrink-0 flex flex-col items-center">
+          {/* 1. Horizontal Stories Tray (Exact Replica of Screenshot) */}
+          <div className="relative w-full mb-6 pb-2 border-b border-[#262626]">
+            <div
+              ref={storyTrayRef}
+              className="flex items-center gap-4 overflow-x-auto scrollbar-hide py-1 px-1 scroll-smooth"
+            >
+              {/* User's Node (Add Story / Poll) */}
               <button
-                key={story.id}
-                onClick={() => {
-                  if (story.isUser) {
-                    // Trigger global create modal by dispatching custom event or selecting category
-                    setSelectedCategory("All");
-                  } else {
-                    setActiveStory(story);
-                  }
-                }}
+                onClick={() => setSelectedStoryIndex(0)}
                 className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none"
               >
-                <div className={cn(
-                  "p-[2.5px] rounded-full transition-transform duration-300 group-hover:scale-105",
-                  story.isUser
-                    ? "bg-emerald-500/20 border-2 border-dashed border-emerald-500/60"
-                    : "bg-gradient-to-tr from-emerald-500 via-teal-400 to-lime-400 shadow-md shadow-emerald-500/20"
-                )}>
-                  <div className="w-14 h-14 rounded-full bg-[#0a0a0c] p-1 flex items-center justify-center text-xl">
-                    <span className="transform transition-transform group-hover:scale-110">{story.icon}</span>
+                <div className="relative p-[2px] rounded-full">
+                  <div className="w-[66px] h-[66px] rounded-full bg-[#121214] p-0.5 border-2 border-dashed border-emerald-500/60 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden">
+                    {auth.currentUser?.photoURL ? (
+                      <img
+                        src={auth.currentUser.photoURL}
+                        alt="Your story"
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-base">
+                        {auth.currentUser?.displayName?.charAt(0) || "Y"}
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-emerald-500 text-black border-2 border-black flex items-center justify-center shadow-md">
+                    <Plus className="w-3.5 h-3.5 stroke-[3]" />
                   </div>
                 </div>
-                <span className="text-[11px] font-medium text-stone-300 max-w-[68px] truncate text-center group-hover:text-emerald-400 transition-colors">
-                  {story.name}
+                <span className="text-[11px] font-medium text-stone-400 max-w-[70px] truncate text-center group-hover:text-emerald-400 transition-colors">
+                  Your node
                 </span>
               </button>
-            ))}
-          </div>
-        </div>
 
-        {/* Advisor Story Dialog */}
-        {activeStory && (
-          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="max-w-md w-full bg-[#0f1012] border border-emerald-500/30 rounded-3xl p-6 space-y-5 shadow-2xl relative">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-2xl">
-                    {activeStory.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-base text-white">{activeStory.name}</h4>
-                    <span className="text-[11px] font-mono text-emerald-400">{activeStory.role} • 2h ago</span>
-                  </div>
-                </div>
+              {/* Instagram Stories from Screenshot */}
+              {INSTAGRAM_STORIES.map((story, index) => (
                 <button
-                  onClick={() => setActiveStory(null)}
-                  className="text-stone-400 hover:text-white p-1"
+                  key={story.id}
+                  onClick={() => setSelectedStoryIndex(index)}
+                  className="flex flex-col items-center gap-1.5 shrink-0 group focus:outline-none"
                 >
-                  ✕
+                  {/* Colorful Gradient Ring (Emerald-Teal-Lime Gradient) */}
+                  <div className="p-[2.5px] rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-lime-400 group-hover:scale-105 transition-transform shadow-md shadow-emerald-500/10">
+                    <div className="w-[62px] h-[62px] rounded-full bg-[#000000] p-0.5 flex items-center justify-center overflow-hidden">
+                      <img
+                        src={story.avatar}
+                        alt={story.name}
+                        className="w-full h-full rounded-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = "none";
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-medium text-stone-300 max-w-[68px] truncate text-center group-hover:text-emerald-400 transition-colors">
+                    {story.handle}
+                  </span>
                 </button>
-              </div>
-
-              <div className="space-y-3 font-mono text-xs leading-relaxed text-stone-300 bg-black/40 p-4 rounded-2xl border border-white/5">
-                <span className="text-emerald-400 font-bold uppercase tracking-wider block">Today's Contrarian Prediction Thesis:</span>
-                <p>
-                  "The crowd constantly underprices structural second-order effects. In high-variance polls, asymmetric upside lies in betting where capital has not yet discovered the moat."
-                </p>
-              </div>
-
-              <button
-                onClick={() => {
-                  setSelectedCategory("Startups & Roasts");
-                  setActiveStory(null);
-                }}
-                className="w-full py-3 rounded-xl bg-emerald-500 text-black font-bold text-xs uppercase tracking-wider hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20"
-              >
-                View Roasted Polls
-              </button>
+              ))}
             </div>
-          </div>
-        )}
 
-        {/* Category Filter Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto py-2 scrollbar-none">
+            {/* Navigation Right Arrow Button */}
+            <button
+              onClick={handleScrollStoryRight}
+              className="absolute right-0 top-1/2 -translate-y-6 w-7 h-7 rounded-full bg-white/90 hover:bg-white text-black flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95 z-20"
+              title="Next stories"
+            >
+              <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+            </button>
+          </div>
+
+          {/* 2. Category Filter Pills */}
+          <div className="w-full flex items-center gap-2 overflow-x-auto pb-4 mb-2 scrollbar-hide">
             {CATEGORIES.map((cat) => {
               const isActive = selectedCategory === cat;
               const isSponsored = cat === "Sponsored";
@@ -216,136 +261,96 @@ export function PollsList() {
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   className={cn(
-                    "px-4 py-1.5 rounded-full text-xs font-mono font-semibold transition-all whitespace-nowrap flex items-center gap-1.5",
+                    "px-3.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5",
                     isActive
                       ? isSponsored
                         ? "bg-amber-500 text-black shadow-lg shadow-amber-500/20"
-                        : "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                        : "bg-emerald-500 text-black shadow-lg shadow-emerald-500/20"
                       : isSponsored
-                      ? "bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20"
-                      : "bg-[var(--glass-bg)] text-[var(--text-secondary)] border border-[var(--glass-border)] hover:text-[var(--text-primary)] hover:border-emerald-500/40"
+                      ? "bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20"
+                      : "bg-[#18181b] text-stone-400 border border-[#262626] hover:text-white hover:border-emerald-500/40"
                   )}
                 >
-                  {isSponsored && <Sparkles className="w-3.5 h-3.5" />}
-                  {cat === "Startups & Roasts" && <Flame className="w-3.5 h-3.5 text-orange-400" />}
+                  {isSponsored && <Sparkles className="w-3 h-3" />}
+                  {cat === "Startups & Roasts" && <Flame className="w-3 h-3 text-orange-400" />}
                   {cat}
                 </button>
               );
             })}
           </div>
+
+          {/* 3. Instagram Feed Posts Stream */}
+          <div className="w-full flex flex-col items-center">
+            {loading && polls.length === 0 ? (
+              <div className="py-24 text-center text-xs font-mono text-emerald-500 uppercase tracking-widest animate-pulse">
+                Synchronizing Swarm Consensus Feed...
+              </div>
+            ) : polls.length === 0 ? (
+              <div className="py-24 text-center text-stone-400 text-sm">
+                No prediction posts found in this topic.
+              </div>
+            ) : (
+              polls.map((poll) => {
+                const userVote = votes[poll.id];
+                return (
+                  <InstagramPostCard
+                    key={poll.id}
+                    poll={poll}
+                    currentUser={auth.currentUser}
+                    hasVoted={Boolean(userVote)}
+                    userVoteOption={userVote?.optionId}
+                    onVote={handleVote}
+                  />
+                );
+              })
+            )}
+
+            {/* Load More Button */}
+            {hasMore && !loading && polls.length > 0 && (
+              <button
+                onClick={() => {
+                  const nextPage = page + 1;
+                  setPage(nextPage);
+                  fetchPolls(selectedCategory, nextPage, false);
+                }}
+                className="my-8 px-6 py-2.5 rounded-full bg-[#18181b] hover:bg-[#222226] border border-[#262626] text-xs font-bold text-white hover:text-emerald-400 transition-colors"
+              >
+                Load More Posts
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Polls Grid */}
-        {loading && polls.length === 0 ? (
-          <div className="py-20 text-center animate-pulse text-[var(--text-secondary)] font-mono text-[10px] uppercase tracking-widest">
-            Scanning Multi-Topic Neural Mesh...
-          </div>
-        ) : polls.length === 0 ? (
-          <div className="py-20 text-center text-[var(--text-secondary)] font-mono text-sm">
-            No polls found matching the selected category or search.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {polls.map((poll) => {
-              const hasVoted = !!votes[poll.id];
-              const isExpired = poll.lockAt ? new Date() > new Date(poll.lockAt) : false;
-              const isSponsored = Boolean(poll.isSponsored);
-
-              return (
-                <Link
-                  key={poll.id}
-                  to={`/polls/${poll.id}`}
-                  className={cn(
-                    "group relative p-7 rounded-[28px] border transition-all duration-300 overflow-hidden flex flex-col justify-between min-h-[260px]",
-                    isSponsored
-                      ? "bg-gradient-to-br from-amber-500/10 via-[var(--glass-bg)] to-amber-500/5 border-amber-500/30 hover:border-amber-400/60 shadow-[0_0_25px_rgba(245,158,11,0.08)]"
-                      : hasVoted
-                      ? "bg-emerald-500/10 border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.08)]"
-                      : isExpired
-                      ? "bg-gray-500/10 border-gray-500/30 opacity-75"
-                      : "bg-[var(--glass-bg)] border-[var(--glass-border)] hover:border-emerald-500/40 hover:bg-[var(--glass-border)]"
-                  )}
-                >
-                  <div className="space-y-3.5 relative z-10">
-                    <div className="flex justify-between items-start gap-2">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className={cn(
-                          "px-2.5 py-0.5 rounded-full text-[9px] font-mono uppercase font-bold tracking-widest border",
-                          isSponsored
-                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                            : "bg-black/10 border-[var(--glass-border)] text-[var(--text-secondary)]"
-                        )}>
-                          {poll.category || "General"}
-                        </span>
-                        
-                        {isSponsored && (
-                          <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500 text-black text-[9px] font-mono uppercase font-extrabold tracking-wider">
-                            <Sparkles className="w-2.5 h-2.5" />
-                            {poll.sponsorName || "Sponsored"}
-                          </span>
-                        )}
-                      </div>
-
-                      {hasVoted ? (
-                        <div className="flex items-center gap-1 text-emerald-500">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span className="text-[9px] font-mono uppercase font-bold tracking-wider">Voted</span>
-                        </div>
-                      ) : isExpired ? (
-                        <span className="text-[9px] font-mono uppercase font-bold tracking-wider text-gray-500">
-                          LOCKED
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)] leading-snug group-hover:text-emerald-500 transition-colors line-clamp-3">
-                      {poll.title}
-                    </h2>
-
-                    {poll.sponsorReward && (
-                      <div className="text-xs font-mono text-amber-400 font-semibold flex items-center gap-1">
-                        🎁 Reward: {poll.sponsorReward}
-                      </div>
-                    )}
-
-                    <p className="text-[var(--text-secondary)] text-xs line-clamp-2">
-                      {poll.description || (poll.matchTime ? `Time: ${poll.matchTime}` : "")}
-                    </p>
-                  </div>
-                  
-                  <div className="pt-4 border-t border-[var(--glass-border)]/50 flex items-center justify-between mt-auto">
-                    <div className="flex items-center gap-1 text-[10px] font-mono text-[var(--text-secondary)]">
-                      <Flame className="w-3.5 h-3.5 text-orange-400" />
-                      <span>Roast Room Council</span>
-                    </div>
-
-                    <div className={cn(
-                      "p-1.5 rounded-full transition-all duration-300",
-                      isSponsored
-                        ? "bg-amber-500/20 text-amber-300 group-hover:bg-amber-500 group-hover:text-black"
-                        : "bg-[var(--glass-border)] group-hover:bg-emerald-500 text-[var(--text-primary)] group-hover:text-white"
-                    )}>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Load More Button */}
-        {hasMore && !loading && polls.length > 0 && (
-          <div className="mt-12 text-center">
-            <button
-              onClick={handleLoadMore}
-              className="px-8 py-3 rounded-full bg-[var(--glass-bg)] border border-[var(--glass-border)] text-sm font-mono text-[var(--text-primary)] hover:border-emerald-500 hover:text-emerald-400 transition-all shadow-lg"
-            >
-              Load More Polls ({polls.length}+ loaded)
-            </button>
-          </div>
-        )}
+        {/* ========================================================= */}
+        {/* RIGHT SIDEBAR (Current User + Suggested For You + Footer) */}
+        {/* ========================================================= */}
+        <InstagramRightSidebar
+          currentUser={auth.currentUser}
+          onOpenFollowersModal={() => setIsFollowersModalOpen(true)}
+        />
       </div>
+
+      {/* Story Viewer Modal */}
+      {selectedStoryIndex !== null && (
+        <InstagramStoryModal
+          stories={INSTAGRAM_STORIES}
+          currentIndex={selectedStoryIndex}
+          isOpen={selectedStoryIndex !== null}
+          onClose={() => setSelectedStoryIndex(null)}
+          onSelectStory={(index) => setSelectedStoryIndex(index)}
+        />
+      )}
+
+      {/* Followers & Suggested Modal */}
+      {isFollowersModalOpen && (
+        <FollowersModal
+          isOpen={isFollowersModalOpen}
+          onClose={() => setIsFollowersModalOpen(false)}
+          targetUid={auth.currentUser?.uid || "me"}
+          targetName={auth.currentUser?.displayName || "Prediction Node"}
+          initialTab="followers"
+        />
+      )}
     </Layout>
   );
 }
