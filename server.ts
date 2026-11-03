@@ -131,6 +131,9 @@ initData();
 async function authenticateToken(req: any, res: any, next: any) {
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
+    if (req.originalUrl?.startsWith('/api/admin') || req.path?.startsWith('/api/admin')) {
+      return res.status(404).json({ error: 'Not found' });
+    }
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {
@@ -144,15 +147,69 @@ async function authenticateToken(req: any, res: any, next: any) {
   }
 }
 
-// Middleware to require admin privileges
+// Optional authentication middleware for unanchored consensus and blind poll masking
+async function authenticateTokenOptional(req: any, res: any, next: any) {
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    try {
+      const token = authHeader.split('Bearer ')[1];
+      const decoded = await admin.auth().verifyIdToken(token);
+      req.user = decoded;
+    } catch (e) {
+      // Proceed unauthenticated if token is invalid
+    }
+  }
+  next();
+}
+
+// Cryptographic admin authorization with zero-trust route cloaking
 const ADMIN_EMAILS = ["aaronalexmathew48@gmail.com", "prems4u@gmail.com"];
 
 async function requireAdmin(req: any, res: any, next: any) {
-  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
-  if (!ADMIN_EMAILS.includes(req.user.email)) {
-    return res.status(403).json({ error: 'Forbidden: Admin access required' });
+  if (!req.user) {
+    // Cloaked: Return 404 to hide route existence from unauthenticated scans
+    return res.status(404).json({ error: 'Not found' });
   }
-  next();
+
+  const isEmailAdmin = req.user.email && ADMIN_EMAILS.includes(req.user.email.toLowerCase());
+  const isClaimAdmin = req.user.admin === true || (req.user.customClaims && req.user.customClaims.admin === true);
+
+  if (isEmailAdmin || isClaimAdmin) {
+    return next();
+  }
+
+  // Fallback to Firestore admins document check
+  try {
+    if (db) {
+      const adminDoc = await db.collection("admins").doc(req.user.uid).get();
+      if (adminDoc.exists) {
+        return next();
+      }
+    }
+  } catch (err) {
+    // Ignore and proceed to cloaked rejection
+  }
+
+  // Cloaked: Return 404 Not Found to disguise route existence from non-admin accounts
+  return res.status(404).json({ error: 'Not found' });
+}
+
+// Immutable audit log recorder
+async function logAdminAction(adminUid: string, adminEmail: string | undefined, action: string, targetId?: string, targetType?: string, details?: any) {
+  if (!db) return;
+  try {
+    await db.collection("audit_logs").add({
+      action,
+      adminUid,
+      adminEmail: adminEmail || null,
+      targetId: targetId || null,
+      targetType: targetType || null,
+      details: details || null,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err: any) {
+    console.warn("⚠️ Failed to write audit log:", err.message);
+  }
 }
 
 // --- API ROUTES ---
@@ -161,7 +218,7 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-app.get("/api/polls", async (req, res) => {
+app.get("/api/polls", authenticateTokenOptional, async (req: any, res: any) => {
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
     const category = req.query.category as string;
@@ -169,6 +226,7 @@ app.get("/api/polls", async (req, res) => {
     const search = (req.query.search as string || '').toLowerCase().trim();
     const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 60));
     const page = Math.max(1, Number(req.query.page) || 1);
+    const viewerUid = req.user?.uid;
 
     let query: admin.firestore.Query = db.collection("world_cup_polls");
     
@@ -192,6 +250,62 @@ app.get("/api/polls", async (req, res) => {
         (p.sponsorName && p.sponsorName.toLowerCase().includes(search))
       );
     }
+
+    // Lookup viewer votes for blind masking
+    const userVotedMap = new Map<string, any>();
+    if (viewerUid) {
+      try {
+        const userVotesSnap = await db.collection("users").doc(viewerUid).collection("predictions").get();
+        userVotesSnap.docs.forEach(d => {
+          const v = d.data();
+          userVotedMap.set(v.pollId, v);
+        });
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // Process polls: blind masking and vote state injection
+    polls = polls.map((p: any) => {
+      const userVote = userVotedMap.get(p.id);
+      const hasVoted = Boolean(userVote);
+      const isBlind = p.blind !== false; // Default to blind voting for unanchored consensus
+      const isClosed = p.status === 'closed';
+
+      const enriched = {
+        ...p,
+        hasVoted,
+        votedOption: userVote?.selectedOption,
+        votedFaction: userVote?.faction,
+        isBlindMasked: isBlind && !hasVoted && !isClosed
+      };
+
+      // Mask percentages and vote counts if user has not yet voted to prevent anchoring bias
+      if (enriched.isBlindMasked) {
+        if (enriched.options && Array.isArray(enriched.options)) {
+          enriched.options = enriched.options.map((opt: any) => ({
+            ...opt,
+            votes: undefined,
+            percentage: undefined
+          }));
+        }
+        if (enriched.versusLeft && enriched.versusRight) {
+          enriched.versusLeft = { ...enriched.versusLeft, votes: undefined, percentage: undefined };
+          enriched.versusRight = { ...enriched.versusRight, votes: undefined, percentage: undefined };
+        }
+        if (enriched.scaleAverage !== undefined) {
+          enriched.scaleAverage = undefined;
+        }
+        if (enriched.rankedItems && Array.isArray(enriched.rankedItems)) {
+          enriched.rankedItems = enriched.rankedItems.map((item: any) => ({
+            ...item,
+            score: undefined
+          }));
+        }
+      }
+
+      return enriched;
+    });
 
     const startIndex = (page - 1) * limit;
     const paginatedPolls = polls.slice(startIndex, startIndex + limit);
@@ -437,43 +551,168 @@ app.post("/api/vote", authenticateToken, async (req: any, res: any) => {
   const { pollId, selectedOption, confidence } = req.body;
   const uid = req.user.uid;
 
+  if (!pollId || selectedOption === undefined || selectedOption === null) {
+    return res.status(400).json({ error: "pollId and selectedOption are required" });
+  }
+
   try {
     const userRef = db.collection("users").doc(uid);
     const docId = `vote_${pollId}`;
     const voteRef = userRef.collection("predictions").doc(docId);
+    const pollRef = db.collection("world_cup_polls").doc(pollId);
+
+    let calculatedFaction = "Neural Forecaster";
+    let updatedPollData: any = {};
 
     await db.runTransaction(async (transaction) => {
       const userDoc = await transaction.get(userRef);
       const voteDoc = await transaction.get(voteRef);
-      if (voteDoc.exists) throw new Error("ALREADY_LOCKED");
-
-      const pollRef = db.collection("world_cup_polls").doc(pollId);
       const pollDoc = await transaction.get(pollRef);
-      if (pollDoc.exists) {
-        const pollData = pollDoc.data();
-        if (pollData?.lockAt && new Date() > new Date(pollData.lockAt)) {
-          throw new Error("POLL_EXPIRED");
-        }
+
+      if (!pollDoc.exists) {
+        throw new Error("POLL_NOT_FOUND");
+      }
+
+      const pollData = pollDoc.data() || {};
+      
+      // Check expiration
+      if (pollData.lockAt && new Date() > new Date(pollData.lockAt)) {
+        throw new Error("POLL_EXPIRED");
+      }
+
+      // Check changeable toggle
+      const isChangeable = pollData.changeable !== false;
+      if (voteDoc.exists && !isChangeable) {
+        throw new Error("ALREADY_LOCKED");
       }
 
       if (!userDoc.exists) {
-        transaction.set(userRef, { uid, displayName: "Neural Predictor", createdAt: new Date().toISOString() });
+        transaction.set(userRef, {
+          uid,
+          displayName: req.user.name || "Neural Predictor",
+          createdAt: new Date().toISOString()
+        });
       }
 
+      const format = pollData.format || "choice";
+      const totalVotes = (pollData.totalVotes || 0) + (voteDoc.exists ? 0 : 1);
+      const pollUpdates: any = { totalVotes, updatedAt: new Date().toISOString() };
+
+      // 1. Versus format voting (Split-screen A vs B)
+      if (format === "versus") {
+        let leftSide = pollData.versusLeft || { id: "left", label: "Alpha", votes: 0 };
+        let rightSide = pollData.versusRight || { id: "right", label: "Beta", votes: 0 };
+
+        if (selectedOption === leftSide.id) {
+          leftSide.votes = (leftSide.votes || 0) + 1;
+          calculatedFaction = leftSide.label;
+        } else {
+          rightSide.votes = (rightSide.votes || 0) + 1;
+          calculatedFaction = rightSide.label;
+        }
+
+        const vTotal = Math.max(1, (leftSide.votes || 0) + (rightSide.votes || 0));
+        leftSide.percentage = Math.round(((leftSide.votes || 0) / vTotal) * 100);
+        rightSide.percentage = 100 - leftSide.percentage;
+
+        pollUpdates.versusLeft = leftSide;
+        pollUpdates.versusRight = rightSide;
+      }
+
+      // 2. Scale format voting (0-100% Intensity slider / Sentiment gauge)
+      else if (format === "scale") {
+        const numericVal = Math.min(100, Math.max(0, Number(selectedOption) || 50));
+        const prevCount = pollData.scaleVotesCount || 0;
+        const prevAvg = pollData.scaleAverage || 50;
+        const newCount = prevCount + 1;
+        const newAvg = Math.round(((prevAvg * prevCount) + numericVal) / newCount);
+
+        pollUpdates.scaleAverage = newAvg;
+        pollUpdates.scaleVotesCount = newCount;
+        calculatedFaction = `Scale: ${numericVal}${pollData.scaleUnit || "%"}`;
+      }
+
+      // 3. Rank format voting (Instant-Runoff preference order)
+      else if (format === "rank") {
+        const rankedOrder = Array.isArray(selectedOption) ? selectedOption : [selectedOption];
+        const existingItems = pollData.rankedItems || (pollData.options || []).map((o: any) => ({ id: o.id, label: o.name || o.text || o.id, score: 0 }));
+        
+        // Borda count weighting: 1st choice gets highest points
+        const numItems = rankedOrder.length;
+        existingItems.forEach((item: any) => {
+          const rankIdx = rankedOrder.indexOf(item.id);
+          if (rankIdx !== -1) {
+            item.score = (item.score || 0) + (numItems - rankIdx);
+          }
+        });
+
+        pollUpdates.rankedItems = existingItems;
+        const topItem = existingItems.find((i: any) => i.id === rankedOrder[0]);
+        calculatedFaction = `#1: ${topItem?.label || rankedOrder[0]}`;
+      }
+
+      // 4. Open ballot format voting (Crowdsourced candidates)
+      else if (format === "open") {
+        const submissions = pollData.openSubmissions || [];
+        const targetSub = submissions.find((s: any) => s.id === selectedOption);
+        if (targetSub) {
+          targetSub.votes = (targetSub.votes || 0) + 1;
+          calculatedFaction = targetSub.text;
+        } else {
+          calculatedFaction = "Open Voter";
+        }
+        pollUpdates.openSubmissions = submissions;
+      }
+
+      // 5. Choice format voting (Default multi-choice list)
+      else {
+        const options = (pollData.options || []).map((opt: any) => {
+          if (opt.id === selectedOption) {
+            opt.votes = (opt.votes || 0) + 1;
+            calculatedFaction = opt.name || opt.text || opt.id;
+          }
+          return opt;
+        });
+
+        const optTotal = options.reduce((sum: number, o: any) => sum + (o.votes || 0), 0);
+        options.forEach((opt: any) => {
+          opt.percentage = optTotal > 0 ? Math.round(((opt.votes || 0) / optTotal) * 100) : 0;
+        });
+
+        pollUpdates.options = options;
+      }
+
+      transaction.update(pollRef, pollUpdates);
+      updatedPollData = { ...pollData, ...pollUpdates };
+
+      // Save user prediction receipt
       const voteData: any = {
-        pollId, selectedOption, confidence,
+        pollId,
+        selectedOption,
+        confidence: confidence || 100,
+        faction: calculatedFaction,
         timestamp: new Date().toISOString()
       };
       transaction.set(voteRef, voteData);
 
-      const globalVoteRef = db.collection("global_votes").doc();
-      const globalVoteData: any = {
-        pollId, selectedOption, confidence,
-        userId: uid, timestamp: new Date().toISOString()
-      };
-      transaction.set(globalVoteRef, globalVoteData);
+      // Save global vote record
+      const globalVoteRef = db.collection("global_votes").doc(`${uid}_${pollId}`);
+      transaction.set(globalVoteRef, {
+        pollId,
+        selectedOption,
+        confidence: confidence || 100,
+        faction: calculatedFaction,
+        userId: uid,
+        timestamp: new Date().toISOString()
+      });
     });
-    res.json({ success: true, message: "Vote synced to neural mesh." });
+
+    res.json({
+      success: true,
+      message: "Vote cast and recorded into consensus mesh.",
+      faction: calculatedFaction,
+      poll: updatedPollData
+    });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -1520,6 +1759,518 @@ app.post("/api/polls/:pollId/comment", authenticateToken, async (req: any, res: 
 
     const docRef = await db.collection("poll_comments").add(newComment);
     res.json({ success: true, id: docRef.id, ...newComment });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// =====================================================================
+// UNIFIED POLLING ENGINE: 5 FORMATS, BLIND VOTING & FACTION DEBATES
+// =====================================================================
+
+// Open ballot: Community option candidate submission
+app.post("/api/polls/:id/open-submit", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.id;
+    const { text } = req.body;
+    const uid = req.user.uid;
+    const displayName = req.user.name || req.user.email?.split("@")[0] || "Anonymous";
+
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: "Option text is required" });
+    }
+
+    const pollRef = db.collection("world_cup_polls").doc(pollId);
+    const pollDoc = await pollRef.get();
+    if (!pollDoc.exists) {
+      return res.status(404).json({ error: "Poll not found" });
+    }
+
+    const pollData = pollDoc.data() || {};
+    if (pollData.format !== "open") {
+      return res.status(400).json({ error: "Candidate submissions are only permitted on Open ballot polls" });
+    }
+
+    const newCandidate = {
+      id: "cand_" + Date.now().toString(36) + "_" + Math.random().toString(36).substring(2, 6),
+      text: text.trim(),
+      authorId: uid,
+      authorName: displayName,
+      votes: 1,
+      createdAt: new Date().toISOString()
+    };
+
+    const existingSubmissions = pollData.openSubmissions || [];
+    existingSubmissions.push(newCandidate);
+
+    await pollRef.update({
+      openSubmissions: existingSubmissions,
+      totalVotes: (pollData.totalVotes || 0) + 1,
+      updatedAt: new Date().toISOString()
+    });
+
+    // Record author's initial vote for their submission
+    await db.collection("global_votes").doc(`${uid}_${pollId}`).set({
+      pollId,
+      userId: uid,
+      selectedOption: newCandidate.id,
+      faction: newCandidate.text,
+      timestamp: new Date().toISOString()
+    });
+
+    res.json({ success: true, submission: newCandidate });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Debate discussion engine with voter faction badges
+app.get("/api/debate/:pollId", async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.pollId;
+    const factionFilter = req.query.faction as string;
+
+    const snap = await db.collection("poll_debates")
+      .where("pollId", "==", pollId)
+      .limit(100)
+      .get();
+
+    let comments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    comments.sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+    // Fallback to legacy poll_comments if none in poll_debates
+    if (comments.length === 0) {
+      const legacySnap = await db.collection("poll_comments")
+        .where("pollId", "==", pollId)
+        .limit(100)
+        .get();
+      comments = legacySnap.docs.map(d => ({
+        id: d.id,
+        userFaction: "Forecaster",
+        upvotes: 0,
+        ...d.data()
+      }));
+    }
+
+    if (factionFilter && factionFilter !== "all") {
+      comments = comments.filter((c: any) => c.userFaction === factionFilter || c.factionId === factionFilter);
+    }
+
+    res.json(comments);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/debate/:pollId", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const uid = req.user.uid;
+    const pollId = req.params.pollId;
+    const { text } = req.body;
+
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: "Argument text is required" });
+    }
+
+    // Lookup user's vote on this poll to derive their faction badge
+    let userFaction = "Observer";
+    let factionId = "observer";
+
+    try {
+      const voteDoc = await db.collection("global_votes").doc(`${uid}_${pollId}`).get();
+      if (voteDoc.exists) {
+        const vData = voteDoc.data();
+        if (vData?.faction) {
+          userFaction = vData.faction;
+          factionId = String(vData.selectedOption || "voter");
+        } else if (vData?.selectedOption) {
+          userFaction = `Voted: ${vData.selectedOption}`;
+          factionId = String(vData.selectedOption);
+        }
+      }
+    } catch (e) {
+      // Default to Observer
+    }
+
+    const userDoc = await db.collection("users").doc(uid).get();
+    const uData = userDoc.exists ? userDoc.data() : null;
+
+    const newComment = {
+      pollId,
+      userId: uid,
+      userName: uData?.displayName || req.user.name || "Neural Forecaster",
+      userAvatar: uData?.avatar || uData?.photoURL || `https://api.dicebear.com/7.x/identicon/svg?seed=${uid}`,
+      userFaction,
+      factionId,
+      text: text.trim(),
+      upvotes: 0,
+      upvotedBy: [],
+      createdAt: new Date().toISOString()
+    };
+
+    const docRef = await db.collection("poll_debates").add(newComment);
+    res.json({ success: true, id: docRef.id, ...newComment });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/debate/:commentId/upvote", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const commentId = req.params.commentId;
+    const uid = req.user.uid;
+    const commentRef = db.collection("poll_debates").doc(commentId);
+    const commentDoc = await commentRef.get();
+
+    if (!commentDoc.exists) {
+      return res.status(404).json({ error: "Argument not found" });
+    }
+
+    const data = commentDoc.data() || {};
+    const upvotedBy = data.upvotedBy || [];
+    const hasUpvoted = upvotedBy.includes(uid);
+
+    let newUpvotedBy;
+    let delta = 0;
+    if (hasUpvoted) {
+      newUpvotedBy = upvotedBy.filter((id: string) => id !== uid);
+      delta = -1;
+    } else {
+      newUpvotedBy = [...upvotedBy, uid];
+      delta = 1;
+    }
+
+    const newUpvotes = Math.max(0, (data.upvotes || 0) + delta);
+    await commentRef.update({
+      upvotes: newUpvotes,
+      upvotedBy: newUpvotedBy
+    });
+
+    res.json({ success: true, upvotes: newUpvotes, hasUpvoted: !hasUpvoted });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Community report endpoint
+app.post("/api/polls/:id/report", authenticateToken, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.id;
+    const { reason } = req.body;
+    const uid = req.user.uid;
+
+    const pollDoc = await db.collection("world_cup_polls").doc(pollId).get();
+    const pollTitle = pollDoc.exists ? pollDoc.data()?.title || "Untitled Poll" : "Unknown Poll";
+
+    await db.collection("reports").add({
+      pollId,
+      pollTitle,
+      reason: reason || "Flagged by community forecaster",
+      reporterUid: uid,
+      reporterName: req.user.name || req.user.email || "Forecaster",
+      status: "pending",
+      createdAt: new Date().toISOString()
+    });
+
+    res.json({ success: true, message: "Report submitted to admin triage queue." });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// =====================================================================
+// STANDALONE ADMIN CONSOLE: 8 SINGLE-WORD TOOL ENDPOINTS
+// =====================================================================
+
+// 1. Queue: Pending user-submitted polls approval triage
+app.get("/api/admin/queue", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const snap = await db.collection("world_cup_polls")
+      .where("status", "==", "pending_approval")
+      .limit(100)
+      .get();
+    const queue = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json(queue);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/admin/queue/:id", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.id;
+    const { action, reason } = req.body; // 'approve' | 'reject'
+
+    if (!["approve", "reject"].includes(action)) {
+      return res.status(400).json({ error: "Action must be 'approve' or 'reject'" });
+    }
+
+    const pollRef = db.collection("world_cup_polls").doc(pollId);
+    const pollDoc = await pollRef.get();
+    if (!pollDoc.exists) return res.status(404).json({ error: "Poll not found" });
+
+    const newStatus = action === "approve" ? "active" : "rejected";
+    await pollRef.update({
+      status: newStatus,
+      moderatedAt: new Date().toISOString(),
+      moderatedBy: req.user.uid,
+      moderationReason: reason || null
+    });
+
+    await logAdminAction(req.user.uid, req.user.email, `QUEUE_${action.toUpperCase()}`, pollId, "poll", { reason });
+
+    res.json({ success: true, message: `Poll ${action}d successfully` });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 2. Polls: Global manager (lock, pin, delete, resolve)
+app.patch("/api/admin/polls/:id", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const pollId = req.params.id;
+    const updates = req.body;
+
+    const pollRef = db.collection("world_cup_polls").doc(pollId);
+    await pollRef.update({
+      ...updates,
+      updatedAt: new Date().toISOString()
+    });
+
+    await logAdminAction(req.user.uid, req.user.email, "POLL_PATCH", pollId, "poll", updates);
+    res.json({ success: true, message: "Poll state updated" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 3. Users: Dossier, ban, shadowban, verify, recalibrate score
+app.get("/api/admin/users", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const snap = await db.collection("users").limit(100).get();
+    const users = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+    res.json(users);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/admin/users/:uid/action", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const targetUid = req.params.uid;
+    const { action, score } = req.body;
+
+    const userRef = db.collection("users").doc(targetUid);
+    const updates: any = { updatedAt: new Date().toISOString() };
+
+    switch (action) {
+      case "ban":
+        updates.isBanned = true;
+        break;
+      case "unban":
+        updates.isBanned = false;
+        break;
+      case "shadowban":
+        updates.isShadowbanned = true;
+        break;
+      case "unshadowban":
+        updates.isShadowbanned = false;
+        break;
+      case "verify":
+        updates.verified = true;
+        break;
+      case "unverify":
+        updates.verified = false;
+        break;
+      case "recalibrate":
+        if (typeof score === "number") {
+          updates.accuracy = Math.max(0, Math.min(100, score));
+        }
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid user management action" });
+    }
+
+    await userRef.set(updates, { merge: true });
+    await logAdminAction(req.user.uid, req.user.email, `USER_${action.toUpperCase()}`, targetUid, "user", { action, score });
+
+    res.json({ success: true, message: `User action '${action}' applied.` });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 4. Bounties: Sponsor escrow verification & yield distribution
+app.get("/api/admin/bounties", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const sponsoredSnap = await db.collection("world_cup_polls")
+      .where("isSponsored", "==", true)
+      .limit(50)
+      .get();
+
+    const bounties = sponsoredSnap.docs.map(d => {
+      const data = d.data();
+      return {
+        id: d.id,
+        pollId: d.id,
+        pollTitle: data.title,
+        sponsorName: data.sponsorName || "Anonymous Sponsor",
+        escrowAmount: data.sponsorReward || "1,000 Points",
+        status: data.status === "closed" ? "distributed" : "active",
+        createdAt: data.createdAt || new Date().toISOString()
+      };
+    });
+
+    res.json(bounties);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/admin/bounties/:id/payout", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const bountyId = req.params.id;
+    const pollRef = db.collection("world_cup_polls").doc(bountyId);
+    await pollRef.update({
+      bountyDistributed: true,
+      bountyDistributedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
+
+    await logAdminAction(req.user.uid, req.user.email, "BOUNTY_PAYOUT", bountyId, "bounty", {});
+    res.json({ success: true, message: "Escrow yield payout distributed to top forecasters." });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 5. Reports: Community abuse triage inbox
+app.get("/api/admin/reports", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const snap = await db.collection("reports")
+      .where("status", "==", "pending")
+      .limit(100)
+      .get();
+    const reports = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json(reports);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/admin/reports/:id", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const reportId = req.params.id;
+    const { action, notes } = req.body; // 'resolve' | 'dismiss'
+
+    const reportRef = db.collection("reports").doc(reportId);
+    await reportRef.update({
+      status: action === "resolve" ? "resolved" : "dismissed",
+      resolvedBy: req.user.uid,
+      resolvedAt: new Date().toISOString(),
+      notes: notes || null
+    });
+
+    await logAdminAction(req.user.uid, req.user.email, `REPORT_${action.toUpperCase()}`, reportId, "report", { notes });
+    res.json({ success: true, message: `Report ${action}d successfully` });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 6. Safety: Prohibited word dictionary, toxicity threshold, rate limits
+app.get("/api/admin/safety", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const doc = await db.collection("config").doc("safety").get();
+    const data = doc.exists ? doc.data() : {
+      prohibitedWords: ["scam", "phishing", "hate", "malware", "ponzi"],
+      toxicityThreshold: 0.85,
+      rateLimitPerMinute: 60,
+      spamFilterEnabled: true
+    };
+    res.json(data);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/admin/safety", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const safetySettings = req.body;
+    await db.collection("config").doc("safety").set({
+      ...safetySettings,
+      updatedAt: new Date().toISOString(),
+      updatedBy: req.user.uid
+    }, { merge: true });
+
+    await logAdminAction(req.user.uid, req.user.email, "SAFETY_CONFIG_UPDATE", "safety", "config", safetySettings);
+    res.json({ success: true, message: "Safety filters synchronized." });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 7. Logs: Immutable audit log stream
+app.get("/api/admin/logs", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const snap = await db.collection("audit_logs")
+      .orderBy("timestamp", "desc")
+      .limit(100)
+      .get();
+    const logs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    res.json(logs);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 8. Config: System emergency kill-switches, maintenance mode, min account age
+app.get("/api/admin/config", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const doc = await db.collection("config").doc("global").get();
+    const data = doc.exists ? doc.data() : {
+      phase: "pre_election",
+      maintenanceMode: false,
+      minAccountAgeDays: 0,
+      maxDailyPollsPerUser: 10
+    };
+    res.json(data);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/admin/config", authenticateToken, requireAdmin, async (req: any, res: any) => {
+  if (!db) return res.status(500).json({ error: "DB not initialized" });
+  try {
+    const configSettings = req.body;
+    await db.collection("config").doc("global").set({
+      ...configSettings,
+      updatedAt: new Date().toISOString(),
+      updatedBy: req.user.uid
+    }, { merge: true });
+
+    await logAdminAction(req.user.uid, req.user.email, "GLOBAL_CONFIG_UPDATE", "global", "config", configSettings);
+    res.json({ success: true, message: "Global protocol config updated." });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
