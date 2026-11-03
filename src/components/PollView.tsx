@@ -1,40 +1,59 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, Info, Lock, Trophy, RefreshCw, Database, Sparkles, ExternalLink, Flame } from "lucide-react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { 
+  ChevronLeft, Sparkles, ExternalLink, ShieldCheck, 
+  Clock, Lock, Share2, CheckCircle2, TrendingUp 
+} from "lucide-react";
 import { cn } from "../lib/utils";
 import { auth } from "../firebase";
 import { Layout } from "./Layout";
-import { useTheme } from "../context/ThemeContext";
 import { Poll } from "../types";
 import { RoastRoomCouncil } from "./RoastRoomCouncil";
+import { Versus } from "./formats/Versus";
+import { Choice } from "./formats/Choice";
+import { Scale } from "./formats/Scale";
+import { Rank } from "./formats/Rank";
+import { Open } from "./formats/Open";
+import { Debate } from "./debate/Debate";
 
 export function PollView() {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
   const { pollId } = useParams<{ pollId: string }>();
   const navigate = useNavigate();
 
   const [poll, setPoll] = useState<Poll | null>(null);
   const [loading, setLoading] = useState(true);
-  const [vote, setVote] = useState<{ selectedOption: string, confidence: number } | null>(null);
-  const [locked, setLocked] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error", text: string } | null>(null);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [votedOption, setVotedOption] = useState<any>(null);
+  const [userFaction, setUserFaction] = useState<string | undefined>();
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const fetchPoll = async () => {
+    if (!pollId) return;
+    try {
+      const currentUser = auth.currentUser;
+      const token = currentUser ? await currentUser.getIdToken() : null;
+
+      const res = await fetch(`/api/polls/${pollId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPoll(data);
+      }
+    } catch (err) {
+      console.error("Failed to load poll:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch(`/api/polls/${pollId}`)
-      .then(r => r.json())
-      .then(data => {
-        setPoll(data);
-        setLoading(false);
-      })
-      .catch(console.error);
+    fetchPoll();
   }, [pollId]);
 
   useEffect(() => {
     if (!auth.currentUser || !pollId) return;
-    
     auth.currentUser.getIdToken().then(token => {
       fetch('/api/user/votes', {
         headers: { Authorization: `Bearer ${token}` }
@@ -42,66 +61,86 @@ export function PollView() {
       .then(res => res.json())
       .then(data => {
         if (data[pollId]) {
-          setVote({
-            selectedOption: data[pollId].selectedOption,
-            confidence: data[pollId].confidence
-          });
-          setLocked(true);
+          setHasVoted(true);
+          setVotedOption(data[pollId].selectedOption);
+          setUserFaction(data[pollId].faction);
         }
       })
       .catch(console.error);
     });
   }, [auth.currentUser, pollId]);
 
-  const handleSelectOption = (optionId: string) => {
-    if (locked) return;
-    setVote(prev => ({
-      selectedOption: optionId,
-      confidence: prev?.confidence || 50
-    }));
-  };
+  const handleVote = async (optionValue: any) => {
+    if (!pollId || !auth.currentUser) {
+      navigate("/signin");
+      return;
+    }
 
-  const handleConfidence = (val: number) => {
-    if (locked) return;
-    setVote(prev => ({
-      ...prev!,
-      confidence: val
-    }));
-  };
-
-  const handleSave = async () => {
-    if (!pollId || !auth.currentUser || !vote?.selectedOption) return;
-
-    setSaving(true);
-    setMessage(null);
     try {
       const token = await auth.currentUser.getIdToken();
-      const res = await fetch('/api/vote', {
+      const res = await fetch("/api/vote", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
           pollId,
-          selectedOption: vote.selectedOption,
-          confidence: vote.confidence
+          selectedOption: optionValue,
+          confidence: 100
         })
       });
-      if (!res.ok) throw new Error("Failed to save via API");
-      setLocked(true);
-      setMessage({ type: "success", text: "Vote locked in swarm via Backend." });
+
+      if (res.ok) {
+        const data = await res.json();
+        setHasVoted(true);
+        setVotedOption(optionValue);
+        if (data.faction) setUserFaction(data.faction);
+        if (data.poll) setPoll(data.poll);
+      }
     } catch (err) {
-      console.error(err);
-      setMessage({ type: "error", text: "Failed to sync signal." });
-    } finally {
-      setSaving(false);
+      console.error("Voting failed:", err);
     }
+  };
+
+  const handleOpenCandidateSubmit = async (text: string) => {
+    if (!pollId || !auth.currentUser) return;
+    const token = await auth.currentUser.getIdToken();
+    const res = await fetch(`/api/polls/${pollId}/open-submit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ text })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.submission) {
+        setPoll(prev => prev ? ({
+          ...prev,
+          openSubmissions: [...(prev.openSubmissions || []), data.submission]
+        }) : null);
+        setHasVoted(true);
+        setVotedOption(data.submission.id);
+        setUserFaction(data.submission.text);
+      }
+    }
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
   };
 
   if (loading) {
     return (
       <Layout user={auth.currentUser}>
-        <div className="flex items-center justify-center h-full">
-          <div className="animate-pulse font-mono text-sm tracking-widest text-[var(--text-secondary)]">
-            FETCHING SWARM NODE...
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="animate-pulse font-mono text-xs tracking-widest text-emerald-500">
+            CONNECTING TO CONSENSUS NODE...
           </div>
         </div>
       </Layout>
@@ -111,38 +150,54 @@ export function PollView() {
   if (!poll) {
     return (
       <Layout user={auth.currentUser}>
-        <div className="flex flex-col items-center justify-center h-full space-y-4">
-          <p className="text-[var(--text-primary)] font-bold text-2xl">Poll not found</p>
-          <button onClick={() => navigate('/polls')} className="px-6 py-2 bg-emerald-500/10 text-emerald-500 rounded-xl font-bold">Return to Polls</button>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+          <p className="text-white font-bold text-xl">Prediction Terminal Not Found</p>
+          <button
+            onClick={() => navigate('/polls')}
+            className="px-5 py-2 bg-emerald-500 text-black font-bold text-xs rounded-xl"
+          >
+            Return to Feed
+          </button>
         </div>
       </Layout>
     );
   }
 
-  const totalPollScore = poll?.optionScores ? Object.values(poll.optionScores).reduce((a, b) => a + b, 0) : 0;
-  const isSponsored = Boolean(poll.isSponsored);
+  const format = poll.format || "choice";
+  const isBlindMasked = Boolean((poll as any).isBlindMasked && !hasVoted);
 
   return (
     <Layout user={auth.currentUser}>
-      <div className="h-full flex flex-col relative pb-20 px-4 sm:px-8 max-w-4xl mx-auto w-full">
-        <button 
-          onClick={() => navigate('/polls')}
-          className="flex items-center gap-2 mt-8 mb-4 text-[var(--text-secondary)] hover:text-emerald-500 transition-colors w-fit font-mono text-[10px] uppercase font-bold tracking-widest"
-        >
-          <ChevronLeft className="w-4 h-4" /> Back to Polls
-        </button>
+      <div className="pb-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+        {/* Navigation Breadcrumb */}
+        <div className="flex items-center justify-between mt-6 mb-4">
+          <button 
+            onClick={() => navigate('/polls')}
+            className="flex items-center gap-1.5 text-stone-400 hover:text-emerald-400 transition-colors font-mono text-xs uppercase font-bold tracking-wider"
+          >
+            <ChevronLeft className="w-4 h-4" /> Feed
+          </button>
 
-        {/* Sponsored Banner if applicable */}
-        {isSponsored && (
-          <div className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border border-amber-500/30 flex items-center justify-between gap-4">
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 hover:text-white text-xs font-mono transition-colors border border-white/5"
+          >
+            {copiedLink ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+            <span>{copiedLink ? "Copied" : "Share"}</span>
+          </button>
+        </div>
+
+        {/* Sponsored Banner */}
+        {poll.isSponsored && (
+          <div className="mb-4 p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-500/5 to-transparent border border-amber-500/30 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-amber-500 text-black">
-                <Sparkles className="w-5 h-5" />
+              <div className="p-2 rounded-xl bg-amber-500 text-black font-bold">
+                <Sparkles className="w-4 h-4" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-mono uppercase tracking-widest font-extrabold text-amber-400">
-                    Sponsored Prediction Poll
+                    Sponsored Market
                   </span>
                   <span className="font-bold text-sm text-white">
                     {poll.sponsorName}
@@ -169,189 +224,115 @@ export function PollView() {
           </div>
         )}
 
-        {/* Main Poll Card */}
-        <div className={cn(
-          "glass p-8 sm:p-12 rounded-[40px] border shadow-xl mt-2",
-          isSponsored
-            ? "border-amber-500/30 bg-gradient-to-b from-amber-500/5 via-[var(--glass-bg)] to-transparent"
-            : "border-[var(--glass-border)] bg-[var(--glass-bg)]"
-        )}>
-          <div className="space-y-4 mb-10">
+        {/* Main Poll Terminal Container */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#0a0d14] border border-[#1d222e] shadow-2xl flex flex-col gap-6">
+          {/* Header Metadata */}
+          <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className={cn(
-                "inline-block px-3 py-1 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-widest border",
-                isSponsored
-                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                  : "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
-              )}>
-                {poll.category || "General Poll"}
+              <span className="px-2.5 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">
+                {format.toUpperCase()}
               </span>
 
-              {poll.tags && poll.tags.map((tag: string) => (
-                <span key={tag} className="text-[9px] font-mono text-[var(--text-secondary)] px-2 py-0.5 rounded-full bg-black/10">
-                  #{tag}
+              {poll.category && (
+                <span className="px-2.5 py-0.5 rounded-lg bg-white/5 border border-white/10 text-stone-400 text-xs font-mono">
+                  {poll.category}
                 </span>
-              ))}
+              )}
+
+              {poll.status && (
+                <span className="px-2.5 py-0.5 rounded-lg bg-stone-900 border border-white/10 text-stone-300 text-xs font-mono uppercase">
+                  {poll.status}
+                </span>
+              )}
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-bold tracking-tighter text-[var(--text-primary)]">{poll.title}</h1>
-            {poll.matchTime && (
-              <p className="text-emerald-500 font-mono text-sm font-bold uppercase tracking-widest">
-                Scheduled: {poll.matchTime}
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-1">
+              {poll.title}
+            </h1>
+
+            {poll.description && (
+              <p className="text-sm text-stone-300 leading-relaxed">
+                {poll.description}
               </p>
             )}
-            <p className="text-[var(--text-secondary)] text-lg">{poll.description}</p>
-          </div>
 
-          <div className="space-y-12">
-            <div className="space-y-6">
-              <h4 className={cn(
-                  "text-[10px] font-mono uppercase tracking-[0.4em] font-extrabold",
-                  isDark ? "text-emerald-400" : "text-emerald-700"
-              )}>Choose Your Option</h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {poll.options.map((option) => {
-                      const isSelected = vote?.selectedOption === option.id;
-                      const isExpired = poll.lockAt ? new Date() > new Date(poll.lockAt) : false;
-                      const isDisabled = locked || poll.status === "closed" || isExpired;
-                      return (
-                          <button
-                              key={option.id}
-                              onClick={() => handleSelectOption(option.id)}
-                              disabled={isDisabled}
-                              className={cn(
-                                  "p-5 rounded-[24px] border transition-all duration-500 text-left relative overflow-hidden group flex flex-col gap-4 shadow-sm",
-                                  isSelected
-                                      ? "bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_-10px_rgba(16,185,129,0.3)]"
-                                      : isDisabled
-                                      ? "opacity-60 cursor-not-allowed bg-black/5 border-[var(--glass-border)]"
-                                      : "bg-black/5 hover:bg-black/10 border-[var(--glass-border)] hover:border-emerald-500/30"
-                              )}
-                          >
-                              <div className="flex items-center justify-between w-full">
-                                  <span className="font-bold text-lg text-[var(--text-primary)] leading-tight">{option.text || option.name}</span>
-                                  {isSelected && (
-                                      <div className="w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20" />
-                                  )}
-                              </div>
-
-                              {totalPollScore > 0 && poll.optionScores && (
-                                <div className="w-full space-y-1 mt-auto">
-                                  <div className="flex justify-between text-[10px] font-mono text-[var(--text-secondary)]">
-                                    <span>Consensus Weight</span>
-                                    <span>{Math.round(((poll.optionScores[option.id] || 0) / totalPollScore) * 100)}%</span>
-                                  </div>
-                                  <div className="w-full h-1.5 rounded-full bg-black/10 overflow-hidden">
-                                    <div
-                                      className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                                      style={{ width: `${Math.round(((poll.optionScores[option.id] || 0) / totalPollScore) * 100)}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                          </button>
-                      );
-                  })}
+            {/* Timing / Countdown */}
+            {poll.lockAt && (
+              <div className="flex items-center gap-1.5 text-xs font-mono text-stone-400 mt-1">
+                <Clock className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Locks: {new Date(poll.lockAt).toLocaleString()}</span>
               </div>
-            </div>
-
-            {/* Confidence Slider */}
-            {vote?.selectedOption && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-4 p-6 rounded-3xl bg-[var(--glass-border)]/30 border border-[var(--glass-border)]"
-              >
-                <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="text-xs font-mono uppercase tracking-widest font-extrabold text-[var(--text-primary)]">Confidence Level</h4>
-                      <p className="text-xs text-[var(--text-secondary)] font-medium">Higher confidence magnifies your accuracy weight in swarm consensus.</p>
-                    </div>
-                    <div className="text-right">
-                      <span className={cn(
-                        "text-[10px] font-mono uppercase font-extrabold mb-1",
-                        isDark ? "text-emerald-500" : "text-emerald-700"
-                      )}>
-                        { vote.confidence < 40 ? "LOW" : vote.confidence < 80 ? "MEDIUM" : "HIGH" }
-                      </span>
-                      <div className="text-3xl font-bold font-mono tracking-tighter text-emerald-500">{vote.confidence}%</div>
-                    </div>
-                </div>
-
-                <input 
-                  type="range"
-                  min="10"
-                  max="100"
-                  step="5"
-                  value={vote.confidence}
-                  onChange={(e) => handleConfidence(parseInt(e.target.value))}
-                  disabled={locked || poll.status === "closed"}
-                  className="w-full h-3 rounded-full appearance-none cursor-pointer accent-emerald-500 disabled:opacity-20 transition-all font-bold bg-black/10"
-                />
-              </motion.div>
-            )}
-
-            {/* Lock in Vote Button */}
-            <div className="pt-4">
-                {(() => {
-                  const isExpired = poll.lockAt ? new Date() > new Date(poll.lockAt) : false;
-                  
-                  if (locked) {
-                    return (
-                      <div className="w-full py-8 sm:py-10 rounded-[32px] bg-emerald-500/10 border border-emerald-500/30 flex flex-col items-center justify-center gap-2">
-                          <Lock className="w-8 h-8 text-emerald-600 mb-2" />
-                          <span className="text-xl sm:text-2xl font-bold text-emerald-600 tracking-[0.2em] uppercase italic">Vote Submitted</span>
-                          <p className="text-[10px] font-mono text-emerald-700 uppercase tracking-[0.2em] font-extrabold">Synched to Neural Mesh</p>
-                      </div>
-                    );
-                  }
-                  if (isExpired) {
-                    return (
-                      <div className="w-full py-8 sm:py-10 rounded-[32px] bg-gray-500/10 border border-gray-500/30 flex flex-col items-center justify-center gap-2">
-                          <Lock className="w-8 h-8 text-gray-500 mb-2" />
-                          <span className="text-xl sm:text-2xl font-bold text-gray-500 tracking-[0.2em] uppercase italic">TIME EXPIRED</span>
-                          <p className="text-[10px] font-mono text-gray-500 uppercase tracking-[0.2em] font-extrabold">Poll Locked</p>
-                      </div>
-                    );
-                  }
-                  return (
-                    <button 
-                        onClick={handleSave}
-                        disabled={saving || !vote?.selectedOption || poll.status === "closed"}
-                        className={cn(
-                            "w-full py-6 sm:py-8 rounded-[32px] font-bold text-xl transition-all duration-300 flex items-center justify-center gap-4 relative overflow-hidden group active:scale-[0.98]",
-                            !vote?.selectedOption || saving || poll.status === "closed"
-                                ? "bg-[var(--glass-bg)] border-2 border-dashed opacity-60 grayscale cursor-not-allowed border-[var(--glass-border)] text-[var(--text-secondary)]"
-                                : "bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 text-white shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] hover:scale-[1.01] ring-1 ring-white/20"
-                        )}
-                    >
-                        {saving ? (
-                            <RefreshCw className="w-7 h-7 animate-spin" />
-                        ) : (
-                            <>
-                                <Database className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
-                                {poll.status === "closed" ? "POLL CLOSED" : "LOCK IN VOTE"}
-                            </>
-                        )}
-                    </button>
-                  );
-                })()}
-            </div>
-
-            {message && (
-                <div className={cn(
-                    "p-4 rounded-xl text-center text-sm font-bold animate-in fade-in slide-in-from-bottom-2",
-                    message.type === 'success' ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500"
-                )}>
-                    {message.text}
-                </div>
             )}
           </div>
+
+          {/* Interactive Format Engine */}
+          <div className="pt-2 border-t border-[#181d28]">
+            {format === "versus" ? (
+              <Versus
+                pollId={poll.id}
+                leftSide={poll.versusLeft}
+                rightSide={poll.versusRight}
+                hasVoted={hasVoted}
+                votedOption={votedOption}
+                isBlindMasked={isBlindMasked}
+                onVote={handleVote}
+              />
+            ) : format === "scale" ? (
+              <Scale
+                pollId={poll.id}
+                scaleMin={poll.scaleMin}
+                scaleMax={poll.scaleMax}
+                scaleUnit={poll.scaleUnit}
+                scaleAverage={poll.scaleAverage}
+                scaleVotesCount={poll.scaleVotesCount}
+                hasVoted={hasVoted}
+                votedOption={votedOption}
+                isBlindMasked={isBlindMasked}
+                onVote={handleVote}
+              />
+            ) : format === "rank" ? (
+              <Rank
+                pollId={poll.id}
+                options={poll.options}
+                rankedItems={poll.rankedItems}
+                hasVoted={hasVoted}
+                votedOption={votedOption}
+                isBlindMasked={isBlindMasked}
+                onVote={handleVote}
+              />
+            ) : format === "open" ? (
+              <Open
+                pollId={poll.id}
+                submissions={poll.openSubmissions}
+                hasVoted={hasVoted}
+                votedOption={votedOption}
+                onVote={handleVote}
+                onOpenSubmit={handleOpenCandidateSubmit}
+              />
+            ) : (
+              <Choice
+                pollId={poll.id}
+                options={poll.options || []}
+                hasVoted={hasVoted}
+                votedOption={votedOption}
+                isBlindMasked={isBlindMasked}
+                onVote={handleVote}
+              />
+            )}
+          </div>
+
+          {/* Faction-badged Debate Arena */}
+          <Debate
+            pollId={poll.id}
+            pollTitle={poll.title}
+            userFaction={userFaction}
+          />
         </div>
 
-        {/* Roast Room Council Debate Section */}
-        <RoastRoomCouncil poll={poll} />
+        {/* AI Council of Advisors */}
+        <div className="mt-8">
+          <RoastRoomCouncil pollId={poll.id} pollTitle={poll.title} />
+        </div>
       </div>
     </Layout>
   );
