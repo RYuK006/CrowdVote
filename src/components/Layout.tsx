@@ -32,10 +32,10 @@ export function Layout({ children, user }: LayoutProps) {
   const isAdminRoute = location.pathname.startsWith("/admin") && location.pathname !== "/admin-login";
 
   const navLinks = [
-    { label: "Markets", path: "/polls", icon: BarChart3 },
-    { label: "Forecast Briefs", path: "/reels", icon: Zap },
-    { label: "Leaderboard", path: "/leaderboard", icon: Trophy },
-    { label: "Swarm Analytics", path: "/analytics", icon: TrendingUp },
+    { label: "Feed", path: "/polls", icon: BarChart3 },
+    { label: "Swipe", path: "/swipe", icon: Zap },
+    { label: "Ranks", path: "/leaderboard", icon: Trophy },
+    { label: "Chat", path: "/chat", icon: Send },
   ];
 
   return (
@@ -120,7 +120,7 @@ export function Layout({ children, user }: LayoutProps) {
             className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span className="hidden sm:inline">New Market</span>
+            <span className="hidden sm:inline">Create</span>
           </button>
 
           {/* Direct Messages (E2EE Chat) */}
