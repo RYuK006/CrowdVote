@@ -237,7 +237,7 @@ export function Reels() {
             )}
           >
             <Zap className="w-3.5 h-3.5 fill-current" />
-            <span>Forecast Briefs</span>
+            <span>Briefs</span>
           </button>
 
           <button
@@ -250,7 +250,7 @@ export function Reels() {
             )}
           >
             <Trophy className="w-3.5 h-3.5" />
-            <span>Grandmaster Leaderboard</span>
+            <span>Ranks</span>
           </button>
         </div>
 
