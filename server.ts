@@ -938,19 +938,31 @@ app.get("/api/results/actual", (req, res) => {
 app.post("/api/user/polls", authenticateToken, async (req: any, res: any) => {
   if (!db) return res.status(500).json({ error: "DB not initialized" });
   try {
-    const { title, description, category, options, tags } = req.body;
+    const { 
+      title, description, category, options, tags, format = "choice",
+      versusLeft, versusRight, scaleMin, scaleMax, scaleUnit,
+      blind = true, changeable = true, anonymous = false, lockAt
+    } = req.body;
     const uid = req.user.uid;
 
     if (!title || typeof title !== "string" || title.trim().length < 5) {
       return res.status(400).json({ error: "Title must be at least 5 characters long." });
     }
-    if (!Array.isArray(options) || options.length < 2) {
-      return res.status(400).json({ error: "At least two options are required." });
+
+    // Format specific validation
+    if (format === "versus") {
+      if (!versusLeft?.label || !versusRight?.label) {
+        return res.status(400).json({ error: "Versus polls require both Side A and Side B labels." });
+      }
+    } else if (format === "choice" || format === "rank") {
+      if (!Array.isArray(options) || options.length < 2) {
+        return res.status(400).json({ error: "At least two options are required." });
+      }
     }
 
     // Server-side safety verification against toxicity, hate speech, spam
     const prohibitedWords = ["hate", "kill", "terrorist", "scam", "nazi", "bomb", "fraud", "exploit"];
-    const contentCheck = `${title} ${description || ""} ${options.map((o: any) => o.text || o.name || "").join(" ")}`.toLowerCase();
+    const contentCheck = `${title} ${description || ""} ${(options || []).map((o: any) => o.text || o.name || "").join(" ")}`.toLowerCase();
     for (const word of prohibitedWords) {
       if (contentCheck.includes(word)) {
         return res.status(400).json({ error: `Safety violation: Content contains prohibited term '${word}'` });
@@ -958,16 +970,24 @@ app.post("/api/user/polls", authenticateToken, async (req: any, res: any) => {
     }
 
     const pollId = `poll_user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const formattedOptions = options.map((opt: any, index: number) => ({
+    const formattedOptions = (options || []).map((opt: any, index: number) => ({
       id: opt.id || `opt_${index + 1}`,
-      text: opt.text || opt.name || `Option ${index + 1}`
+      name: typeof opt === "string" ? opt : (opt.text || opt.name || `Option ${index + 1}`),
+      text: typeof opt === "string" ? opt : (opt.text || opt.name || `Option ${index + 1}`),
+      votes: 0,
+      percentage: 0
     }));
 
-    const newPoll = {
+    const newPoll: any = {
       id: pollId,
       title: title.trim(),
       description: (description || "").trim(),
       category: category || "General",
+      format,
+      blind: Boolean(blind),
+      changeable: Boolean(changeable),
+      anonymous: Boolean(anonymous),
+      lockAt: lockAt || null,
       options: formattedOptions,
       tags: tags || [],
       status: "pending_approval",
@@ -975,8 +995,36 @@ app.post("/api/user/polls", authenticateToken, async (req: any, res: any) => {
       createdByName: req.user.name || req.user.email || "Community Agent",
       createdAt: new Date().toISOString(),
       optionScores: {},
-      isSponsored: false
+      isSponsored: false,
+      totalVotes: 0
     };
+
+    if (format === "versus") {
+      newPoll.versusLeft = {
+        id: "side_a",
+        label: versusLeft.label.trim(),
+        image: versusLeft.image || null,
+        votes: 0,
+        percentage: 50
+      };
+      newPoll.versusRight = {
+        id: "side_b",
+        label: versusRight.label.trim(),
+        image: versusRight.image || null,
+        votes: 0,
+        percentage: 50
+      };
+    } else if (format === "scale") {
+      newPoll.scaleMin = Number(scaleMin) || 0;
+      newPoll.scaleMax = Number(scaleMax) || 100;
+      newPoll.scaleUnit = scaleUnit || "%";
+      newPoll.scaleAverage = 50;
+      newPoll.scaleVotesCount = 0;
+    } else if (format === "rank") {
+      newPoll.rankedItems = formattedOptions.map(o => ({ id: o.id, label: o.name, score: 0 }));
+    } else if (format === "open") {
+      newPoll.openSubmissions = [];
+    }
 
     await db.collection("world_cup_polls").doc(pollId).set(newPoll);
 
