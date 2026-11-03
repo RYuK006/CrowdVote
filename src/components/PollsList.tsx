@@ -12,11 +12,11 @@ import { GrandmasterRadar } from "./GrandmasterRadar";
 import { MarketSideRail } from "./MarketSideRail";
 
 const CATEGORIES = [
-  "All Markets",
-  "Sponsored Bounties",
-  "Tech & AI",
-  "Startups & Roasts",
-  "Finance & Crypto",
+  "All",
+  "Bounties",
+  "AI",
+  "Startups",
+  "Crypto",
   "Politics",
   "Science",
   "Sports",
@@ -26,7 +26,7 @@ export function PollsList() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [loading, setLoading] = useState(true);
   const [votes, setVotes] = useState<Record<string, any>>({});
-  const [selectedCategory, setSelectedCategory] = useState<string>("All Markets");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -35,8 +35,8 @@ export function PollsList() {
   const fetchPolls = (cat: string, search: string, pageNum: number, replace: boolean = true) => {
     setLoading(true);
     const params = new URLSearchParams();
-    if (cat !== "All Markets") {
-      if (cat === "Sponsored Bounties") {
+    if (cat !== "All") {
+      if (cat === "Bounties") {
         params.set("sponsored", "true");
       } else {
         params.set("category", cat);
@@ -137,7 +137,7 @@ export function PollsList() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2 border-b border-[#1b1e24] pb-5">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-              <span>Prediction Markets</span>
+              <span>Feed</span>
               <span className="text-emerald-400 font-mono text-sm font-bold px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                 ACTIVE
               </span>
@@ -169,7 +169,7 @@ export function PollsList() {
           <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
             {CATEGORIES.map((cat) => {
               const isActive = selectedCategory === cat;
-              const isSponsored = cat === "Sponsored Bounties";
+              const isSponsored = cat === "Bounties";
               return (
                 <button
                   key={cat}
