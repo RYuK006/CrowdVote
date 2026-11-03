@@ -9,8 +9,8 @@ import { Signup } from "./components/Signup";
 import { Signin } from "./components/Signin";
 import { PollsList } from "./components/PollsList";
 import { PollView } from "./components/PollView";
-import { Leaderboard } from "./components/Leaderboard";
 import { Reels } from "./components/Reels";
+import { Swipe } from "./components/swipe/Swipe";
 import { Analytics } from "./components/Analytics";
 import { Profile } from "./components/Profile";
 import { ChatDirect } from "./components/ChatDirect";
@@ -50,9 +50,12 @@ export default function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/signin" element={<Signin />} />
               <Route path="/polls" element={user ? <PollsList /> : <Navigate to="/signin" />} />
+              <Route path="/feed" element={user ? <PollsList /> : <Navigate to="/signin" />} />
               <Route path="/polls/:pollId" element={user ? <PollView /> : <Navigate to="/signin" />} />
-              <Route path="/reels" element={user ? <Reels /> : <Navigate to="/signin" />} />
+              <Route path="/swipe" element={user ? <Swipe /> : <Navigate to="/signin" />} />
+              <Route path="/reels" element={<Navigate to="/swipe" replace />} />
               <Route path="/leaderboard" element={<Reels />} />
+              <Route path="/ranks" element={<Reels />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/profile" element={user ? <Profile /> : <Navigate to="/signin" />} />
               <Route path="/profile/:uid" element={user ? <Profile /> : <Navigate to="/signin" />} />
