@@ -149,67 +149,67 @@ const FALLBACK_FORECASTERS: ForecasterNode[] = [
 const FORECAST_BRIEFS: ForecastBrief[] = [
   {
     id: "brief_1",
-    pollId: "poll_quantum_oracle_2026",
-    title: "Will open-weight reasoning models surpass frontier proprietary LLMs by Q3 2026?",
+    pollId: "poll_versus_model_supremacy",
+    title: "Frontier Model Supremacy: OpenAI o3 vs DeepSeek-R1",
     authorHandle: "quantum_oracle",
     authorName: "Quantum Oracle",
     authorAvatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&h=150&q=80",
     authorAccuracy: 98.4,
     category: "AI",
-    consensusPrediction: "Surpass Frontier Parity",
-    confidence: 74,
+    consensusPrediction: "OpenAI o3 Frontier Reasoning",
+    confidence: 56,
     status: "Tracking Ahead",
   },
   {
     id: "brief_2",
-    pollId: "poll_alpha_macro_2026",
-    title: "US Federal Reserve interest rates: Cumulative rate cuts before December 2026",
+    pollId: "poll_choice_fed_terminal_rate",
+    title: "US Federal Reserve Terminal Rate Cuts: Cumulative Policy Actions through 2026",
     authorHandle: "alpha_macro",
     authorName: "Alpha Macro",
     authorAvatar: "https://images.unsplash.com/photo-1642790106117-e829e14a795f?auto=format&fit=crop&w=150&h=150&q=80",
     authorAccuracy: 97.2,
     category: "Finance",
-    consensusPrediction: "3 or More Cuts (>75 bps)",
-    confidence: 68,
+    consensusPrediction: "Aggressive Easing (>75 bps cuts)",
+    confidence: 46,
     status: "Decisive Win",
   },
   {
     id: "brief_3",
-    pollId: "poll_venture_roast_2026",
-    title: "Will the median Series A SaaS revenue multiple drop below 8x ARR by late 2026?",
-    authorHandle: "venture_roast",
-    authorName: "Venture Roast",
-    authorAvatar: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=150&h=150&q=80",
-    authorAccuracy: 94.6,
-    category: "Startups",
-    consensusPrediction: "Drop Below 8x ARR",
-    confidence: 71,
+    pollId: "poll_scale_agi_probability",
+    title: "AGI Realization Probability: Odds of AGI Consensus before 2028",
+    authorHandle: "cyber_pulse",
+    authorName: "Cyber Pulse",
+    authorAvatar: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=150&h=150&q=80",
+    authorAccuracy: 96.5,
+    category: "Science",
+    consensusPrediction: "73% Mean Subjective Probability",
+    confidence: 73,
     status: "High Spread",
   },
   {
     id: "brief_4",
-    pollId: "poll_crypto_sentinel_2026",
-    title: "Will Bitcoin breach $150,000 before the end of Q4 2026?",
+    pollId: "poll_rank_layer1_settlement",
+    title: "Smart Contract Layer 1 Supremacy: Rank by 2026 Settlement Volume",
     authorHandle: "crypto_sentinel",
     authorName: "Crypto Sentinel",
     authorAvatar: "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&w=150&h=150&q=80",
     authorAccuracy: 96.1,
     category: "Crypto",
-    consensusPrediction: "Yes, Above $150k target",
+    consensusPrediction: "Ethereum Superchain Dominance",
     confidence: 63,
     status: "In Range",
   },
   {
     id: "brief_5",
-    pollId: "poll_polity_matrix_2026",
-    title: "Kerala Assembly Elections 2026: Coalition Seat Majority Projection",
+    pollId: "poll_open_trillion_dollar_breakthrough",
+    title: "Next Trillion-Dollar Frontier Sector: Nominate & Back Candidate Theses",
     authorHandle: "polity_matrix",
     authorName: "Polity Matrix",
     authorAvatar: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=150&h=150&q=80",
     authorAccuracy: 97.9,
-    category: "Politics",
-    consensusPrediction: "LDF Majority Retention",
-    confidence: 51,
+    category: "Startups",
+    consensusPrediction: "Room-Temp Superconducting Synthetics",
+    confidence: 58,
     status: "Decisive Win",
   },
 ];
@@ -269,7 +269,6 @@ export function Ranks() {
     .map((f, idx) => ({ ...f, rank: idx + 1 }));
 
   const topThree = filteredForecasters.slice(0, 3);
-  const tableForecasters = filteredForecasters.slice(3);
 
   return (
     <Layout user={auth.currentUser}>
@@ -455,7 +454,7 @@ export function Ranks() {
               </div>
             </div>
 
-            {/* Podium (Top 3 Forecasters) */}
+            {/* Podium (Top 3 Forecasters - Olympic Layout: #2 Left, #1 Center Stage, #3 Right) */}
             {topThree.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-end pt-4">
                 {topThree.map((user, idx) => {
@@ -467,8 +466,10 @@ export function Ranks() {
                       className={cn(
                         "p-6 rounded-3xl border transition-all flex flex-col items-center text-center justify-between relative overflow-hidden shadow-2xl",
                         isFirst
-                          ? "bg-gradient-to-b from-[#121620] via-[#0d1017] to-[#08090d] border-amber-500/40 shadow-amber-500/10 md:min-h-[410px] order-first md:order-none"
-                          : "bg-[#090b0e] border-[#1b1e26] md:min-h-[360px]"
+                          ? "bg-gradient-to-b from-[#121620] via-[#0d1017] to-[#08090d] border-amber-500/40 shadow-amber-500/10 md:min-h-[410px] order-1 md:order-2"
+                          : rank === 2
+                          ? "bg-[#090b0e] border-[#1b1e26] md:min-h-[360px] order-2 md:order-1"
+                          : "bg-[#090b0e] border-[#1b1e26] md:min-h-[340px] order-3 md:order-3"
                       )}
                     >
                       {/* Top Accent Line */}
@@ -580,7 +581,13 @@ export function Ranks() {
                         key={f.uid}
                         className="hover:bg-white/[0.02] transition-colors group"
                       >
-                        <td className="py-3.5 px-4 font-mono font-extrabold text-stone-400 group-hover:text-emerald-400">
+                        <td className={cn(
+                          "py-3.5 px-4 font-mono font-extrabold",
+                          f.rank === 1 ? "text-amber-400" :
+                          f.rank === 2 ? "text-slate-300" :
+                          f.rank === 3 ? "text-amber-600" :
+                          "text-stone-400 group-hover:text-emerald-400"
+                        )}>
                           #{f.rank}
                         </td>
 
