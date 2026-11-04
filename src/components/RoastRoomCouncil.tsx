@@ -3,25 +3,28 @@ import { Flame, Sparkles, Trophy, ChevronRight, MessageSquareQuote, ShieldAlert 
 import { generateCouncilDebate, CouncilEvaluation } from "../lib/roastRoom";
 
 interface RoastRoomCouncilProps {
-  poll: {
+  poll?: {
     title: string;
     category?: string;
     options?: Array<{ id: string; text?: string; name?: string }>;
     councilVerdict?: string;
   };
+  pollId?: string;
+  pollTitle?: string;
 }
 
-export function RoastRoomCouncil({ poll }: RoastRoomCouncilProps) {
+export function RoastRoomCouncil({ poll, pollTitle }: RoastRoomCouncilProps) {
   const [activeTab, setActiveTab] = useState<number>(0);
   
-  const options = (poll.options || []).map(o => ({
+  const title = poll?.title || pollTitle || "Active Prediction Question";
+  const options = (poll?.options || []).map(o => ({
     id: o.id,
     text: o.text || o.name || "Option"
   }));
 
   const debate = generateCouncilDebate({
-    title: poll.title,
-    category: poll.category,
+    title,
+    category: poll?.category || "General",
     options
   });
 
