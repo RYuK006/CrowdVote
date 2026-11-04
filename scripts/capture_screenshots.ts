@@ -19,8 +19,8 @@ async function capture() {
     { name: "swipe_mobile", url: "http://localhost:3000/swipe", viewport: { width: 390, height: 844 } },
     { name: "ranks_desktop", url: "http://localhost:3000/ranks", viewport: { width: 1440, height: 900 } },
     { name: "ranks_mobile", url: "http://localhost:3000/ranks", viewport: { width: 390, height: 844 } },
-    { name: "pollview_desktop", url: "http://localhost:3000/polls/alg-aus-win", viewport: { width: 1440, height: 900 } },
-    { name: "pollview_mobile", url: "http://localhost:3000/polls/alg-aus-win", viewport: { width: 390, height: 844 } },
+    { name: "pollview_desktop", url: "http://localhost:3000/polls/poll_versus_model_supremacy", viewport: { width: 1440, height: 900 } },
+    { name: "pollview_mobile", url: "http://localhost:3000/polls/poll_versus_model_supremacy", viewport: { width: 390, height: 844 } },
     { name: "admin_login_desktop", url: "http://localhost:3000/admin-login", viewport: { width: 1440, height: 900 } },
     { name: "admin_terminal_desktop", url: "http://localhost:3000/admin", viewport: { width: 1440, height: 900 } },
   ];
