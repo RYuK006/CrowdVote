@@ -95,7 +95,7 @@ export function Admin() {
           <h2 className="text-xl font-bold text-white">404 • Not Found</h2>
           <p className="text-xs text-stone-500 font-mono">The requested terminal interface does not exist or has been cloaked.</p>
           <button
-            onClick={() => navigate("/polls")}
+            onClick={() => navigate("/feed")}
             className="px-4 py-2 mt-2 bg-emerald-500 text-black font-bold text-xs rounded-xl"
           >
             Return to Feed
