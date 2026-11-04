@@ -327,7 +327,7 @@ export function Layout({ children, user }: LayoutProps) {
       <CreatePollModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        onPollCreated={() => {
+        onSuccess={() => {
           if (location.pathname === "/feed" || location.pathname === "/polls") {
             window.location.reload();
           }
