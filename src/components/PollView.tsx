@@ -153,7 +153,7 @@ export function PollView() {
         <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
           <p className="text-white font-bold text-xl">Prediction Terminal Not Found</p>
           <button
-            onClick={() => navigate('/polls')}
+            onClick={() => navigate('/feed')}
             className="px-5 py-2 bg-emerald-500 text-black font-bold text-xs rounded-xl"
           >
             Return to Feed
@@ -172,7 +172,7 @@ export function PollView() {
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between mt-6 mb-4">
           <button 
-            onClick={() => navigate('/polls')}
+            onClick={() => navigate('/feed')}
             className="flex items-center gap-1.5 text-stone-400 hover:text-emerald-400 transition-colors font-mono text-xs uppercase font-bold tracking-wider"
           >
             <ChevronLeft className="w-4 h-4" /> Feed
