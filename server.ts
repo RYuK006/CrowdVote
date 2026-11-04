@@ -243,6 +243,16 @@ app.get("/api/polls", authenticateTokenOptional, async (req: any, res: any) => {
     // Exclude polls that are pending review or rejected from the public feed
     polls = polls.filter((p: any) => !p.status || p.status === 'open' || p.status === 'active');
 
+    // Prioritize newest active polls and multi-format markets at the top of the feed
+    polls.sort((a: any, b: any) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      if (bTime !== aTime) return bTime - aTime;
+      const aHasFormat = a.format && a.format !== 'choice' ? 1 : 0;
+      const bHasFormat = b.format && b.format !== 'choice' ? 1 : 0;
+      return bHasFormat - aHasFormat;
+    });
+
     if (search) {
       polls = polls.filter((p: any) => 
         (p.title && p.title.toLowerCase().includes(search)) || 
