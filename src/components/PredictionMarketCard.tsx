@@ -86,15 +86,19 @@ export function PredictionMarketCard({
   };
 
   const executeVote = async (optionValue: any) => {
+    if (!currentUser) {
+      navigate("/signin");
+      return;
+    }
     if (isVoting) return;
     setIsVoting(true);
     try {
-      const token = currentUser ? await currentUser.getIdToken() : null;
+      const token = await currentUser.getIdToken();
       const res = await fetch("/api/vote", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           pollId: poll.id,
@@ -122,12 +126,16 @@ export function PredictionMarketCard({
   };
 
   const handleOpenCandidateSubmit = async (text: string) => {
-    const token = currentUser ? await currentUser.getIdToken() : null;
+    if (!currentUser) {
+      navigate("/signin");
+      return;
+    }
+    const token = await currentUser.getIdToken();
     const res = await fetch(`/api/polls/${poll.id}/open-submit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({ text })
     });
