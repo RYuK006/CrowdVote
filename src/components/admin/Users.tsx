@@ -128,7 +128,9 @@ export function Users() {
                       {user.displayName || "Anonymous Forecaster"}
                     </span>
                     {isVerified && (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" title="Verified Forecaster" />
+                      <span title="Verified Forecaster">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      </span>
                     )}
                     {isBanned && (
                       <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-rose-500/20 text-rose-400 border border-rose-500/40">
