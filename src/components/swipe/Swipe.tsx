@@ -19,17 +19,14 @@ import { Debate } from "../debate/Debate";
 
 const FALLBACK_SWIPE_POLLS: Poll[] = [
   {
-    id: "poll_quantum_oracle_2026",
-    title: "Will open-weight reasoning models surpass frontier proprietary LLMs by Q3 2026?",
-    description: "Autonomous reasoning synthesis and open-weights benchmark trends show rapid parity acceleration.",
+    id: "poll_versus_model_supremacy",
+    title: "Frontier Model Supremacy: OpenAI o3 vs DeepSeek-R1",
+    description: "Which reasoning architecture will dominate frontier agentic benchmarks through late 2026? Vote Side A or Side B.",
     category: "AI",
-    format: "choice",
-    options: [
-      { id: "0", text: "Surpass Frontier", votes: 58 },
-      { id: "1", text: "Parity with Frontier", votes: 32 },
-      { id: "2", text: "Proprietary Remains Ahead", votes: 10 }
-    ],
-    totalVotes: 14820,
+    format: "versus",
+    versusLeft: { id: "side_a", text: "OpenAI o3", votes: 412, percentage: 56 },
+    versusRight: { id: "side_b", text: "DeepSeek-R1", votes: 324, percentage: 44 },
+    totalVotes: 736,
     status: "active",
     authorHandle: "quantum_oracle",
     authorName: "Quantum Oracle",
@@ -37,14 +34,17 @@ const FALLBACK_SWIPE_POLLS: Poll[] = [
     authorAccuracy: 98.4,
   } as any,
   {
-    id: "poll_alpha_macro_2026",
-    title: "US Federal Reserve interest rates: Cumulative rate cuts before December 2026",
-    description: "Bond market yield curve pricing is decoupled from real economic indicators. Predict terminal cut frequency.",
+    id: "poll_choice_fed_terminal_rate",
+    title: "US Federal Reserve Terminal Rate Cuts: Cumulative Policy Actions through 2026",
+    description: "Standard multi-choice market. Predict the cumulative monetary easing cycle over the next 12 months.",
     category: "Finance",
-    format: "versus",
-    versusLeft: { id: "cuts_heavy", text: "≥3 Cuts (>75 bps)", votes: 64 },
-    versusRight: { id: "cuts_light", text: "0-2 Cuts (≤50 bps)", votes: 36 },
-    totalVotes: 21300,
+    format: "choice",
+    options: [
+      { id: "opt_1", text: "Aggressive Easing (>75 bps total cuts)", votes: 310 },
+      { id: "opt_2", text: "Moderate Easing (25 to 50 bps cuts)", votes: 280 },
+      { id: "opt_3", text: "Pause or Further Rate Hikes (≤0 bps)", votes: 80 }
+    ],
+    totalVotes: 670,
     status: "active",
     isSponsored: true,
     sponsorName: "MacroCapital Labs",
@@ -56,43 +56,65 @@ const FALLBACK_SWIPE_POLLS: Poll[] = [
     authorAccuracy: 97.2,
   } as any,
   {
-    id: "poll_crypto_sentinel_2026",
-    title: "Will Bitcoin breach $150,000 before the end of Q4 2026?",
-    description: "L2 settlement compression and institutional spot order books show asymmetric liquidity on the ask side.",
-    category: "Crypto",
-    format: "choice",
-    options: [
-      { id: "0", text: "Yes, Above $150k", votes: 63 },
-      { id: "1", text: "Peaks $110k-$145k", votes: 28 },
-      { id: "2", text: "Stays Below $100k", votes: 9 }
-    ],
-    totalVotes: 45200,
+    id: "poll_scale_agi_probability",
+    title: "AGI Realization Probability: Odds of AGI Consensus before 2028",
+    description: "Quantify your subjective probability (0-100%) that artificial general intelligence is verified by independent consensus before January 1, 2028.",
+    category: "Science",
+    format: "scale",
+    scaleMin: 0,
+    scaleMax: 100,
+    scaleUnit: "%",
+    scaleAverage: 73,
+    scaleVotesCount: 680,
+    totalVotes: 680,
     status: "active",
-    isSponsored: true,
-    sponsorName: "ChainSentinel Prime",
-    sponsorReward: "1,000 CSP Rewards",
+    authorHandle: "cyber_pulse",
+    authorName: "Cyber Pulse",
+    authorAvatar: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=150&h=150&q=80",
+    authorAccuracy: 96.5,
+  } as any,
+  {
+    id: "poll_rank_layer1_settlement",
+    title: "Smart Contract Layer 1 Supremacy: Rank by 2026 Settlement Volume",
+    description: "Drag and arrange the leading Layer 1 architectures from highest to lowest projected net economic transaction throughput.",
+    category: "Crypto",
+    format: "rank",
+    options: [
+      { id: "eth", text: "Ethereum (L1 + Rollup Superchain)" },
+      { id: "sol", text: "Solana Parallel SVM Engine" },
+      { id: "sui", text: "Sui Move Object Framework" },
+      { id: "apt", text: "Aptos Block-STM Parallelism" }
+    ],
+    rankedItems: [
+      { id: "eth", label: "Ethereum (L1 + Rollup Superchain)", score: 1420 },
+      { id: "sol", label: "Solana Parallel SVM Engine", score: 1290 },
+      { id: "sui", label: "Sui Move Object Framework", score: 810 },
+      { id: "apt", label: "Aptos Block-STM Parallelism", score: 650 }
+    ],
+    totalVotes: 512,
+    status: "active",
     authorHandle: "crypto_sentinel",
     authorName: "Crypto Sentinel",
     authorAvatar: "https://images.unsplash.com/photo-1622979135225-d2ba269bc1df?auto=format&fit=crop&w=150&h=150&q=80",
     authorAccuracy: 96.1,
   } as any,
   {
-    id: "poll_scale_terminal_gdp",
-    title: "Projected Global AI Compute Growth Multiple by Year-End 2026",
-    description: "Estimate the cluster compute capacity multiple compared to baseline 2024 installations.",
-    category: "Science",
-    format: "scale",
-    scaleMin: 1,
-    scaleMax: 20,
-    scaleUnit: "x Compute",
-    scaleAverage: 7.8,
-    scaleVotesCount: 3200,
-    totalVotes: 3200,
+    id: "poll_open_trillion_dollar_breakthrough",
+    title: "Next Trillion-Dollar Frontier Sector: Nominate & Back Candidate Theses",
+    description: "Crowdsourced open ballot. Vote for existing community proposals or nominate a new paradigm-shifting sector.",
+    category: "Tech",
+    format: "open",
+    openSubmissions: [
+      { id: "sub_1", text: "Room-Temperature Superconducting Synthetics", authorName: "Quantum Oracle", votes: 342 },
+      { id: "sub_2", text: "Autonomous Multi-Agent Sovereign Economic DAOs", authorName: "Alpha Macro", votes: 289 },
+      { id: "sub_3", text: "In-Vivo CRISPR Epigenetic mRNA Diagnostics", authorName: "BioSynth Lab", votes: 215 }
+    ],
+    totalVotes: 846,
     status: "active",
-    authorHandle: "cyber_pulse",
-    authorName: "Cyber Pulse",
-    authorAvatar: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=150&h=150&q=80",
-    authorAccuracy: 96.5,
+    authorHandle: "polity_matrix",
+    authorName: "Polity Matrix",
+    authorAvatar: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=150&h=150&q=80",
+    authorAccuracy: 97.9,
   } as any,
 ];
 
@@ -195,10 +217,25 @@ export function Swipe() {
     touchStartY.current = null;
   };
 
-  // Wheel gesture (with debouncing)
+  // Wheel gesture (with debouncing and inner scroll boundary check)
   const wheelLock = useRef(false);
   const handleWheel = (e: React.WheelEvent) => {
     if (isDebateOpen || wheelLock.current) return;
+
+    // Check if the wheel event originated from inside an element with active scrollable content
+    const target = e.target as HTMLElement | null;
+    const scrollable = target?.closest('.overflow-y-auto') as HTMLElement | null;
+    if (scrollable && scrollable.scrollHeight > scrollable.clientHeight) {
+      const isScrollingDown = e.deltaY > 0;
+      const atBottom = Math.ceil(scrollable.scrollTop + scrollable.clientHeight) >= scrollable.scrollHeight - 2;
+      const atTop = scrollable.scrollTop <= 2;
+      
+      // If not at the boundary in the direction of scroll, let the inner element scroll naturally
+      if ((isScrollingDown && !atBottom) || (!isScrollingDown && !atTop)) {
+        return;
+      }
+    }
+
     if (Math.abs(e.deltaY) > 40) {
       wheelLock.current = true;
       if (e.deltaY > 0) {
@@ -351,7 +388,7 @@ export function Swipe() {
         onWheel={handleWheel}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="w-full min-h-[calc(100vh-4.5rem)] flex items-center justify-center px-3 sm:px-4 py-4 select-none relative"
+        className="w-full min-h-[calc(100vh-4.5rem)] flex items-center justify-center px-2 sm:px-4 py-3 sm:py-4 select-none relative"
       >
         {/* Dynamic Animated Ambient Background */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-30">
@@ -385,7 +422,10 @@ export function Swipe() {
         {/* Main Rapid Swipe Deck Frame */}
         <div className="relative z-10 w-full max-w-[560px] flex items-center justify-center">
           {/* Card Body */}
-          <div className="w-full bg-[#0a0d14]/95 backdrop-blur-2xl border border-[#1d222e] rounded-3xl p-5 sm:p-7 shadow-2xl flex flex-col justify-between min-h-[580px] max-h-[85vh] overflow-y-auto custom-scrollbar relative">
+          <div 
+            key={currentPoll.id}
+            className="w-full bg-[#0a0d14]/95 backdrop-blur-2xl border border-[#1d222e] rounded-3xl p-4 sm:p-7 shadow-2xl flex flex-col justify-between min-h-[520px] sm:min-h-[580px] max-h-[85vh] overflow-y-auto custom-scrollbar relative animate-in fade-in zoom-in-95 duration-200"
+          >
             
             {/* 1. Top Bar: Progress, Format, Category & Clapperboard Motif */}
             <div className="flex items-center justify-between pb-3 border-b border-[#181d29] gap-3">
@@ -566,18 +606,18 @@ export function Swipe() {
           </div>
 
           {/* Right Action Rail (Vertical TikTok / Reels Style Cluster) */}
-          <div className="flex flex-col items-center gap-4 ml-3 sm:ml-4 select-none shrink-0">
+          <div className="flex flex-col items-center gap-2.5 sm:gap-4 ml-2 sm:ml-4 select-none shrink-0">
             {/* Endorsement / Like */}
             <div className="flex flex-col items-center gap-1">
               <button
                 type="button"
                 onClick={() => handleToggleLike(currentPoll.id)}
-                className="p-3 rounded-full bg-[#111318] hover:bg-[#1a1e26] border border-[#222836] text-white hover:scale-110 active:scale-95 transition-all shadow-xl"
+                className="p-2.5 sm:p-3 rounded-full bg-[#111318] hover:bg-[#1a1e26] border border-[#222836] text-white hover:scale-110 active:scale-95 transition-all shadow-xl"
                 title="Endorse Market"
               >
                 <Heart
                   className={cn(
-                    "w-5 h-5 transition-colors",
+                    "w-4 h-4 sm:w-5 sm:h-5 transition-colors",
                     likedPolls[currentPoll.id] ? "fill-red-500 text-red-500" : "text-stone-300"
                   )}
                 />
@@ -592,10 +632,10 @@ export function Swipe() {
               <button
                 type="button"
                 onClick={() => setIsDebateOpen(true)}
-                className="p-3 rounded-full bg-[#111318] hover:bg-emerald-500/20 hover:border-emerald-500/50 border border-[#222836] text-emerald-400 hover:scale-110 active:scale-95 transition-all shadow-xl"
+                className="p-2.5 sm:p-3 rounded-full bg-[#111318] hover:bg-emerald-500/20 hover:border-emerald-500/50 border border-[#222836] text-emerald-400 hover:scale-110 active:scale-95 transition-all shadow-xl"
                 title="Open Faction Discourse"
               >
-                <MessageSquare className="w-5 h-5" />
+                <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <span className="text-[10px] font-mono font-bold text-stone-400">
                 {commentCount}
@@ -606,12 +646,12 @@ export function Swipe() {
             <button
               type="button"
               onClick={() => handleToggleSave(currentPoll.id)}
-              className="p-3 rounded-full bg-[#111318] hover:bg-[#1a1e26] border border-[#222836] text-white hover:scale-110 active:scale-95 transition-all shadow-xl"
+              className="p-2.5 sm:p-3 rounded-full bg-[#111318] hover:bg-[#1a1e26] border border-[#222836] text-white hover:scale-110 active:scale-95 transition-all shadow-xl"
               title="Bookmark Market"
             >
               <Bookmark
                 className={cn(
-                  "w-5 h-5 transition-colors",
+                  "w-4 h-4 sm:w-5 sm:h-5 transition-colors",
                   savedPolls[currentPoll.id] ? "fill-amber-400 text-amber-400" : "text-stone-300"
                 )}
               />
@@ -622,10 +662,10 @@ export function Swipe() {
               <button
                 type="button"
                 onClick={handleShare}
-                className="p-3 rounded-full bg-[#111318] hover:bg-[#1a1e26] border border-[#222836] text-stone-300 hover:text-white hover:scale-110 active:scale-95 transition-all shadow-xl"
+                className="p-2.5 sm:p-3 rounded-full bg-[#111318] hover:bg-[#1a1e26] border border-[#222836] text-stone-300 hover:text-white hover:scale-110 active:scale-95 transition-all shadow-xl"
                 title="Share Signal Link"
               >
-                {copiedLink ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : <Share2 className="w-5 h-5" />}
+                {copiedLink ? <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" /> : <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />}
               </button>
               <span className="text-[9px] font-mono text-stone-500">
                 {copiedLink ? "✓" : "Share"}
@@ -637,10 +677,10 @@ export function Swipe() {
               type="button"
               disabled={currentIndex === 0}
               onClick={handlePrev}
-              className="p-2.5 rounded-full bg-[#111318] hover:bg-white/10 disabled:opacity-25 text-stone-400 hover:text-white transition-all"
+              className="p-2 sm:p-2.5 rounded-full bg-[#111318] hover:bg-white/10 disabled:opacity-25 text-stone-400 hover:text-white transition-all"
               title="Previous (Up Arrow / k)"
             >
-              <ChevronUp className="w-5 h-5" />
+              <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
             {/* Next Reel / Snap Down */}
@@ -648,10 +688,10 @@ export function Swipe() {
               type="button"
               disabled={currentIndex === polls.length - 1}
               onClick={handleNext}
-              className="p-2.5 rounded-full bg-[#111318] hover:bg-white/10 disabled:opacity-25 text-stone-400 hover:text-white transition-all"
+              className="p-2 sm:p-2.5 rounded-full bg-[#111318] hover:bg-white/10 disabled:opacity-25 text-stone-400 hover:text-white transition-all"
               title="Next (Down Arrow / j)"
             >
-              <ChevronDown className="w-5 h-5" />
+              <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
