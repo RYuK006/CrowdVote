@@ -185,7 +185,7 @@ export function PredictionMarketCard({
               alt={authorName}
               className="w-5 h-5 rounded-full object-cover border border-[#2a2e36]"
               onError={(e) => {
-                (e.target as HTMLElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${authorHandle}`;
+                (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${authorHandle}`;
               }}
             />
             <span className="text-[11px] font-mono text-stone-400 font-semibold group-hover:text-stone-300 truncate max-w-[120px]">
