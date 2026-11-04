@@ -154,7 +154,7 @@ export function GrandmasterRadar({ onSelectTopic }: GrandmasterRadarProps) {
                     alt={story.name}
                     className="w-8 h-8 rounded-full object-cover border border-[#262a33]"
                     onError={(e) => {
-                      (e.target as HTMLElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${story.handle}`;
+                      (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${story.handle}`;
                     }}
                   />
                   <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 border border-black" />
