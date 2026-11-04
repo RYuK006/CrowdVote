@@ -145,7 +145,7 @@ export function MarketSideRail({ currentUser, onOpenFollowersModal }: MarketSide
                     alt={f.displayName}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      (e.target as HTMLElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${f.handle}`;
+                      (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${f.handle}`;
                     }}
                   />
                 </div>
