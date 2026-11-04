@@ -17,10 +17,40 @@ export function RoastRoomCouncil({ poll, pollTitle }: RoastRoomCouncilProps) {
   const [activeTab, setActiveTab] = useState<number>(0);
   
   const title = poll?.title || pollTitle || "Active Prediction Question";
-  const options = (poll?.options || []).map(o => ({
+  let options = (poll?.options || []).map(o => ({
     id: o.id,
     text: o.text || o.name || "Option"
   }));
+
+  // Defensive format-aware option extraction for all 5 poll types (Versus, Scale, Rank, Open, Choice)
+  if (options.length === 0) {
+    if ((poll as any)?.versusLeft && (poll as any)?.versusRight) {
+      options = [
+        { id: (poll as any).versusLeft.id || "left", text: (poll as any).versusLeft.text || (poll as any).versusLeft.label || "Side A" },
+        { id: (poll as any).versusRight.id || "right", text: (poll as any).versusRight.text || (poll as any).versusRight.label || "Side B" },
+      ];
+    } else if ((poll as any)?.rankedItems && (poll as any).rankedItems.length > 0) {
+      options = (poll as any).rankedItems.map((r: any) => ({
+        id: r.id,
+        text: r.label || r.text || r.name || "Item"
+      }));
+    } else if ((poll as any)?.openSubmissions && (poll as any).openSubmissions.length > 0) {
+      options = (poll as any).openSubmissions.map((s: any) => ({
+        id: s.id,
+        text: s.text || "Submission"
+      }));
+    } else if ((poll as any)?.format === "scale") {
+      options = [
+        { id: "above", text: `Above Baseline (${(poll as any).scaleAverage || 50}${(poll as any).scaleUnit || ''})` },
+        { id: "below", text: `Below Baseline (${(poll as any).scaleAverage || 50}${(poll as any).scaleUnit || ''})` }
+      ];
+    } else {
+      options = [
+        { id: "yes", text: "Yes / High Conviction" },
+        { id: "no", text: "No / Low Conviction" }
+      ];
+    }
+  }
 
   const debate = generateCouncilDebate({
     title,
