@@ -39,7 +39,7 @@ export function Signup() {
       }
 
       setStep(2);
-      setTimeout(() => navigate("/polls"), 2000);
+      setTimeout(() => navigate("/feed"), 2000);
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Failed to register with Google.");
