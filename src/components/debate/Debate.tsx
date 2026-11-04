@@ -39,18 +39,22 @@ export function Debate({ pollId, pollTitle, userFaction }: DebateProps) {
 
   const handlePostComment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!auth.currentUser) {
+      window.location.href = "/signin";
+      return;
+    }
     if (!newComment.trim() || submitting) return;
 
     setSubmitting(true);
     try {
       const currentUser = auth.currentUser;
-      const token = currentUser ? await currentUser.getIdToken() : null;
+      const token = await currentUser.getIdToken();
 
       const res = await fetch(`/api/debate/${pollId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ text: newComment.trim() })
       });
@@ -68,14 +72,18 @@ export function Debate({ pollId, pollTitle, userFaction }: DebateProps) {
   };
 
   const handleUpvote = async (commentId: string) => {
+    if (!auth.currentUser) {
+      window.location.href = "/signin";
+      return;
+    }
     try {
       const currentUser = auth.currentUser;
-      const token = currentUser ? await currentUser.getIdToken() : null;
+      const token = await currentUser.getIdToken();
 
       const res = await fetch(`/api/debate/${commentId}/upvote`, {
         method: "POST",
         headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
+          Authorization: `Bearer ${token}`
         }
       });
 
@@ -144,23 +152,38 @@ export function Debate({ pollId, pollTitle, userFaction }: DebateProps) {
       )}
 
       {/* Argument Submission Form */}
-      <form onSubmit={handlePostComment} className="flex gap-2">
-        <input
-          type="text"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Defend your thesis or challenge the consensus..."
-          disabled={submitting}
-          className="flex-1 bg-[#0b0e14] border border-[#20242e] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-stone-500 outline-none transition-all"
-        />
-        <button
-          type="submit"
-          disabled={!newComment.trim() || submitting}
-          className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-black font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20 active:scale-95"
-        >
-          {submitting ? "Posting..." : <><Send className="w-3.5 h-3.5" /> Argue</>}
-        </button>
-      </form>
+      {auth.currentUser ? (
+        <form onSubmit={handlePostComment} className="flex gap-2">
+          <input
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Defend your thesis or challenge the consensus..."
+            disabled={submitting}
+            className="flex-1 bg-[#0b0e14] border border-[#20242e] focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-stone-500 outline-none transition-all"
+          />
+          <button
+            type="submit"
+            disabled={!newComment.trim() || submitting}
+            className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-black font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-emerald-500/20 active:scale-95"
+          >
+            {submitting ? "Posting..." : <><Send className="w-3.5 h-3.5" /> Argue</>}
+          </button>
+        </form>
+      ) : (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-black/40 border border-emerald-500/20 text-xs font-mono">
+          <div className="flex items-center gap-2 text-stone-400">
+            <User className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Connect your forecaster node to submit thesis and upvote</span>
+          </div>
+          <a
+            href="/signin"
+            className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs font-sans transition-all shadow-md shadow-emerald-500/20 self-start sm:self-auto"
+          >
+            Sign In to Argue
+          </a>
+        </div>
+      )}
 
       {/* Comments List */}
       <div className="flex flex-col gap-2.5">
