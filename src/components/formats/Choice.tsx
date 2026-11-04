@@ -85,7 +85,9 @@ export function Choice({
                     {option.name || option.text || `Option ${index + 1}`}
                   </span>
                   {isTop && !isBlindMasked && (
-                    <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0" title="Consensus Leader" />
+                    <span title="Consensus Leader">
+                      <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    </span>
                   )}
                 </div>
               </div>
