@@ -30,7 +30,7 @@ export function Signin() {
 
       if (checkData.exists) {
         setStep(2);
-        setTimeout(() => navigate("/polls"), 1500);
+        setTimeout(() => navigate("/feed"), 1500);
       } else {
         // User doesn't exist, redirect to signup
         setError("Account not found. Redirecting to registration...");
