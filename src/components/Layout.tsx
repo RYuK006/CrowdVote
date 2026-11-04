@@ -32,9 +32,9 @@ export function Layout({ children, user }: LayoutProps) {
   const isAdminRoute = location.pathname.startsWith("/admin") && location.pathname !== "/admin-login";
 
   const navLinks = [
-    { label: "Feed", path: "/polls", icon: BarChart3 },
+    { label: "Feed", path: "/feed", icon: BarChart3 },
     { label: "Swipe", path: "/swipe", icon: Zap },
-    { label: "Ranks", path: "/leaderboard", icon: Trophy },
+    { label: "Ranks", path: "/ranks", icon: Trophy },
     { label: "Chat", path: "/chat", icon: Send },
   ];
 
@@ -44,7 +44,7 @@ export function Layout({ children, user }: LayoutProps) {
       <header className="sticky top-0 z-40 w-full h-16 bg-[#090b0e]/95 border-b border-[#181b22] backdrop-blur-xl px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Left: Brand Identity & Live Status */}
         <div className="flex items-center gap-6">
-          <Link to="/polls" className="flex items-center gap-2.5 group">
+          <Link to="/feed" className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-lime-400 p-[1.5px] shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
               <div className="w-full h-full rounded-[10px] bg-black flex items-center justify-center">
                 <ShieldCheck className="w-5 h-5 text-emerald-400" />
@@ -65,8 +65,9 @@ export function Layout({ children, user }: LayoutProps) {
           <nav className="hidden md:flex items-center gap-1 ml-4 border-l border-[#1f232b] pl-4">
             {navLinks.map((item) => {
               const isActive = location.pathname === item.path || 
-                (item.path === "/reels" && location.pathname === "/leaderboard") ||
-                (item.path === "/polls" && location.pathname === "/");
+                (item.path === "/feed" && (location.pathname === "/polls" || location.pathname === "/")) ||
+                (item.path === "/swipe" && location.pathname === "/reels") ||
+                (item.path === "/ranks" && location.pathname === "/leaderboard");
 
               return (
                 <Link
@@ -225,7 +226,7 @@ export function Layout({ children, user }: LayoutProps) {
                   </Link>
 
                   <Link
-                    to="/leaderboard"
+                    to="/ranks"
                     onClick={() => setIsUserMenuOpen(false)}
                     className="w-full px-3 py-2 rounded-xl hover:bg-white/5 flex items-center gap-2.5 text-xs text-stone-300 hover:text-white transition-colors"
                   >
@@ -267,35 +268,47 @@ export function Layout({ children, user }: LayoutProps) {
       </main>
 
       {/* 3. Mobile Bottom Navigation Deck */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#090b0e]/95 border-t border-[#181b22] backdrop-blur-xl px-4 py-2 flex items-center justify-around">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#090b0e]/95 border-t border-[#181b22] backdrop-blur-xl px-2 py-1.5 flex items-center justify-around">
         <Link
-          to="/polls"
+          to="/feed"
           className={cn(
             "flex flex-col items-center gap-1 p-1 transition-colors",
-            location.pathname === "/polls" || location.pathname === "/" ? "text-emerald-400" : "text-stone-400"
+            location.pathname === "/feed" || location.pathname === "/polls" || location.pathname === "/" ? "text-emerald-400" : "text-stone-400"
           )}
         >
           <BarChart3 className="w-5 h-5" />
-          <span className="text-[10px] font-semibold">Markets</span>
+          <span className="text-[10px] font-semibold">Feed</span>
         </Link>
 
         <Link
-          to="/reels"
+          to="/swipe"
           className={cn(
             "flex flex-col items-center gap-1 p-1 transition-colors",
-            location.pathname === "/reels" ? "text-emerald-400" : "text-stone-400"
+            location.pathname === "/swipe" || location.pathname === "/reels" ? "text-emerald-400" : "text-stone-400"
           )}
         >
           <Zap className="w-5 h-5" />
-          <span className="text-[10px] font-semibold">Briefs</span>
+          <span className="text-[10px] font-semibold">Swipe</span>
         </Link>
 
         <button
           onClick={() => setIsCreateOpen(true)}
-          className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-500 text-black shadow-lg shadow-emerald-500/30 -mt-4 active:scale-95"
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-500 text-black shadow-lg shadow-emerald-500/30 -mt-3 active:scale-95 hover:bg-emerald-400 transition-all"
+          title="Create Market"
         >
           <Plus className="w-5 h-5 stroke-[3]" />
         </button>
+
+        <Link
+          to="/ranks"
+          className={cn(
+            "flex flex-col items-center gap-1 p-1 transition-colors",
+            location.pathname === "/ranks" || location.pathname === "/leaderboard" ? "text-emerald-400" : "text-stone-400"
+          )}
+        >
+          <Trophy className="w-5 h-5" />
+          <span className="text-[10px] font-semibold">Ranks</span>
+        </Link>
 
         <Link
           to="/chat"
@@ -305,19 +318,8 @@ export function Layout({ children, user }: LayoutProps) {
           )}
         >
           <Send className="w-5 h-5" />
-          <span className="text-[10px] font-semibold">Direct</span>
-          <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-red-500" />
-        </Link>
-
-        <Link
-          to="/profile"
-          className={cn(
-            "flex flex-col items-center gap-1 p-1 transition-colors",
-            location.pathname.startsWith("/profile") ? "text-emerald-400" : "text-stone-400"
-          )}
-        >
-          <User className="w-5 h-5" />
-          <span className="text-[10px] font-semibold">Profile</span>
+          <span className="text-[10px] font-semibold">Chat</span>
+          <span className="absolute top-0 right-1 w-2 h-2 rounded-full bg-red-500" />
         </Link>
       </nav>
 
@@ -326,7 +328,7 @@ export function Layout({ children, user }: LayoutProps) {
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         onPollCreated={() => {
-          if (location.pathname === "/polls") {
+          if (location.pathname === "/feed" || location.pathname === "/polls") {
             window.location.reload();
           }
         }}
