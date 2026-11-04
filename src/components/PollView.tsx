@@ -331,7 +331,7 @@ export function PollView() {
 
         {/* AI Council of Advisors */}
         <div className="mt-8">
-          <RoastRoomCouncil pollId={poll.id} pollTitle={poll.title} />
+          <RoastRoomCouncil poll={poll} />
         </div>
       </div>
     </Layout>
