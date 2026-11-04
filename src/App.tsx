@@ -9,8 +9,8 @@ import { Signup } from "./components/Signup";
 import { Signin } from "./components/Signin";
 import { PollsList } from "./components/PollsList";
 import { PollView } from "./components/PollView";
-import { Reels } from "./components/Reels";
 import { Swipe } from "./components/swipe/Swipe";
+import { Ranks } from "./components/Ranks";
 import { Analytics } from "./components/Analytics";
 import { Profile } from "./components/Profile";
 import { ChatDirect } from "./components/ChatDirect";
@@ -45,26 +45,38 @@ export default function App() {
         <ErrorBoundary>
           <Router>
             <Routes>
+              {/* Canonical Landing & Information */}
               <Route path="/" element={<Landing />} />
               <Route path="/docs" element={<Documentation />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/signin" element={<Signin />} />
-              <Route path="/polls" element={user ? <PollsList /> : <Navigate to="/signin" />} />
-              <Route path="/feed" element={user ? <PollsList /> : <Navigate to="/signin" />} />
-              <Route path="/polls/:pollId" element={user ? <PollView /> : <Navigate to="/signin" />} />
-              <Route path="/swipe" element={user ? <Swipe /> : <Navigate to="/signin" />} />
-              <Route path="/reels" element={<Navigate to="/swipe" replace />} />
-              <Route path="/leaderboard" element={<Reels />} />
-              <Route path="/ranks" element={<Reels />} />
+
+              {/* Canonical Primary Feeds & Markets */}
+              <Route path="/feed" element={<PollsList />} />
+              <Route path="/swipe" element={<Swipe />} />
+              <Route path="/ranks" element={<Ranks />} />
+              <Route path="/polls/:pollId" element={<PollView />} />
               <Route path="/analytics" element={<Analytics />} />
+
+              {/* Legacy Aliases & 301 Redirects */}
+              <Route path="/polls" element={<Navigate to="/feed" replace />} />
+              <Route path="/reels" element={<Navigate to="/swipe" replace />} />
+              <Route path="/leaderboard" element={<Navigate to="/ranks" replace />} />
+              <Route path="/direct" element={<Navigate to="/chat" replace />} />
+              <Route path="/messages" element={<Navigate to="/chat" replace />} />
+
+              {/* Authenticated Node Dossier & Encrypted Messenger */}
               <Route path="/profile" element={user ? <Profile /> : <Navigate to="/signin" />} />
               <Route path="/profile/:uid" element={user ? <Profile /> : <Navigate to="/signin" />} />
               <Route path="/chat" element={user ? <ChatDirect /> : <Navigate to="/signin" />} />
-              <Route path="/direct" element={user ? <ChatDirect /> : <Navigate to="/signin" />} />
-              <Route path="/messages" element={user ? <ChatDirect /> : <Navigate to="/signin" />} />
+
+              {/* Governance & Console */}
               <Route path="/admin" element={user ? <Admin /> : <Navigate to="/admin-login" />} />
               <Route path="/admin-login" element={<AdminLogin />} />
               <Route path="/adminlogin" element={<Navigate to="/admin-login" replace />} />
+
+              {/* Catch-all redirect to canonical feed */}
+              <Route path="*" element={<Navigate to="/feed" replace />} />
             </Routes>
           </Router>
         </ErrorBoundary>
