@@ -92,6 +92,8 @@ export interface Poll {
   // Client-injected voting state
   hasVoted?: boolean;
   votedOption?: string | number | string[];
+  votedFaction?: string;
+  isBlindMasked?: boolean;
 }
 
 export interface Vote {
