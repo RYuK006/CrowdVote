@@ -115,20 +115,20 @@ export function Layout({ children, user }: LayoutProps) {
             <Search className="w-5 h-5" />
           </button>
 
-          {/* Create Market CTA */}
+          {/* Create Market CTA (desktop only, mobile has floating center action in bottom deck) */}
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+            className="hidden sm:flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span className="hidden sm:inline">Create</span>
+            <span>Create</span>
           </button>
 
-          {/* Direct Messages (E2EE Chat) */}
+          {/* Direct Messages (E2EE Chat) (desktop only, mobile has bottom deck Chat tab) */}
           <Link
             to="/chat"
             className={cn(
-              "relative p-2 rounded-xl border transition-colors",
+              "hidden sm:flex relative p-2 rounded-xl border transition-colors",
               location.pathname.startsWith("/chat")
                 ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
                 : "bg-[#111318] border-[#20242e] text-stone-400 hover:text-white hover:border-white/20"
