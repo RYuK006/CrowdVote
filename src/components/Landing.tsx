@@ -48,14 +48,14 @@ export function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:gap-6 gap-4">
               <Link
-                to="/polls"
+                to="/feed"
                 className="group flex justify-center items-center gap-3 px-8 py-4 rounded-2xl bg-emerald-500 text-black font-bold text-sm emerald-glow hover:bg-emerald-400 transition-all w-full sm:w-auto"
               >
                 START PREDICTING
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
-                to="/leaderboard"
+                to="/ranks"
                 className="flex text-center justify-center px-8 py-4 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-sm font-bold hover:bg-black/10 transition-all w-full sm:w-auto text-[var(--text-primary)]"
               >
                 LIVE PREDICTIONS
