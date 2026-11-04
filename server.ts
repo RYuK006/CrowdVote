@@ -237,7 +237,7 @@ app.get("/api/polls", authenticateTokenOptional, async (req: any, res: any) => {
       query = query.where("isSponsored", "==", true);
     }
 
-    const snapshot = await query.limit(limit * 3).get();
+    const snapshot = await query.get();
     let polls = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
     // Exclude polls that are pending review or rejected from the public feed
