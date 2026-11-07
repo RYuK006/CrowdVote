@@ -11,6 +11,13 @@
   --color-emerald-400: #34d399;
 }
 
+/* =========================================================
+   60-30-10 HARMONIC COLOR SYSTEM
+   60%: Deep Matte Canvas (restful foundation)
+   30%: Refined Surface Panels, Structural Borders & Clear Hierarchy
+   10%: Deliberate Action Accents (Consensus Signals & CTAs)
+   ========================================================= */
+
 :root {
   --bg-primary: #f8fafc;
   --text-primary: #0f172a;
@@ -18,18 +25,20 @@
   --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(0, 0, 0, 0.08);
   --card-bg: #ffffff;
+  --card-border: #e2e8f0;
   --nav-bg: rgba(255, 255, 255, 0.95);
   color-scheme: light;
 }
 
 .dark {
-  --bg-primary: #060709;
-  --text-primary: #ffffff;
+  --bg-primary: #080a0f;
+  --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
-  --glass-bg: rgba(9, 11, 14, 0.85);
+  --glass-bg: rgba(14, 18, 25, 0.85);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --card-bg: #090a0d;
-  --nav-bg: rgba(9, 11, 14, 0.95);
+  --card-bg: #0e1219;
+  --card-border: #1e2533;
+  --nav-bg: rgba(10, 13, 19, 0.95);
   color-scheme: dark;
 }
 
@@ -90,7 +99,6 @@ textarea {
 
 /* =========================================================
    HARMONIOUS & READABLE TYPOGRAPHY SCALE
-   Refines micro-text sizes to ensure legibility without breaking compact badges
    ========================================================= */
 
 .text-\[9px\] {
@@ -125,6 +133,7 @@ html:not(.dark) body {
 
 /* Base Canvas & Main Backgrounds */
 html:not(.dark) .min-h-screen,
+html:not(.dark) .bg-\[\#080a0f\],
 html:not(.dark) .bg-\[\#060709\],
 html:not(.dark) .bg-\[\#050505\],
 html:not(.dark) .bg-\[\#070707\] {
@@ -135,6 +144,7 @@ html:not(.dark) .bg-\[\#070707\] {
 /* Card, Header, Drawer & Sidebar Containers */
 html:not(.dark) header,
 html:not(.dark) nav,
+html:not(.dark) .bg-\[\#0e1219\],
 html:not(.dark) .bg-\[\#090b0e\],
 html:not(.dark) .bg-\[\#090a0d\],
 html:not(.dark) .bg-\[\#0a0a0a\],
@@ -150,6 +160,7 @@ html:not(.dark) .bg-\[\#0b0e14\] {
 }
 
 /* Hover States on Cards and Buttons */
+html:not(.dark) .hover\:bg-\[\#131822\]:hover,
 html:not(.dark) .hover\:bg-\[\#0c0e12\]:hover,
 html:not(.dark) .hover\:bg-\[\#161920\]:hover,
 html:not(.dark) .hover\:bg-\[\#10141d\]:hover,
@@ -158,6 +169,7 @@ html:not(.dark) .hover\:bg-white\/5:hover {
 }
 
 /* Borders in Light Mode */
+html:not(.dark) .border-\[\#1e2533\],
 html:not(.dark) .border-\[\#181b22\],
 html:not(.dark) .border-\[\#1b1e24\],
 html:not(.dark) .border-\[\#1d222e\],
