@@ -51,7 +51,41 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* =========================================================
+   VIEW TRANSITION CIRCULAR RIPPLE ANIMATION
+   Smooth circular transition radiating from the button across the viewport
+   ========================================================= */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+/* Global smooth transition for theme backgrounds, borders, and colors */
+html,
+body,
+header,
+nav,
+aside,
+main,
+button,
+input,
+select,
+textarea {
+  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* =========================================================
