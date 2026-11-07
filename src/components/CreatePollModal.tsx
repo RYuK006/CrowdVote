@@ -153,26 +153,23 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#0c0d12] border border-[#1e2330] shadow-2xl p-6 sm:p-8 relative">
-        {/* Glow */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+      <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#0e1219] border border-slate-200 dark:border-[#1e2533] shadow-2xl p-6 sm:p-8 relative">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#1b202c]">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#1e2533]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-[#161d2a] border border-slate-200 dark:border-[#1e2533] flex items-center justify-center text-slate-700 dark:text-slate-300">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white">Create Prediction Node</h3>
-              <p className="text-xs font-mono text-stone-400">Deploy a consensus question into the mesh</p>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Create Prediction Node</h3>
+              <p className="text-xs font-mono text-slate-500 dark:text-slate-400">Deploy a consensus question into the mesh</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-white/10 text-stone-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -180,7 +177,7 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
 
         {/* Format Selector Tabs */}
         <div className="mt-5">
-          <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-stone-400 mb-2">
+          <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-2">
             Select Poll Format
           </label>
           <div className="grid grid-cols-5 gap-2">
@@ -195,8 +192,8 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                   className={cn(
                     "flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition-all",
                     isActive
-                      ? "bg-emerald-500/15 border-emerald-500 text-emerald-400 shadow-md shadow-emerald-500/10"
-                      : "bg-[#11141c] border-[#1d222e] text-stone-400 hover:text-white hover:border-white/20"
+                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-950 font-bold border-transparent shadow-sm"
+                      : "bg-slate-50 dark:bg-[#121722] border-slate-200 dark:border-[#1e2533] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#161d2a]"
                   )}
                 >
                   <Icon className="w-4 h-4 mb-1" />
@@ -211,7 +208,7 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           {/* Title */}
           <div>
-            <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-stone-400 mb-1">
+            <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-1">
               Title / Proposition *
             </label>
             <input
@@ -220,20 +217,20 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
               placeholder="e.g. Will Ethereum flip Bitcoin market cap by 2028?"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl bg-[#11141c] border border-[#1f2533] text-white placeholder-stone-500 text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs focus:outline-none focus:border-slate-400 dark:focus:border-slate-600 transition-colors"
             />
           </div>
 
           {/* Category & Duration */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-stone-400 mb-1">
+              <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-1">
                 Domain Category
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-[#11141c] border border-[#1f2533] text-white text-xs focus:outline-none focus:border-emerald-500"
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white text-xs focus:outline-none focus:border-slate-400 dark:focus:border-slate-600"
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -242,13 +239,13 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
             </div>
 
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-stone-400 mb-1">
+              <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-1">
                 Resolution Lifespan
               </label>
               <select
                 value={durationHours}
                 onChange={(e) => setDurationHours(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl bg-[#11141c] border border-[#1f2533] text-white text-xs focus:outline-none focus:border-emerald-500"
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white text-xs focus:outline-none focus:border-slate-400 dark:focus:border-slate-600"
               >
                 <option value={1}>1 Hour (Flash Thesis)</option>
                 <option value={24}>24 Hours (Daily Lock)</option>
@@ -261,7 +258,7 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
 
           {/* Description */}
           <div>
-            <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-stone-400 mb-1">
+            <label className="block text-[11px] font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-1">
               Context / Resolution Criteria (Optional)
             </label>
             <textarea
@@ -269,93 +266,93 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
               placeholder="State clear resolution sources and criteria..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-4 py-2 rounded-xl bg-[#11141c] border border-[#1f2533] text-white placeholder-stone-500 text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+              className="w-full px-4 py-2 rounded-xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-xs focus:outline-none focus:border-slate-400 dark:focus:border-slate-600 transition-colors"
             />
           </div>
 
           {/* Format-Specific Option Inputs */}
           {format === "versus" ? (
-            <div className="space-y-3 p-3 rounded-2xl bg-[#0f121a] border border-[#1f2533]">
-              <span className="text-[11px] font-mono font-bold text-emerald-400 uppercase">
+            <div className="space-y-3 p-3 rounded-2xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533]">
+              <span className="text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 uppercase">
                 Versus Contenders
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-mono text-stone-400 mb-1">Side A Label *</label>
+                  <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 mb-1">Side A Label *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. OpenAI o3"
                     value={versusLeftLabel}
                     onChange={(e) => setVersusLeftLabel(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#161a24] border border-[#272e3f] text-white text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#161d2a] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white text-xs focus:outline-none focus:border-slate-400 dark:focus:border-slate-600"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono text-stone-400 mb-1">Side B Label *</label>
+                  <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 mb-1">Side B Label *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. DeepSeek-R1"
                     value={versusRightLabel}
                     onChange={(e) => setVersusRightLabel(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#161a24] border border-[#272e3f] text-white text-xs focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#161d2a] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white text-xs focus:outline-none focus:border-slate-400 dark:focus:border-slate-600"
                   />
                 </div>
               </div>
             </div>
           ) : format === "scale" ? (
-            <div className="space-y-3 p-3 rounded-2xl bg-[#0f121a] border border-[#1f2533]">
-              <span className="text-[11px] font-mono font-bold text-emerald-400 uppercase">
+            <div className="space-y-3 p-3 rounded-2xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533]">
+              <span className="text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 uppercase">
                 Scale Range & Metric
               </span>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-[10px] font-mono text-stone-400 mb-1">Min Value</label>
+                  <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 mb-1">Min Value</label>
                   <input
                     type="number"
                     value={scaleMin}
                     onChange={(e) => setScaleMin(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-[#161a24] border border-[#272e3f] text-white text-xs"
+                    className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#161d2a] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono text-stone-400 mb-1">Max Value</label>
+                  <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 mb-1">Max Value</label>
                   <input
                     type="number"
                     value={scaleMax}
                     onChange={(e) => setScaleMax(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl bg-[#161a24] border border-[#272e3f] text-white text-xs"
+                    className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#161d2a] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono text-stone-400 mb-1">Unit</label>
+                  <label className="block text-[10px] font-mono text-slate-500 dark:text-slate-400 mb-1">Unit</label>
                   <input
                     type="text"
                     value={scaleUnit}
                     onChange={(e) => setScaleUnit(e.target.value)}
                     placeholder="%"
-                    className="w-full px-3 py-2 rounded-xl bg-[#161a24] border border-[#272e3f] text-white text-xs"
+                    className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#161d2a] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white text-xs"
                   />
                 </div>
               </div>
             </div>
           ) : format === "open" ? (
-            <div className="p-3 rounded-2xl bg-[#0f121a] border border-[#1f2533] text-xs font-mono text-stone-400">
+            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533] text-xs font-mono text-slate-500 dark:text-slate-400">
               Community voters will dynamically submit candidate choices to this open ballot.
             </div>
           ) : (
             /* Choice & Rank Builder */
-            <div className="space-y-2 p-3 rounded-2xl bg-[#0f121a] border border-[#1f2533]">
+            <div className="space-y-2 p-3 rounded-2xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533]">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono font-bold text-emerald-400 uppercase">
+                <span className="text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 uppercase">
                   {format === "rank" ? "Rank Candidates (2 - 6)" : "Options (2 - 6)"}
                 </span>
                 {options.length < 6 && (
                   <button
                     type="button"
                     onClick={handleAddOption}
-                    className="text-xs font-mono text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-bold"
+                    className="text-xs font-mono text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-1 font-bold"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add
                   </button>
@@ -364,7 +361,7 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
 
               {options.map((opt, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-lg bg-black/40 border border-white/10 text-[10px] font-mono font-bold flex items-center justify-center text-stone-400 shrink-0">
+                  <span className="w-6 h-6 rounded-lg bg-slate-200 dark:bg-[#161d2a] border border-slate-300 dark:border-[#1e2533] text-[10px] font-mono font-bold flex items-center justify-center text-slate-600 dark:text-slate-400 shrink-0">
                     {String.fromCharCode(65 + index)}
                   </span>
                   <input
@@ -373,13 +370,13 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                     placeholder={`Option ${index + 1}`}
                     value={opt}
                     onChange={(e) => handleOptionChange(e.target.value, index)}
-                    className="flex-1 px-3 py-2 rounded-xl bg-[#161a24] border border-[#272e3f] text-white text-xs focus:outline-none focus:border-emerald-500"
+                    className="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-[#161d2a] border border-slate-200 dark:border-[#1e2533] text-slate-900 dark:text-white text-xs focus:outline-none focus:border-slate-400 dark:focus:border-slate-600"
                   />
                   {options.length > 2 && (
                     <button
                       type="button"
                       onClick={() => handleRemoveOption(index)}
-                      className="p-1.5 text-stone-500 hover:text-rose-400 transition-colors"
+                      className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -391,7 +388,7 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
 
           {/* Voting Dynamics Controls */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <label className="flex items-center gap-2 p-3 rounded-xl bg-[#11141c] border border-[#1f2533] cursor-pointer hover:border-emerald-500/40 transition-colors">
+            <label className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533] cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
               <input
                 type="checkbox"
                 checked={blind}
@@ -399,16 +396,16 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                 className="w-4 h-4 rounded accent-emerald-500 cursor-pointer"
               />
               <div className="flex flex-col">
-                <span className="text-xs font-bold text-white flex items-center gap-1">
-                  <Lock className="w-3 h-3 text-emerald-400" /> Blind Voting
+                <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1">
+                  <Lock className="w-3 h-3 text-slate-400 dark:text-slate-500" /> Blind Voting
                 </span>
-                <span className="text-[10px] font-mono text-stone-400">
+                <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
                   Mask consensus until vote is cast
                 </span>
               </div>
             </label>
 
-            <label className="flex items-center gap-2 p-3 rounded-xl bg-[#11141c] border border-[#1f2533] cursor-pointer hover:border-emerald-500/40 transition-colors">
+            <label className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 dark:bg-[#121722] border border-slate-200 dark:border-[#1e2533] cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
               <input
                 type="checkbox"
                 checked={changeable}
@@ -416,10 +413,10 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
                 className="w-4 h-4 rounded accent-emerald-500 cursor-pointer"
               />
               <div className="flex flex-col">
-                <span className="text-xs font-bold text-white flex items-center gap-1">
-                  <RefreshCw className="w-3 h-3 text-emerald-400" /> Modifiable Stance
+                <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1">
+                  <RefreshCw className="w-3 h-3 text-slate-400 dark:text-slate-500" /> Modifiable Stance
                 </span>
-                <span className="text-[10px] font-mono text-stone-400">
+                <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
                   Allow updating vote before lock
                 </span>
               </div>
@@ -428,12 +425,12 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
 
           {/* Alerts */}
           {error && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-mono">
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-mono">
               {error}
             </div>
           )}
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold">
+            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold">
               {successMsg}
             </div>
           )}
@@ -442,7 +439,7 @@ export function CreatePollModal({ isOpen, onClose, onSuccess }: CreatePollModalP
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-black font-extrabold text-xs transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.99] uppercase tracking-wider font-mono"
+            className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-extrabold text-xs transition-all shadow-md shadow-emerald-500/20 active:scale-[0.99] uppercase tracking-wider font-mono"
           >
             {submitting ? "Broadcasting..." : "Publish to Swarm Feed"}
           </button>
