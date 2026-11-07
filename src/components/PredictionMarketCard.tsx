@@ -224,12 +224,6 @@ export function PredictionMarketCard({
             </span>
           </Link>
         </div>
-            />
-            <span className="text-xs font-mono text-slate-500 dark:text-slate-400 font-semibold group-hover:text-slate-700 dark:group-hover:text-slate-300 truncate max-w-[130px]">
-              @{authorHandle}
-            </span>
-          </Link>
-        </div>
 
         {/* 2. Question / Title */}
         <h3 
