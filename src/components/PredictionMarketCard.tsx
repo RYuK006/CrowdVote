@@ -20,6 +20,29 @@ interface PredictionMarketCardProps {
   onVote?: (pollId: string, optionId: any) => Promise<void>;
 }
 
+const getCategoryBadgeClass = (category?: string) => {
+  const cat = (category || "").toLowerCase();
+  if (cat.includes("ai") || cat.includes("tech")) {
+    return "bg-sky-500/10 border-sky-500/30 text-sky-600 dark:text-sky-400";
+  }
+  if (cat.includes("finance")) {
+    return "bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400";
+  }
+  if (cat.includes("hardware") || cat.includes("science")) {
+    return "bg-teal-500/10 border-teal-500/30 text-teal-600 dark:text-teal-400";
+  }
+  if (cat.includes("startup") || cat.includes("roast")) {
+    return "bg-orange-500/10 border-orange-500/30 text-orange-600 dark:text-orange-400";
+  }
+  if (cat.includes("politic")) {
+    return "bg-indigo-500/10 border-indigo-500/30 text-indigo-600 dark:text-indigo-400";
+  }
+  if (cat.includes("crypto")) {
+    return "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400";
+  }
+  return "bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-300";
+};
+
 export function PredictionMarketCard({
   poll: initialPoll,
   currentUser,
@@ -157,26 +180,26 @@ export function PredictionMarketCard({
 
   return (
     <div 
-      className="group relative bg-[#090a0d] hover:bg-[#0c0e12] border border-[#1b1e24] hover:border-emerald-500/50 rounded-2xl p-4 sm:p-5 transition-all duration-200 shadow-lg hover:shadow-emerald-500/10 flex flex-col justify-between"
+      className="group relative bg-white dark:bg-[#0e1219] hover:bg-slate-50/50 dark:hover:bg-[#121722] border border-slate-200 dark:border-[#1e2533] hover:border-slate-300 dark:hover:border-slate-700 rounded-2xl p-4 sm:p-5 transition-all duration-200 shadow-sm hover:shadow-md flex flex-col justify-between"
     >
       {/* 1. Header Meta Bar */}
       <div>
         <div className="flex items-center justify-between gap-3 mb-2.5">
           {/* Format Badge & Category */}
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-            <span className="px-2 py-0.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider">
+            <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 text-[10px] sm:text-[11px] font-mono font-semibold uppercase tracking-wider">
               {format.toUpperCase()}
             </span>
 
             {poll.category && (
-              <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-stone-400 text-[11px] sm:text-xs font-mono font-medium">
+              <span className={cn("px-2 py-0.5 rounded-lg border text-[10px] sm:text-[11px] font-mono font-medium", getCategoryBadgeClass(poll.category))}>
                 {poll.category}
               </span>
             )}
 
             {poll.isSponsored && (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-600 dark:text-amber-300 text-[11px] sm:text-xs font-mono font-extrabold uppercase tracking-wider">
-                <Sparkles className="w-3 h-3" />
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider">
+                <Sparkles className="w-3 h-3 text-amber-500" />
                 {poll.sponsorName || "Sponsored"}
               </span>
             )}
@@ -186,17 +209,17 @@ export function PredictionMarketCard({
           <Link
             to={poll.createdBy ? `/profile/${poll.createdBy}` : "/profile"}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-1.5 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors shrink-0"
+            className="flex items-center gap-1.5 hover:text-slate-900 dark:hover:text-white transition-colors shrink-0"
           >
             <img
               src={authorAvatar}
               alt={authorName}
-              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-slate-300 dark:border-[#2a2e36]"
+              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover border border-slate-200 dark:border-[#2a2e36]"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${authorHandle}`;
               }}
             />
-            <span className="text-xs font-mono text-slate-600 dark:text-stone-400 font-semibold group-hover:text-slate-900 dark:group-hover:text-stone-300 truncate max-w-[130px]">
+            <span className="text-xs font-mono text-slate-500 dark:text-slate-400 font-semibold group-hover:text-slate-700 dark:group-hover:text-slate-300 truncate max-w-[130px]">
               @{authorHandle}
             </span>
           </Link>
@@ -205,7 +228,7 @@ export function PredictionMarketCard({
         {/* 2. Question / Title */}
         <h3 
           onClick={() => navigate(`/polls/${poll.id}`)}
-          className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors mb-2 cursor-pointer"
+          className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight leading-snug hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors mb-2 cursor-pointer"
         >
           {poll.title}
         </h3>
@@ -220,7 +243,7 @@ export function PredictionMarketCard({
 
         {/* Short Description */}
         {poll.description && (
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-stone-400 line-clamp-2 leading-relaxed mb-3">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed mb-3">
             {poll.description}
           </p>
         )}
@@ -288,17 +311,17 @@ export function PredictionMarketCard({
       </div>
 
       {/* 4. Card Bottom Metrics Bar */}
-      <div className="pt-3 mt-2.5 border-t border-slate-200 dark:border-[#1b1e24] flex items-center justify-between text-xs text-slate-500 dark:text-stone-400">
+      <div className="pt-3 mt-2.5 border-t border-slate-200 dark:border-[#1e2533] flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         {/* Signals Volume & Blind Status */}
         <div className="flex items-center gap-2.5">
-          <span className="font-mono text-xs text-slate-700 dark:text-stone-300 flex items-center gap-1.5 font-semibold">
-            <TrendingUp className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
-            <strong className="text-slate-900 dark:text-white">{totalSignals.toLocaleString()}</strong> votes
+          <span className="font-mono text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1.5 font-medium">
+            <TrendingUp className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+            <strong className="text-slate-900 dark:text-white font-semibold">{totalSignals.toLocaleString()}</strong> votes
           </span>
 
           {isBlindMasked && (
-            <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[11px] text-slate-500 dark:text-stone-500">
-              <Lock className="w-3 h-3 text-slate-400 dark:text-stone-500" /> Masked Consensus
+            <span className="hidden sm:inline-flex items-center gap-1 font-mono text-[11px] text-slate-500 dark:text-slate-500">
+              <Lock className="w-3 h-3 text-slate-400 dark:text-slate-500" /> Masked Consensus
             </span>
           )}
         </div>
@@ -308,7 +331,7 @@ export function PredictionMarketCard({
           {/* Like */}
           <button
             onClick={handleLike}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 hover:text-slate-900 dark:text-stone-400 dark:hover:text-white transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
             title="Endorse Poll"
           >
             <Heart className={cn("w-3.5 h-3.5", isLiked && "fill-red-500 text-red-500")} />
@@ -321,7 +344,7 @@ export function PredictionMarketCard({
               e.stopPropagation();
               navigate(`/polls/${poll.id}`);
             }}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 hover:text-slate-900 dark:text-stone-400 dark:hover:text-white transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
             title="Join Debate"
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -331,17 +354,17 @@ export function PredictionMarketCard({
           {/* Share */}
           <button
             onClick={handleShare}
-            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 hover:text-slate-900 dark:text-stone-400 dark:hover:text-white transition-colors"
+            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
             title="Share Poll Link"
           >
-            {copiedLink ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+            {copiedLink ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
           </button>
 
           {/* Details Link */}
           <Link
             to={`/polls/${poll.id}`}
             onClick={(e) => e.stopPropagation()}
-            className="p-1.5 rounded-lg hover:bg-emerald-500/20 text-slate-500 hover:text-emerald-600 dark:text-stone-400 dark:hover:text-emerald-400 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
             title="Full Poll View"
           >
             <ArrowUpRight className="w-3.5 h-3.5" />
