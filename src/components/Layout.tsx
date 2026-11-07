@@ -35,7 +35,6 @@ export function Layout({ children, user }: LayoutProps) {
     { label: "Feed", path: "/feed", icon: BarChart3 },
     { label: "Swipe", path: "/swipe", icon: Zap },
     { label: "Ranks", path: "/ranks", icon: Trophy },
-    { label: "Chat", path: "/chat", icon: Send },
   ];
 
   return (
@@ -124,7 +123,7 @@ export function Layout({ children, user }: LayoutProps) {
             <span>Create</span>
           </button>
 
-          {/* Direct Messages (E2EE Chat) (desktop only, mobile has bottom deck Chat tab) */}
+          {/* Direct Messages (E2EE Chat) */}
           <Link
             to="/chat"
             className={cn(
