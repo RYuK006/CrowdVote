@@ -38,30 +38,30 @@ export function Layout({ children, user }: LayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#060709] text-white selection:bg-emerald-500/25 font-sans flex flex-col">
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#060709] dark:text-white selection:bg-emerald-500/25 font-sans flex flex-col transition-colors duration-200">
       {/* 1. Universal Top Cyber-Terminal Navigation Bar */}
-      <header className="sticky top-0 z-40 w-full h-16 bg-[#090b0e]/95 border-b border-[#181b22] backdrop-blur-xl px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      <header className="sticky top-0 z-40 w-full h-16 bg-white/95 border-b border-slate-200 dark:bg-[#090b0e]/95 dark:border-[#181b22] backdrop-blur-xl px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-colors">
         {/* Left: Brand Identity & Live Status */}
         <div className="flex items-center gap-6">
           <Link to="/feed" className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-lime-400 p-[1.5px] shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-              <div className="w-full h-full rounded-[10px] bg-black flex items-center justify-center">
+              <div className="w-full h-full rounded-[10px] bg-slate-950 flex items-center justify-center">
                 <ShieldCheck className="w-5 h-5 text-emerald-400" />
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-base tracking-tight text-white flex items-center gap-1">
-                CrowdVote <span className="text-emerald-400 font-mono text-xs uppercase tracking-widest font-black">AI</span>
+              <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
+                CrowdVote <span className="text-emerald-500 dark:text-emerald-400 font-mono text-xs uppercase tracking-widest font-black">AI</span>
               </span>
-              <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-mono text-stone-400 tracking-wider">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="hidden sm:flex items-center gap-1.5 text-[9px] font-mono text-slate-500 dark:text-stone-400 tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
                 CONSENSUS MESH ACTIVE
               </span>
             </div>
           </Link>
 
           {/* Desktop Primary Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-1 ml-4 border-l border-[#1f232b] pl-4">
+          <nav className="hidden md:flex items-center gap-1 ml-4 border-l border-slate-200 dark:border-[#1f232b] pl-4">
             {navLinks.map((item) => {
               const isActive = location.pathname === item.path || 
                 (item.path === "/feed" && (location.pathname === "/polls" || location.pathname === "/")) ||
@@ -75,11 +75,11 @@ export function Layout({ children, user }: LayoutProps) {
                   className={cn(
                     "px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2",
                     isActive
-                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm"
-                      : "text-stone-400 hover:text-white hover:bg-white/5"
+                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-sm font-bold"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-stone-400 dark:hover:text-white dark:hover:bg-white/5"
                   )}
                 >
-                  <item.icon className={cn("w-3.5 h-3.5", isActive ? "text-emerald-400" : "text-stone-500")} />
+                  <item.icon className={cn("w-3.5 h-3.5", isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-stone-500")} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -91,13 +91,13 @@ export function Layout({ children, user }: LayoutProps) {
         <div className="hidden lg:flex items-center flex-1 max-w-md mx-6">
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="w-full px-4 py-2 rounded-xl bg-[#111318] hover:bg-[#161920] border border-[#20242e] hover:border-emerald-500/40 text-stone-400 text-xs flex items-center justify-between transition-all group"
+            className="w-full px-4 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200/90 border border-slate-200 hover:border-emerald-500/40 text-slate-500 dark:bg-[#111318] dark:hover:bg-[#161920] dark:border-[#20242e] dark:hover:border-emerald-500/40 dark:text-stone-400 text-xs flex items-center justify-between transition-all group shadow-sm"
           >
             <div className="flex items-center gap-2.5">
-              <Search className="w-4 h-4 text-stone-500 group-hover:text-emerald-400 transition-colors" />
+              <Search className="w-4 h-4 text-slate-400 dark:text-stone-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" />
               <span>Search markets, forecasters, topics...</span>
             </div>
-            <kbd className="px-2 py-0.5 rounded bg-black/40 border border-white/10 text-[10px] font-mono text-stone-400">
+            <kbd className="px-2 py-0.5 rounded bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 text-[10px] font-mono text-slate-500 dark:text-stone-400 shadow-sm">
               ⌘K
             </kbd>
           </button>
@@ -108,13 +108,13 @@ export function Layout({ children, user }: LayoutProps) {
           {/* Mobile Search Button */}
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="lg:hidden p-2 rounded-xl text-stone-400 hover:text-white hover:bg-white/5"
+            className="lg:hidden p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-stone-400 dark:hover:text-white dark:hover:bg-white/5"
             title="Search"
           >
             <Search className="w-5 h-5" />
           </button>
 
-          {/* Create Market CTA (desktop only, mobile has floating center action in bottom deck) */}
+          {/* Create Market CTA */}
           <button
             onClick={() => setIsCreateOpen(true)}
             className="hidden sm:flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
@@ -129,8 +129,8 @@ export function Layout({ children, user }: LayoutProps) {
             className={cn(
               "hidden sm:flex relative p-2 rounded-xl border transition-colors",
               location.pathname.startsWith("/chat")
-                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
-                : "bg-[#111318] border-[#20242e] text-stone-400 hover:text-white hover:border-white/20"
+                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
+                : "bg-slate-100/90 border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300 dark:bg-[#111318] dark:border-[#20242e] dark:text-stone-400 dark:hover:text-white dark:hover:border-white/20"
             )}
             title="Encrypted Messenger"
           >
@@ -146,8 +146,8 @@ export function Layout({ children, user }: LayoutProps) {
             className={cn(
               "relative p-2 rounded-xl border transition-colors",
               isNotificationsOpen
-                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
-                : "bg-[#111318] border-[#20242e] text-stone-400 hover:text-white hover:border-white/20"
+                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
+                : "bg-slate-100/90 border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300 dark:bg-[#111318] dark:border-[#20242e] dark:text-stone-400 dark:hover:text-white dark:hover:border-white/20"
             )}
             title="Consensus Activity"
           >
@@ -160,10 +160,10 @@ export function Layout({ children, user }: LayoutProps) {
           {/* Appearance Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-[#111318] border border-[#20242e] text-stone-400 hover:text-white transition-colors"
-            title="Toggle Appearance"
+            className="p-2 rounded-xl bg-slate-100/90 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 dark:bg-[#111318] dark:border-[#20242e] dark:text-stone-400 dark:hover:text-white transition-colors"
+            title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
           >
-            {theme === "light" ? <Moon className="w-4 h-4 text-emerald-400" /> : <Sun className="w-4 h-4 text-emerald-400" />}
+            {theme === "light" ? <Moon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Sun className="w-4 h-4 text-amber-400" />}
           </button>
 
           {/* User Profile Pill & Dropdown */}
@@ -171,29 +171,29 @@ export function Layout({ children, user }: LayoutProps) {
             {user ? (
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-2 p-1 pl-2 rounded-xl bg-[#111318] border border-[#20242e] hover:border-emerald-500/40 transition-all"
+                className="flex items-center gap-2 p-1 pl-2 rounded-xl bg-slate-100/90 border border-slate-200 hover:border-emerald-500/40 dark:bg-[#111318] dark:border-[#20242e] dark:hover:border-emerald-500/40 transition-all"
               >
                 <div className="flex flex-col text-right hidden sm:block">
-                  <span className="text-xs font-bold text-white truncate max-w-[100px]">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white truncate max-w-[100px]">
                     {user.displayName || "Node Forecaster"}
                   </span>
-                  <span className="text-[10px] font-mono text-emerald-400 font-semibold">
+                  <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
                     98.4% Accuracy
                   </span>
                 </div>
-                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/30 overflow-hidden">
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/30 overflow-hidden">
                   {user.photoURL ? (
                     <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
                     user.displayName?.charAt(0) || "U"
                   )}
                 </div>
-                <ChevronDown className="w-3.5 h-3.5 text-stone-400" />
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 dark:text-stone-400" />
               </button>
             ) : (
               <Link
                 to="/signin"
-                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white text-xs font-bold transition-colors"
               >
                 Sign In
               </Link>
@@ -202,14 +202,14 @@ export function Layout({ children, user }: LayoutProps) {
             {/* Profile Dropdown Menu */}
             {isUserMenuOpen && (
               <div 
-                className="absolute right-0 top-12 w-56 bg-[#111318] border border-[#20242e] rounded-2xl shadow-2xl p-2 z-50 divide-y divide-white/5 animate-in fade-in zoom-in-95 duration-150"
+                className="absolute right-0 top-12 w-56 bg-white dark:bg-[#111318] border border-slate-200 dark:border-[#20242e] rounded-2xl shadow-2xl p-2 z-50 divide-y divide-slate-100 dark:divide-white/5 animate-in fade-in zoom-in-95 duration-150"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="p-2 space-y-0.5">
-                  <span className="text-xs font-bold text-white block truncate">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white block truncate">
                     {user?.displayName || "Forecasting Node"}
                   </span>
-                  <span className="text-[10px] font-mono text-stone-400 block truncate">
+                  <span className="text-[10px] font-mono text-slate-500 dark:text-stone-400 block truncate">
                     {user?.email}
                   </span>
                 </div>
@@ -218,27 +218,27 @@ export function Layout({ children, user }: LayoutProps) {
                   <Link
                     to="/profile"
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="w-full px-3 py-2 rounded-xl hover:bg-white/5 flex items-center gap-2.5 text-xs text-stone-300 hover:text-white transition-colors"
+                    className="w-full px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 flex items-center gap-2.5 text-xs text-slate-700 hover:text-slate-900 dark:text-stone-300 dark:hover:text-white transition-colors"
                   >
-                    <User className="w-4 h-4 text-emerald-400" />
+                    <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     <span>Forecaster Dossier</span>
                   </Link>
 
                   <Link
                     to="/ranks"
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="w-full px-3 py-2 rounded-xl hover:bg-white/5 flex items-center gap-2.5 text-xs text-stone-300 hover:text-white transition-colors"
+                    className="w-full px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 flex items-center gap-2.5 text-xs text-slate-700 hover:text-slate-900 dark:text-stone-300 dark:hover:text-white transition-colors"
                   >
-                    <Trophy className="w-4 h-4 text-amber-400" />
+                    <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                     <span>Global Rankings</span>
                   </Link>
 
                   <Link
                     to="/admin"
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="w-full px-3 py-2 rounded-xl hover:bg-white/5 flex items-center gap-2.5 text-xs text-stone-300 hover:text-white transition-colors"
+                    className="w-full px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 flex items-center gap-2.5 text-xs text-slate-700 hover:text-slate-900 dark:text-stone-300 dark:hover:text-white transition-colors"
                   >
-                    <ShieldAlert className="w-4 h-4 text-red-400" />
+                    <ShieldAlert className="w-4 h-4 text-red-500 dark:text-red-400" />
                     <span>Admin Authority</span>
                   </Link>
                 </div>
@@ -249,7 +249,7 @@ export function Layout({ children, user }: LayoutProps) {
                       setIsUserMenuOpen(false);
                       signOut(auth);
                     }}
-                    className="w-full px-3 py-2 rounded-xl hover:bg-red-500/10 text-red-400 flex items-center gap-2.5 text-xs font-semibold transition-colors"
+                    className="w-full px-3 py-2 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 text-red-600 dark:text-red-400 flex items-center gap-2.5 text-xs font-semibold transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Disconnect Node</span>
@@ -267,12 +267,14 @@ export function Layout({ children, user }: LayoutProps) {
       </main>
 
       {/* 3. Mobile Bottom Navigation Deck */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#090b0e]/95 border-t border-[#181b22] backdrop-blur-xl px-2 py-1.5 flex items-center justify-around">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 dark:bg-[#090b0e]/95 dark:border-[#181b22] backdrop-blur-xl px-2 py-1.5 flex items-center justify-around transition-colors">
         <Link
           to="/feed"
           className={cn(
             "flex flex-col items-center gap-1 p-1 transition-colors",
-            location.pathname === "/feed" || location.pathname === "/polls" || location.pathname === "/" ? "text-emerald-400" : "text-stone-400"
+            location.pathname === "/feed" || location.pathname === "/polls" || location.pathname === "/" 
+              ? "text-emerald-600 dark:text-emerald-400 font-bold" 
+              : "text-slate-500 dark:text-stone-400"
           )}
         >
           <BarChart3 className="w-5 h-5" />
@@ -283,7 +285,9 @@ export function Layout({ children, user }: LayoutProps) {
           to="/swipe"
           className={cn(
             "flex flex-col items-center gap-1 p-1 transition-colors",
-            location.pathname === "/swipe" || location.pathname === "/reels" ? "text-emerald-400" : "text-stone-400"
+            location.pathname === "/swipe" || location.pathname === "/reels" 
+              ? "text-emerald-600 dark:text-emerald-400 font-bold" 
+              : "text-slate-500 dark:text-stone-400"
           )}
         >
           <Zap className="w-5 h-5" />
@@ -302,7 +306,9 @@ export function Layout({ children, user }: LayoutProps) {
           to="/ranks"
           className={cn(
             "flex flex-col items-center gap-1 p-1 transition-colors",
-            location.pathname === "/ranks" || location.pathname === "/leaderboard" ? "text-emerald-400" : "text-stone-400"
+            location.pathname === "/ranks" || location.pathname === "/leaderboard" 
+              ? "text-emerald-600 dark:text-emerald-400 font-bold" 
+              : "text-slate-500 dark:text-stone-400"
           )}
         >
           <Trophy className="w-5 h-5" />
@@ -313,7 +319,9 @@ export function Layout({ children, user }: LayoutProps) {
           to="/chat"
           className={cn(
             "relative flex flex-col items-center gap-1 p-1 transition-colors",
-            location.pathname.startsWith("/chat") ? "text-emerald-400" : "text-stone-400"
+            location.pathname.startsWith("/chat") 
+              ? "text-emerald-600 dark:text-emerald-400 font-bold" 
+              : "text-slate-500 dark:text-stone-400"
           )}
         >
           <Send className="w-5 h-5" />
