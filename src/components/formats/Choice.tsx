@@ -42,8 +42,8 @@ export function Choice({
             className={cn(
               "group relative w-full text-left p-3 sm:p-3.5 rounded-xl border transition-all duration-300 overflow-hidden",
               isSelected
-                ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-500/80 shadow-md shadow-emerald-500/10 ring-1 ring-emerald-500/30"
-                : "bg-white dark:bg-[#0b0e14] hover:bg-slate-50 dark:hover:bg-[#10141d] border-slate-200 dark:border-[#1d222e] hover:border-emerald-500/40 shadow-sm",
+                ? "bg-emerald-500/10 dark:bg-emerald-950/20 border-emerald-500/80 shadow-sm ring-1 ring-emerald-500/30"
+                : "bg-slate-50/70 hover:bg-slate-100/90 dark:bg-[#121722] dark:hover:bg-[#161d2a] border border-slate-200 dark:border-[#1e2533] hover:border-slate-300 dark:hover:border-slate-700 shadow-sm",
               disabled && "cursor-default"
             )}
           >
@@ -51,12 +51,12 @@ export function Choice({
             {!isBlindMasked && (
               <div
                 className={cn(
-                  "absolute inset-y-0 left-0 transition-all duration-700 ease-out opacity-20",
+                  "absolute inset-y-0 left-0 transition-all duration-700 ease-out",
                   isSelected
-                    ? "bg-gradient-to-r from-emerald-500 to-teal-400 opacity-30"
+                    ? "bg-emerald-500 opacity-20"
                     : isTop
-                    ? "bg-emerald-500"
-                    : "bg-slate-300 dark:bg-white/10"
+                    ? "bg-emerald-500/80 opacity-15"
+                    : "bg-slate-300 dark:bg-white/5 opacity-20"
                 )}
                 style={{ width: `${percentage}%` }}
               />
@@ -68,10 +68,10 @@ export function Choice({
               <div className="flex items-center gap-2.5 min-w-0">
                 <span
                   className={cn(
-                    "w-6 h-6 rounded-lg text-xs font-mono font-bold flex items-center justify-center shrink-0 border",
+                    "w-6 h-6 rounded-lg text-xs font-mono font-bold flex items-center justify-center shrink-0 border transition-colors",
                     isSelected
-                      ? "bg-emerald-500 text-black border-emerald-400 shadow-sm"
-                      : "bg-slate-100 dark:bg-black/40 text-slate-600 dark:text-stone-400 border-slate-200 dark:border-white/10 group-hover:border-emerald-500/40 group-hover:text-slate-900 dark:group-hover:text-white"
+                      ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow-sm"
+                      : "bg-white dark:bg-[#0e1219] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-[#1e2533] group-hover:text-slate-900 dark:group-hover:text-white"
                   )}
                 >
                   {isSelected ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : String.fromCharCode(65 + index)}
@@ -80,13 +80,13 @@ export function Choice({
                 <div className="flex items-center gap-1.5 min-w-0">
                   <span className={cn(
                     "text-xs sm:text-sm font-semibold truncate transition-colors",
-                    isSelected ? "text-emerald-700 dark:text-emerald-300 font-bold" : "text-slate-800 dark:text-stone-200 group-hover:text-slate-900 dark:group-hover:text-white"
+                    isSelected ? "text-emerald-700 dark:text-emerald-300 font-bold" : "text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white"
                   )}>
                     {option.name || option.text || `Option ${index + 1}`}
                   </span>
                   {isTop && !isBlindMasked && (
                     <span title="Consensus Leader">
-                      <Crown className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
+                      <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                     </span>
                   )}
                 </div>
@@ -95,20 +95,20 @@ export function Choice({
               {/* Right: Percentages or Blind status */}
               <div className="flex items-center gap-2 shrink-0">
                 {isBlindMasked ? (
-                  <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-stone-500 font-mono">
-                    <Lock className="w-3 h-3 text-slate-400 dark:text-stone-600" />
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500 font-mono">
+                    <Lock className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                     <span className="hidden sm:inline text-xs font-medium">Masked</span>
                   </div>
                 ) : (
                   <div className="flex items-baseline gap-1 font-mono">
                     <span className={cn(
                       "text-xs sm:text-sm font-black",
-                      isSelected ? "text-emerald-600 dark:text-emerald-400" : "text-slate-700 dark:text-stone-300"
+                      isSelected ? "text-emerald-600 dark:text-emerald-400" : "text-slate-700 dark:text-slate-300"
                     )}>
                       {percentage}%
                     </span>
                     {option.votes !== undefined && (
-                      <span className="text-[10px] text-slate-400 dark:text-stone-500 hidden sm:inline">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 hidden sm:inline">
                         ({option.votes})
                       </span>
                     )}
@@ -116,7 +116,7 @@ export function Choice({
                 )}
 
                 {!hasVoted && (
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-500/40 group-hover:text-emerald-500 transition-colors" />
+                  <Sparkles className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-400 transition-colors" />
                 )}
               </div>
             </div>
@@ -126,8 +126,8 @@ export function Choice({
 
       {/* Consensus masking banner */}
       {isBlindMasked && (
-        <div className="flex items-center justify-center gap-1.5 py-1 text-xs font-mono text-slate-500 dark:text-stone-500">
-          <Lock className="w-3 h-3 text-emerald-600 dark:text-emerald-500/60" />
+        <div className="flex items-center justify-center gap-1.5 py-1 text-xs font-mono text-slate-500 dark:text-slate-500">
+          <Lock className="w-3 h-3 text-slate-400 dark:text-slate-500" />
           <span>Consensus masked to eliminate bias • Select an option to reveal live swarm distribution</span>
         </div>
       )}
