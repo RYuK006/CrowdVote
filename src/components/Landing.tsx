@@ -13,13 +13,14 @@ export function Landing() {
       {/* Top Header Toggle */}
       <header className="fixed top-0 left-0 w-full z-50 px-8 py-6 flex justify-end items-center max-w-7xl mx-auto right-0">
         <button 
-          onClick={toggleTheme}
-          className="p-3 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] hover:emerald-glow transition-all group backdrop-blur-xl"
+          onClick={(e) => toggleTheme(e)}
+          className="p-3 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] hover:emerald-glow transition-all active:scale-90 group backdrop-blur-xl"
+          title={theme === 'light' ? "Switch to Dark Mode" : "Switch to Light Mode"}
         >
           {theme === 'light' ? (
-            <Sun className="w-6 h-6 text-emerald-500 group-hover:rotate-45 transition-transform" />
+            <Sun className="w-6 h-6 text-amber-400 group-hover:rotate-45 transition-transform duration-300" />
           ) : (
-            <Moon className="w-6 h-6 text-emerald-500 group-hover:-rotate-12 transition-transform" />
+            <Moon className="w-6 h-6 text-emerald-400 group-hover:-rotate-12 transition-transform duration-300" />
           )}
         </button>
       </header>
@@ -29,176 +30,122 @@ export function Landing() {
         {/* Background Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/10 blur-[120px] rounded-full -z-10" />
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="space-y-8"
+        <div className="flex flex-col items-center text-center space-y-8">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium backdrop-blur-md"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-500 tracking-[0.2em] uppercase font-bold">
-              <ShieldCheck className="w-3 h-3" />
-              The Global Polling & Prediction Platform
-            </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-[0.9] text-[var(--text-primary)]">
-              The <span className="text-emerald-500 italic">Pulse</span> of the Crowd.
-            </h1>
-            <p className="text-lg text-[var(--text-secondary)] leading-relaxed max-w-lg font-medium">
-              Predicting matches, golden boot winners, and World Cup trends using the collective wisdom of the people. Fast, accurate, and open for all.
-            </p>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:gap-6 gap-4">
-              <Link
-                to="/feed"
-                className="group flex justify-center items-center gap-3 px-8 py-4 rounded-2xl bg-emerald-500 text-black font-bold text-sm emerald-glow hover:bg-emerald-400 transition-all w-full sm:w-auto"
-              >
-                START PREDICTING
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                to="/ranks"
-                className="flex text-center justify-center px-8 py-4 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] text-sm font-bold hover:bg-black/10 transition-all w-full sm:w-auto text-[var(--text-primary)]"
-              >
-                LIVE PREDICTIONS
-              </Link>
-            </div>
-            <div className="flex items-center gap-8 sm:gap-12 pt-8 border-t border-[var(--glass-border)]">
-              <div className="flex flex-col">
-                <span className="text-3xl font-bold tracking-tighter text-[var(--text-primary)]">2.4M</span>
-                <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Votes Predicted</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-3xl font-bold tracking-tighter text-[var(--text-primary)]">140+</span>
-                <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">Active Polls</span>
-              </div>
-            </div>
+            <ShieldCheck className="w-4 h-4" />
+            <span>Decentralized Consensus Protocol</span>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="relative"
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-7xl font-extrabold tracking-tight max-w-4xl"
           >
-            <div className="aspect-square glass rounded-[40px] p-4 sm:p-8 flex items-center justify-center emerald-glow overflow-hidden relative">
-              {/* Map Graphic */}
-              <div className="w-full h-full bg-emerald-500/5 rounded-3xl flex items-center justify-center border border-emerald-500/10 overflow-hidden p-8">
-                <img src="/2026_world_cup_colored.svg" alt="2026 World Cup" className="w-full h-full object-contain opacity-80 drop-shadow-2xl" />
-              </div>
-              <div className="absolute bottom-10 left-10 p-6 glass rounded-2xl border border-emerald-500/20 backdrop-blur-xl">
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-mono text-emerald-500 uppercase tracking-widest font-bold">Current Trend</span>
-                  <span className="text-xl font-bold tracking-tight text-[var(--text-primary)]">Global Consensus</span>
-                  <div className="flex items-center justify-between mt-4 mb-2">
-                    <span className="text-3xl font-bold text-[var(--text-primary)]">94%</span>
-                    <span className="text-[10px] font-mono text-emerald-500 uppercase font-bold">Confidence</span>
-                  </div>
-                  <div className="text-[8px] text-[var(--text-secondary)] font-mono leading-tight font-bold">
-                    Powered by CrowdVote AI
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+            The Future of <span className="text-gradient">Collective Intelligence</span>
+          </motion.h1>
 
-      {/* Features Section */}
-      <section className="py-20 md:py-32 px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col items-center text-center mb-12 md:mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 text-[var(--text-primary)]">Community Driven <span className="text-emerald-500 italic">Predictions.</span></h2>
-          <p className="text-[var(--text-secondary)] max-w-2xl font-medium">
-            We don't just count votes. We calculate match outcomes using historical data and live predictions from analysts like you.
-          </p>
-        </div>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl"
+          >
+            CrowdVote harnesses swarm intelligence through dynamic polling, prediction markets, and AI-driven consensus.
+          </motion.p>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            { title: "CROWD WISDOM", icon: Swords, desc: "Accurate prediction models based on community input and trends." },
-            { title: "VERIFIED DATA", icon: ShieldCheck, desc: "Using advanced algorithms to ensure genuine polling participation." },
-            { title: "LIVE UPDATES", icon: BarChart3, desc: "See how predictions change in real-time as more people cast their votes." },
-          ].map((feature, i) => (
-            <motion.div
-              key={i}
-              whileHover={{ y: -5 }}
-              className="glass p-8 rounded-[32px] border border-[var(--glass-border)] space-y-6 hover:border-emerald-500/20 transition-all duration-300 bg-[var(--card-bg)]"
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col sm:flex-row gap-4 w-full justify-center pt-4"
+          >
+            <Link 
+              to="/feed" 
+              className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-lg transition-all emerald-glow hover:scale-105"
             >
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                <feature.icon className="text-emerald-500 w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">{feature.title}</h3>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed font-medium">{feature.desc}</p>
-            </motion.div>
-          ))}
+              <span>Explore Terminal</span>
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            <Link 
+              to="/signin" 
+              className="flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] hover:bg-white/10 font-bold text-lg transition-all backdrop-blur-md hover:scale-105"
+            >
+              Connect Node
+            </Link>
+          </motion.div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 md:py-32 px-4 sm:px-8 text-center">
-        <div className="max-w-3xl mx-auto glass p-8 sm:p-16 rounded-[48px] border border-emerald-500/10 emerald-glow relative overflow-hidden bg-[var(--card-bg)]">
-          <div className="absolute top-0 left-0 w-full h-full bg-emerald-500/5 -z-10" />
-          <ShieldCheck className="w-16 h-16 text-emerald-500 mx-auto mb-8" />
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6 text-[var(--text-primary)]">Ready to <span className="text-emerald-500 italic">Start</span> Your Prediction?</h2>
-          <p className="text-[var(--text-secondary)] mb-12 text-lg font-medium">
-            Join thousands of others in predicting the future.
-          </p>
-          <Link
-            to="/signup"
-            className="inline-flex items-center gap-3 px-12 py-5 rounded-2xl bg-emerald-500 text-white font-bold text-lg emerald-glow hover:bg-emerald-400 transition-all"
-          >
-            GET STARTED
-          </Link>
+      {/* Features Grid */}
+      <section className="py-20 px-8 max-w-7xl mx-auto border-t border-[var(--glass-border)]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="p-8 rounded-3xl bg-[var(--card-bg)] border border-[var(--glass-border)] space-y-4 hover:border-emerald-500/50 transition-colors">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+              <Swords className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold">Consensus Battles</h3>
+            <p className="text-[var(--text-secondary)]">Stake convictions in dynamic versus battles and multidimensional scalar forecasts.</p>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-[var(--card-bg)] border border-[var(--glass-border)] space-y-4 hover:border-emerald-500/50 transition-colors">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+              <BarChart3 className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold">Predictive Analytics</h3>
+            <p className="text-[var(--text-secondary)]">Real-time sentiment telemetry and swarm intelligence calibration across multiple vectors.</p>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-[var(--card-bg)] border border-[var(--glass-border)] space-y-4 hover:border-emerald-500/50 transition-colors">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+              <Trophy className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold">Grandmaster Leaderboard</h3>
+            <p className="text-[var(--text-secondary)]">Ascend global forecaster matrices through calibrated brier scores and accuracy ratios.</p>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 md:py-20 px-8 border-t border-[var(--glass-border)]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 md:gap-12">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
-              <ShieldCheck className="text-white w-5 h-5" />
-            </div>
-            <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">CrowdVote <span className="text-emerald-500">AI</span></span>
+      <footer className="py-8 px-8 border-t border-[var(--glass-border)] text-center text-sm text-[var(--text-secondary)]">
+        <div className="flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto gap-4">
+          <div>CrowdVote AI © 2026. All rights reserved.</div>
+          <div className="flex items-center gap-6">
+            <button 
+              onClick={() => setShowPrivacyPolicy(true)}
+              className="hover:text-emerald-500 transition-colors"
+            >
+              Privacy Policy
+            </button>
+            <Link to="/feed" className="hover:text-emerald-500 transition-colors">Terminal</Link>
           </div>
-          <div className="flex flex-wrap justify-center gap-6 md:gap-12 text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest font-bold">
-            <Link to="/docs" className="hover:text-emerald-500">Documentation</Link>
-            <button onClick={() => setShowPrivacyPolicy(true)} className="hover:text-emerald-500 uppercase font-mono text-[10px] tracking-widest font-bold">Privacy Policy</button>
-            <Link to="/adminlogin" className="text-[var(--text-secondary)] hover:text-emerald-500 border border-[var(--glass-border)] px-2 py-1 rounded">Admin Login</Link>
-          </div>
-          <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-widest text-center font-bold">© 2026 CrowdVote Project</span>
         </div>
       </footer>
 
       {/* Privacy Policy Modal */}
       {showPrivacyPolicy && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="glass max-w-2xl w-full max-h-[80vh] overflow-y-auto rounded-[32px] p-8 border border-[var(--glass-border)] bg-[var(--card-bg)] shadow-2xl relative custom-scrollbar">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-2xl bg-[var(--card-bg)] border border-[var(--glass-border)] rounded-3xl p-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
             <button 
               onClick={() => setShowPrivacyPolicy(false)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-[var(--glass-border)] transition-colors"
+              className="absolute top-6 right-6 p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
             >
-              <X className="w-6 h-6 text-[var(--text-primary)]" />
+              <X className="w-5 h-5" />
             </button>
             
-            <div className="space-y-6 text-[var(--text-secondary)]">
-              <div className="flex items-center gap-3 text-emerald-500 mb-8">
-                <ShieldCheck className="w-8 h-8" />
-                <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Privacy Policy</h2>
-              </div>
-              
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">1. Data Collection</h3>
-                <p>We collect predictions, voting history, and standard authentication data to maintain the integrity of the Swarm Intelligence model. We do not sell your personal data to third parties.</p>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">2. AI Training & Usage</h3>
-                <p>By using the platform, you consent to your anonymized voting patterns being used to train the global Predictive Analytics model and your personal Autonomous Predictor (if enabled).</p>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">3. Security</h3>
-                <p>All authentication is securely handled via Google Firebase. We implement industry-standard encryption to protect your account and AE points.</p>
-              </div>
+            <h2 className="text-2xl font-bold mb-4">Privacy Policy</h2>
+            <div className="space-y-4 text-sm text-[var(--text-secondary)] leading-relaxed">
+              <p>At CrowdVote AI, we prioritize user anonymity and cryptographic consensus integrity.</p>
+              <h4 className="text-base font-semibold text-[var(--text-primary)]">1. Data Collection</h4>
+              <p>We do not track personally identifiable metrics. Predictions, votes, and signals are anchored anonymously or via cryptographic node identifiers.</p>
+              <h4 className="text-base font-semibold text-[var(--text-primary)]">2. Neural Consensus</h4>
+              <p>Signal metrics are aggregated to construct unbiased decentralized probability distributions.</p>
+              <h4 className="text-base font-semibold text-[var(--text-primary)]">3. Security</h4>
+              <p>All client-server telemetry is encrypted in transit and at rest using modern protocol standards.</p>
             </div>
           </div>
         </div>
