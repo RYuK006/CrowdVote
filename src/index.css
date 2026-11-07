@@ -33,6 +33,11 @@
   color-scheme: dark;
 }
 
+html {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -40,6 +45,31 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* =========================================================
+   ACCESSIBLE & LEGIBLE TYPOGRAPHY SCALE
+   Elevates micro-text sizes to clear, comfortable reading sizes
+   ========================================================= */
+
+.text-\[9px\] {
+  font-size: 0.75rem !important; /* 12px instead of 9px */
+  line-height: 1rem !important;
+}
+
+.text-\[10px\] {
+  font-size: 0.8125rem !important; /* 13px instead of 10px */
+  line-height: 1.125rem !important;
+}
+
+.text-\[11px\] {
+  font-size: 0.875rem !important; /* 14px instead of 11px */
+  line-height: 1.25rem !important;
+}
+
+.text-xs {
+  font-size: 0.875rem !important; /* 14px instead of 12px */
+  line-height: 1.25rem !important;
 }
 
 /* =========================================================
