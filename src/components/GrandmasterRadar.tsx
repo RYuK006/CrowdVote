@@ -108,11 +108,11 @@ export function GrandmasterRadar({ onSelectTopic }: GrandmasterRadarProps) {
       {/* Header Label */}
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-xs font-mono font-bold tracking-wider text-emerald-400 uppercase">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
+          <span className="text-sm font-mono font-bold tracking-wider text-emerald-600 dark:text-emerald-400 uppercase">
             Grandmaster Forecasting Radar
           </span>
-          <span className="text-xs text-stone-500 font-mono hidden sm:inline">
+          <span className="text-xs text-slate-500 dark:text-stone-400 font-mono hidden sm:inline">
             • Live 24h Predictive Theses
           </span>
         </div>
@@ -121,13 +121,13 @@ export function GrandmasterRadar({ onSelectTopic }: GrandmasterRadarProps) {
         <div className="flex items-center gap-1">
           <button
             onClick={() => handleScroll(-300)}
-            className="p-1 rounded-lg bg-[#111318] hover:bg-[#1a1d24] text-stone-400 hover:text-white border border-[#20242e] transition-colors"
+            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#111318] dark:hover:bg-[#1a1d24] text-slate-600 hover:text-slate-900 dark:text-stone-400 dark:hover:text-white border border-slate-200 dark:border-[#20242e] transition-colors shadow-sm"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleScroll(300)}
-            className="p-1 rounded-lg bg-[#111318] hover:bg-[#1a1d24] text-stone-400 hover:text-white border border-[#20242e] transition-colors"
+            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#111318] dark:hover:bg-[#1a1d24] text-slate-600 hover:text-slate-900 dark:text-stone-400 dark:hover:text-white border border-slate-200 dark:border-[#20242e] transition-colors shadow-sm"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -143,46 +143,46 @@ export function GrandmasterRadar({ onSelectTopic }: GrandmasterRadarProps) {
           <div
             key={story.id}
             onClick={() => setSelectedStoryIndex(index)}
-            className="min-w-[260px] sm:min-w-[280px] max-w-[280px] p-3 rounded-2xl bg-[#090b0e] hover:bg-[#101217] border border-[#1b1e24] hover:border-emerald-500/40 transition-all cursor-pointer shadow-md hover:shadow-emerald-500/10 flex flex-col justify-between group"
+            className="min-w-[270px] sm:min-w-[300px] max-w-[300px] p-4 rounded-2xl bg-white dark:bg-[#090b0e] hover:bg-slate-50 dark:hover:bg-[#101217] border border-slate-200 dark:border-[#1b1e24] hover:border-emerald-500/40 transition-all cursor-pointer shadow-sm hover:shadow-emerald-500/10 flex flex-col justify-between group"
           >
             {/* Top Node Meta */}
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2.5">
               <div className="flex items-center gap-2.5">
                 <div className="relative">
                   <img
                     src={story.avatar}
                     alt={story.name}
-                    className="w-8 h-8 rounded-full object-cover border border-[#262a33]"
+                    className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-[#262a33]"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/identicon/svg?seed=${story.handle}`;
                     }}
                   />
-                  <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 border border-black" />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 border-2 border-white dark:border-black" />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
+                  <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
                     @{story.handle}
                   </span>
-                  <span className="text-[10px] font-mono text-emerald-400/90 truncate font-semibold">
+                  <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400/90 truncate font-semibold">
                     {story.role}
                   </span>
                 </div>
               </div>
 
-              <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-[9px] font-mono text-emerald-400 font-bold uppercase shrink-0">
+              <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-700 dark:text-emerald-400 font-bold uppercase shrink-0">
                 {story.category}
               </span>
             </div>
 
             {/* Thesis Quote */}
-            <p className="text-xs text-stone-300 line-clamp-2 leading-relaxed italic mb-2">
+            <p className="text-xs sm:text-sm text-slate-700 dark:text-stone-300 line-clamp-2 leading-relaxed italic mb-3">
               "{story.quote}"
             </p>
 
             {/* Bottom Meta */}
-            <div className="flex items-center justify-between pt-1 border-t border-white/5 text-[10px] font-mono text-stone-500">
+            <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 dark:border-white/5 text-xs font-mono text-slate-500 dark:text-stone-400">
               <span>{story.timeAgo} ago</span>
-              <span className="text-emerald-400 group-hover:underline flex items-center gap-1 font-semibold">
+              <span className="text-emerald-600 dark:text-emerald-400 group-hover:underline flex items-center gap-1 font-semibold">
                 Read Thesis →
               </span>
             </div>
