@@ -294,14 +294,14 @@ export function Ranks() {
           </div>
 
           {/* Quick Dual View Toggle (Leaderboard Matrix vs Forecast Briefs) */}
-          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#0d0f14] border border-[#1f232d] shadow-xl self-start md:self-auto">
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-[#0e1219] border border-slate-200 dark:border-[#1e2533] shadow-sm self-start md:self-auto">
             <button
               onClick={() => setActiveView("ranks")}
               className={cn(
                 "px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-2",
                 activeView === "ranks"
-                  ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20 font-black"
-                  : "text-stone-400 hover:text-white"
+                  ? "bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-sm font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               )}
             >
               <Trophy className="w-4 h-4" />
@@ -313,8 +313,8 @@ export function Ranks() {
               className={cn(
                 "px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-2",
                 activeView === "briefs"
-                  ? "bg-amber-500 text-black shadow-md shadow-amber-500/20 font-black"
-                  : "text-stone-400 hover:text-white"
+                  ? "bg-amber-500 text-black shadow-sm font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               )}
             >
               <Clapperboard className="w-4 h-4" />
@@ -432,8 +432,8 @@ export function Ranks() {
                     className={cn(
                       "px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition-all",
                       selectedCategory === cat
-                        ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20"
-                        : "bg-[#0c0e13] text-stone-400 border border-[#1b1e26] hover:text-white hover:border-emerald-500/30"
+                        ? "bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-sm"
+                        : "bg-white text-slate-600 border border-slate-200 hover:text-slate-900 hover:bg-slate-50 dark:bg-[#0e1219] dark:text-slate-400 dark:border-[#1e2533] dark:hover:text-white dark:hover:bg-[#141923]"
                     )}
                   >
                     {cat}
