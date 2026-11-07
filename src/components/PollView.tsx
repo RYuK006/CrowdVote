@@ -196,14 +196,14 @@ export function PollView() {
         <div className="flex items-center justify-between mt-6 mb-4">
           <button 
             onClick={() => navigate('/feed')}
-            className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors font-mono text-xs uppercase font-bold tracking-wider"
+            className="flex items-center gap-1.5 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors font-mono text-xs uppercase font-bold tracking-wider"
           >
             <ChevronLeft className="w-4 h-4" /> Feed
           </button>
 
           <button
             onClick={handleShare}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#121722] dark:hover:bg-[#161d2a] text-slate-700 dark:text-slate-300 text-xs font-mono transition-colors border border-slate-200 dark:border-[#1e2533]"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/70 hover:bg-white/90 dark:bg-[#121722]/70 dark:hover:bg-[#161d2a]/90 backdrop-blur-md text-slate-700 dark:text-slate-300 text-xs font-mono transition-colors border border-slate-200/80 dark:border-emerald-500/20"
           >
             {copiedLink ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
             <span>{copiedLink ? "Copied" : "Share"}</span>
@@ -247,23 +247,23 @@ export function PollView() {
           </div>
         )}
 
-        {/* Main Poll Terminal Container */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0e1219] border border-slate-200 dark:border-[#1e2533] shadow-md dark:shadow-2xl flex flex-col gap-6">
+        {/* Main Poll Terminal Container with Frosted Glassmorphism */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-white/75 dark:bg-[#0e1219]/75 backdrop-blur-2xl border border-slate-200/80 dark:border-emerald-500/25 shadow-xl shadow-emerald-500/5 flex flex-col gap-6">
           {/* Header Metadata */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 text-xs font-mono font-semibold uppercase tracking-wider">
+              <span className="px-2.5 py-0.5 rounded-lg bg-emerald-500/15 border border-emerald-500/35 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-bold uppercase tracking-wider backdrop-blur-md shadow-sm">
                 {format.toUpperCase()}
               </span>
 
               {poll.category && (
-                <span className={cn("px-2.5 py-0.5 rounded-lg border text-xs font-mono font-medium", getCategoryBadgeClass(poll.category))}>
+                <span className={cn("px-2.5 py-0.5 rounded-lg border text-xs font-mono font-medium backdrop-blur-md", getCategoryBadgeClass(poll.category))}>
                   {poll.category}
                 </span>
               )}
 
               {poll.status && (
-                <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 text-xs font-mono uppercase">
+                <span className="px-2.5 py-0.5 rounded-lg bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 text-xs font-mono uppercase">
                   {poll.status}
                 </span>
               )}
@@ -281,8 +281,8 @@ export function PollView() {
 
             {/* Timing / Countdown */}
             {poll.lockAt && (
-              <div className="flex items-center gap-1.5 text-xs font-mono text-slate-500 dark:text-slate-400 mt-1">
-                <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+              <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-600 dark:text-emerald-400 mt-1 font-semibold">
+                <Clock className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Locks: {new Date(poll.lockAt).toLocaleString()}</span>
               </div>
             )}
