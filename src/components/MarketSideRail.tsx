@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Trophy, Sparkles, ShieldCheck, TrendingUp, ArrowUpRight, CheckCircle2, UserPlus, Users } from "lucide-react";
+import { Trophy, Sparkles, TrendingUp } from "lucide-react";
 import { cn } from "../lib/utils";
 
 interface SuggestedUser {
@@ -111,19 +111,19 @@ export function MarketSideRail({ currentUser, onOpenFollowersModal }: MarketSide
   };
 
   return (
-    <aside className="w-full xl:w-[340px] shrink-0 space-y-6 select-none">
+    <aside className="w-full xl:w-[350px] shrink-0 space-y-6 select-none">
       {/* 1. Elite Forecasters Widget */}
-      <div className="p-5 rounded-2xl bg-[#090b0e] border border-[#1b1e24] shadow-xl space-y-4">
+      <div className="p-5 rounded-2xl bg-white dark:bg-[#090b0e] border border-slate-200 dark:border-[#1b1e24] shadow-sm dark:shadow-xl space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-amber-400" />
-            <h4 className="text-xs font-mono font-bold tracking-wider text-white uppercase">
+            <Trophy className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+            <h4 className="text-sm font-mono font-bold tracking-wider text-slate-900 dark:text-white uppercase">
               Top Forecasters
             </h4>
           </div>
           <Link
             to="/leaderboard"
-            className="text-[11px] font-mono text-emerald-400 hover:text-emerald-300 font-semibold"
+            className="text-xs font-mono text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-semibold"
           >
             Full Matrix →
           </Link>
@@ -139,7 +139,7 @@ export function MarketSideRail({ currentUser, onOpenFollowersModal }: MarketSide
                 to={`/profile/${f.uid}`}
                 className="flex items-center gap-2.5 min-w-0 flex-1 pr-2"
               >
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-stone-900 border border-[#2a2e36] shrink-0">
+                <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-100 dark:bg-stone-900 border border-slate-200 dark:border-[#2a2e36] shrink-0">
                   <img
                     src={f.avatar}
                     alt={f.displayName}
@@ -150,10 +150,10 @@ export function MarketSideRail({ currentUser, onOpenFollowersModal }: MarketSide
                   />
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
+                  <span className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
                     {f.displayName}
                   </span>
-                  <span className="text-[10px] font-mono text-stone-400 truncate">
+                  <span className="text-xs font-mono text-slate-500 dark:text-stone-400 truncate">
                     {f.subtitle}
                   </span>
                 </div>
@@ -163,10 +163,10 @@ export function MarketSideRail({ currentUser, onOpenFollowersModal }: MarketSide
                 onClick={() => handleToggleFollow(f.uid)}
                 disabled={loadingUid === f.uid}
                 className={cn(
-                  "px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold border transition-colors shrink-0",
+                  "px-3 py-1.5 rounded-lg text-xs font-mono font-bold border transition-colors shrink-0",
                   f.isFollowing
-                    ? "border-white/10 text-stone-400 hover:text-white"
-                    : "border-emerald-500/40 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20"
+                    ? "border-slate-300 dark:border-white/10 text-slate-600 dark:text-stone-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-transparent"
+                    : "border-emerald-500/40 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20"
                 )}
               >
                 {loadingUid === f.uid ? "..." : f.isFollowing ? "Connected" : "+ Follow"}
@@ -177,73 +177,73 @@ export function MarketSideRail({ currentUser, onOpenFollowersModal }: MarketSide
       </div>
 
       {/* 2. High-Stakes Bounty Pools Widget */}
-      <div className="p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-[#090b0e] to-[#090b0e] border border-amber-500/30 shadow-xl space-y-3">
+      <div className="p-5 rounded-2xl bg-amber-500/5 dark:bg-gradient-to-br dark:from-amber-500/10 dark:via-[#090b0e] dark:to-[#090b0e] border border-amber-500/30 shadow-sm dark:shadow-xl space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-amber-400">
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
             <Sparkles className="w-4 h-4" />
-            <h4 className="text-xs font-mono font-bold tracking-wider uppercase">
+            <h4 className="text-sm font-mono font-bold tracking-wider uppercase">
               Bounty Allocations
             </h4>
           </div>
-          <span className="px-2 py-0.5 rounded-full bg-amber-500 text-black text-[9px] font-mono font-black uppercase">
+          <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-black text-xs font-mono font-black uppercase">
             Live
           </span>
         </div>
 
-        <p className="text-xs text-stone-300 leading-relaxed">
+        <p className="text-sm text-slate-600 dark:text-stone-300 leading-relaxed">
           Sponsor pools incentivize calibrated prediction signals. Cast high-accuracy forecasts to earn protocol yield bounties.
         </p>
 
         <div className="space-y-2 pt-1">
-          <div className="p-2.5 rounded-xl bg-black/40 border border-amber-500/20 flex items-center justify-between text-xs">
+          <div className="p-3 rounded-xl bg-white dark:bg-black/40 border border-amber-500/20 shadow-sm flex items-center justify-between text-sm">
             <div>
-              <span className="font-bold text-white block">MacroCapital Labs</span>
-              <span className="text-[10px] font-mono text-amber-400">500 USDC Yield Bounty</span>
+              <span className="font-bold text-slate-900 dark:text-white block">MacroCapital Labs</span>
+              <span className="text-xs font-mono text-amber-600 dark:text-amber-400 font-semibold">500 USDC Yield Bounty</span>
             </div>
-            <span className="text-[10px] font-mono text-stone-400">420 signals</span>
+            <span className="text-xs font-mono text-slate-500 dark:text-stone-400">420 signals</span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-black/40 border border-amber-500/20 flex items-center justify-between text-xs">
+          <div className="p-3 rounded-xl bg-white dark:bg-black/40 border border-amber-500/20 shadow-sm flex items-center justify-between text-sm">
             <div>
-              <span className="font-bold text-white block">ChainSentinel Prime</span>
-              <span className="text-[10px] font-mono text-amber-400">1,000 CSP Rewards</span>
+              <span className="font-bold text-slate-900 dark:text-white block">ChainSentinel Prime</span>
+              <span className="text-xs font-mono text-amber-600 dark:text-amber-400 font-semibold">1,000 CSP Rewards</span>
             </div>
-            <span className="text-[10px] font-mono text-stone-400">850 signals</span>
+            <span className="text-xs font-mono text-slate-500 dark:text-stone-400">850 signals</span>
           </div>
         </div>
       </div>
 
       {/* 3. Protocol Telemetry & Footer */}
-      <div className="p-5 rounded-2xl bg-[#090b0e] border border-[#1b1e24] shadow-xl space-y-3 text-xs text-stone-400">
-        <div className="flex items-center gap-2 text-emerald-400 mb-1">
+      <div className="p-5 rounded-2xl bg-white dark:bg-[#090b0e] border border-slate-200 dark:border-[#1b1e24] shadow-sm dark:shadow-xl space-y-3.5 text-xs text-slate-600 dark:text-stone-400">
+        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 mb-1">
           <TrendingUp className="w-4 h-4" />
-          <h4 className="text-xs font-mono font-bold tracking-wider uppercase">
+          <h4 className="text-sm font-mono font-bold tracking-wider uppercase">
             Protocol Telemetry
           </h4>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
-          <div className="p-2.5 rounded-xl bg-black/30 border border-white/5">
-            <span className="text-stone-500 block text-[9px]">TOTAL SIGNALS</span>
-            <span className="font-bold text-white">48,920</span>
+        <div className="grid grid-cols-2 gap-2 font-mono text-xs sm:text-sm">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/5">
+            <span className="text-slate-500 dark:text-stone-500 block text-xs font-semibold">TOTAL SIGNALS</span>
+            <span className="font-bold text-slate-900 dark:text-white text-base">48,920</span>
           </div>
-          <div className="p-2.5 rounded-xl bg-black/30 border border-white/5">
-            <span className="text-stone-500 block text-[9px]">AVG ACCURACY</span>
-            <span className="font-bold text-emerald-400">96.8%</span>
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/5">
+            <span className="text-slate-500 dark:text-stone-500 block text-xs font-semibold">AVG ACCURACY</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400 text-base">96.8%</span>
           </div>
         </div>
 
-        <div className="pt-2 border-t border-white/5 flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-stone-500">
-          <Link to="/docs" className="hover:text-emerald-400 transition-colors">Documentation</Link>
+        <div className="pt-2 border-t border-slate-200 dark:border-white/5 flex flex-wrap gap-x-2.5 gap-y-1.5 text-xs sm:text-sm text-slate-500 dark:text-stone-400">
+          <Link to="/docs" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Documentation</Link>
           <span>•</span>
-          <Link to="/analytics" className="hover:text-emerald-400 transition-colors">Analytics</Link>
+          <Link to="/analytics" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Analytics</Link>
           <span>•</span>
-          <Link to="/leaderboard" className="hover:text-emerald-400 transition-colors">Leaderboard</Link>
+          <Link to="/leaderboard" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Leaderboard</Link>
           <span>•</span>
-          <Link to="/chat" className="hover:text-emerald-400 transition-colors">Encrypted Chat</Link>
+          <Link to="/chat" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Encrypted Chat</Link>
         </div>
 
-        <div className="text-[10px] font-mono text-stone-600 uppercase">
+        <div className="text-xs font-mono text-slate-400 dark:text-stone-600 uppercase">
           © 2026 CROWDVOTE AI • SWARM CONSENSUS PROTOCOL
         </div>
       </div>
