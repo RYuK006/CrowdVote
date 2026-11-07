@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
@@ -10,23 +12,25 @@
 }
 
 :root {
-  --bg-primary: #ffffff;
+  --bg-primary: #f8fafc;
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-bg: rgba(255, 255, 255, 0.85);
   --glass-border: rgba(0, 0, 0, 0.08);
-  --card-bg: #f8fafc;
-  --nav-bg: rgba(255, 255, 255, 0.8);
+  --card-bg: #ffffff;
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  color-scheme: light;
 }
 
 .dark {
-  --bg-primary: #000000;
+  --bg-primary: #060709;
   --text-primary: #ffffff;
   --text-secondary: #94a3b8;
-  --glass-bg: rgba(0, 0, 0, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --card-bg: rgba(10, 10, 10, 0.8);
-  --nav-bg: rgba(0, 0, 0, 0.8);
+  --glass-bg: rgba(9, 11, 14, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --card-bg: #090a0d;
+  --nav-bg: rgba(9, 11, 14, 0.95);
+  color-scheme: dark;
 }
 
 body {
@@ -35,7 +39,145 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* =========================================================
+   LIGHT MODE SYSTEM THEME OVERRIDES
+   Activates cleanly whenever html does NOT have .dark class
+   ========================================================= */
+
+html:not(.dark) {
+  color-scheme: light;
+  background-color: #f8fafc;
+}
+
+html:not(.dark) body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Base Canvas & Main Backgrounds */
+html:not(.dark) .min-h-screen,
+html:not(.dark) .bg-\[\#060709\],
+html:not(.dark) .bg-\[\#050505\],
+html:not(.dark) .bg-\[\#070707\] {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Card, Header, Drawer & Sidebar Containers */
+html:not(.dark) header,
+html:not(.dark) nav,
+html:not(.dark) .bg-\[\#090b0e\],
+html:not(.dark) .bg-\[\#090a0d\],
+html:not(.dark) .bg-\[\#0a0a0a\],
+html:not(.dark) .bg-\[\#0b0d11\],
+html:not(.dark) .bg-\[\#0c0e12\],
+html:not(.dark) .bg-\[\#0d0f13\],
+html:not(.dark) .bg-\[\#0e1014\],
+html:not(.dark) .bg-\[\#111318\],
+html:not(.dark) .bg-\[\#0f1115\],
+html:not(.dark) .bg-\[\#0b0e14\] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Hover States on Cards and Buttons */
+html:not(.dark) .hover\:bg-\[\#0c0e12\]:hover,
+html:not(.dark) .hover\:bg-\[\#161920\]:hover,
+html:not(.dark) .hover\:bg-\[\#10141d\]:hover,
+html:not(.dark) .hover\:bg-white\/5:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Borders in Light Mode */
+html:not(.dark) .border-\[\#181b22\],
+html:not(.dark) .border-\[\#1b1e24\],
+html:not(.dark) .border-\[\#1d222e\],
+html:not(.dark) .border-\[\#1f232b\],
+html:not(.dark) .border-\[\#20242e\],
+html:not(.dark) .border-\[\#222630\],
+html:not(.dark) .border-\[\#2a2e36\],
+html:not(.dark) .border-white\/5,
+html:not(.dark) .border-white\/10,
+html:not(.dark) .divide-white\/5 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #e2e8f0 !important;
+}
+
+/* Primary Text & Headings */
+html:not(.dark) .text-white {
+  color: #0f172a !important;
+}
+
+/* Secondary & Muted Text */
+html:not(.dark) .text-stone-300,
+html:not(.dark) .text-stone-400,
+html:not(.dark) .text-slate-400 {
+  color: #475569 !important;
+}
+
+html:not(.dark) .text-stone-500,
+html:not(.dark) .text-slate-500 {
+  color: #64748b !important;
+}
+
+html:not(.dark) .text-stone-600,
+html:not(.dark) .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+/* Subtle Badges, Chips & Keyboard Keys */
+html:not(.dark) .bg-white\/5,
+html:not(.dark) .bg-white\/10 {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) kbd.bg-black\/40 {
+  background-color: #e2e8f0 !important;
+  color: #475569 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Form Inputs, Selects & Modals */
+html:not(.dark) input,
+html:not(.dark) select,
+html:not(.dark) textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html:not(.dark) input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Clean Elevation Shadows in Light Mode */
+html:not(.dark) .shadow-lg {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.04) !important;
+}
+
+html:not(.dark) .shadow-2xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Voting Option Selection State in Light Mode */
+html:not(.dark) .bg-emerald-950\/30 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  border-color: #10b981 !important;
+}
+
+/* Ticker separator in Light Mode */
+html:not(.dark) .border-l.border-\[\#1f232b\] {
+  border-color: #e2e8f0 !important;
+}
+
+/* Glass effect in Light Mode */
+html:not(.dark) .glass {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .glass {
@@ -82,7 +224,7 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.18);
   border-radius: 20px;
 }
 
@@ -91,5 +233,5 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.5);
 }
