@@ -157,13 +157,17 @@ export function Layout({ children, user }: LayoutProps) {
             </span>
           </button>
 
-          {/* Appearance Toggle */}
+          {/* Appearance Toggle (With Ripple from button) */}
           <button
-            onClick={toggleTheme}
-            className="p-2 rounded-xl bg-slate-100/90 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 dark:bg-[#111318] dark:border-[#20242e] dark:text-stone-400 dark:hover:text-white transition-colors shrink-0"
+            onClick={(e) => toggleTheme(e)}
+            className="p-2 rounded-xl bg-slate-100/90 border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 dark:bg-[#111318] dark:border-[#20242e] dark:text-stone-400 dark:hover:text-white transition-all active:scale-90 shrink-0"
             title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
           >
-            {theme === "light" ? <Moon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Sun className="w-4 h-4 text-amber-400" />}
+            {theme === "light" ? (
+              <Moon className="w-4 h-4 text-emerald-600 dark:text-emerald-400 transition-transform duration-300" />
+            ) : (
+              <Sun className="w-4 h-4 text-amber-400 transition-transform duration-300" />
+            )}
           </button>
 
           {/* User Profile Pill & Dropdown */}
@@ -215,6 +219,21 @@ export function Layout({ children, user }: LayoutProps) {
                 </div>
 
                 <div className="py-1 space-y-1">
+                  {/* Theme Switcher in Dropdown */}
+                  <button
+                    onClick={(e) => {
+                      setIsUserMenuOpen(false);
+                      toggleTheme(e);
+                    }}
+                    className="w-full px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 flex items-center justify-between text-xs text-slate-700 hover:text-slate-900 dark:text-stone-300 dark:hover:text-white transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      {theme === "light" ? <Moon className="w-4 h-4 text-emerald-600" /> : <Sun className="w-4 h-4 text-amber-400" />}
+                      <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold uppercase">Toggle</span>
+                  </button>
+
                   <Link
                     to="/profile"
                     onClick={() => setIsUserMenuOpen(false)}
