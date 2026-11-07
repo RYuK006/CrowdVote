@@ -44,32 +44,34 @@ export function Scale({
 
   // Determine sentiment category
   const getSentimentLabel = (val: number) => {
-    if (val < 25) return { text: "Strong Skepticism", color: "text-rose-400" };
-    if (val < 50) return { text: "Lean Negative", color: "text-amber-400" };
-    if (val < 75) return { text: "Lean Confident", color: "text-teal-400" };
-    return { text: "High Conviction", color: "text-emerald-400" };
+    if (val < 25) return { text: "Strong Skepticism", color: "text-rose-500 dark:text-rose-400" };
+    if (val < 50) return { text: "Lean Negative", color: "text-amber-500 dark:text-amber-400" };
+    if (val < 75) return { text: "Lean Confident", color: "text-teal-600 dark:text-teal-400" };
+    return { text: "High Conviction", color: "text-emerald-600 dark:text-emerald-400" };
   };
 
   const sentiment = getSentimentLabel(currentValue);
 
   return (
-    <div className="w-full flex flex-col gap-4 p-4 rounded-2xl bg-[#0b0e14] border border-[#1d222e] my-2">
+    <div className="w-full flex flex-col gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0b0e14] border border-slate-200 dark:border-[#1d222e] shadow-sm my-2">
       {/* Header Info */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-            <Gauge className="w-4 h-4" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+            <Gauge className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-xs font-mono uppercase tracking-wider text-stone-400">Sentiment Gauge</span>
-            <div className={cn("text-xs font-bold", sentiment.color)}>{sentiment.text}</div>
+            <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-slate-500 dark:text-stone-400 font-semibold">
+              Sentiment Gauge
+            </span>
+            <div className={cn("text-sm sm:text-base font-bold", sentiment.color)}>{sentiment.text}</div>
           </div>
         </div>
 
         {/* Selected / Current Value Display */}
-        <div className="flex items-baseline gap-1 bg-black/60 px-3 py-1.5 rounded-xl border border-white/10 font-mono">
-          <span className="text-2xl font-black text-emerald-400">{currentValue}</span>
-          <span className="text-xs text-stone-400 font-bold">{scaleUnit}</span>
+        <div className="flex items-baseline gap-1.5 bg-slate-100 dark:bg-black/60 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 font-mono shadow-inner">
+          <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{currentValue}</span>
+          <span className="text-sm text-slate-600 dark:text-stone-400 font-bold">{scaleUnit}</span>
         </div>
       </div>
 
@@ -82,11 +84,11 @@ export function Scale({
           value={currentValue}
           disabled={disabled}
           onChange={(e) => setCurrentValue(Number(e.target.value))}
-          className="w-full h-3 bg-[#161a23] rounded-lg appearance-none cursor-pointer accent-emerald-400 hover:accent-emerald-300 transition-all border border-white/5"
+          className="w-full h-3.5 bg-slate-200 dark:bg-[#161a23] rounded-lg appearance-none cursor-pointer accent-emerald-500 hover:accent-emerald-400 transition-all border border-slate-300 dark:border-white/5"
         />
 
         {/* Min / Max ticks */}
-        <div className="flex justify-between items-center text-[10px] font-mono text-stone-500 px-0.5">
+        <div className="flex justify-between items-center text-xs font-mono text-slate-500 dark:text-stone-400 px-1 font-medium">
           <span>{scaleMin}{scaleUnit} (Bearish)</span>
           <span>50{scaleUnit} (Neutral)</span>
           <span>{scaleMax}{scaleUnit} (Bullish)</span>
@@ -95,32 +97,32 @@ export function Scale({
 
       {/* Aggregate Swarm Consensus (Revealed post-vote or unmasked) */}
       {!isBlindMasked && scaleAverage !== undefined ? (
-        <div className="flex flex-col gap-1.5 p-3 rounded-xl bg-[#10141c] border border-white/5 font-mono">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-stone-400 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+        <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-slate-50 dark:bg-[#10141c] border border-slate-200 dark:border-white/5 font-mono">
+          <div className="flex items-center justify-between text-xs sm:text-sm">
+            <span className="text-slate-600 dark:text-stone-400 flex items-center gap-2 font-medium">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
               Swarm Consensus Mean:
             </span>
-            <span className="text-emerald-400 font-bold text-sm">
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold text-base">
               {scaleAverage}{scaleUnit}
             </span>
           </div>
 
           {/* Comparative visual bar */}
-          <div className="relative w-full h-2 rounded-full bg-black/60 overflow-hidden">
+          <div className="relative w-full h-2.5 rounded-full bg-slate-200 dark:bg-black/60 overflow-hidden">
             <div
               className="absolute h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-700"
               style={{ width: `${scaleAverage}%` }}
             />
           </div>
-          <div className="flex justify-between text-[10px] text-stone-500">
+          <div className="flex justify-between text-xs text-slate-500 dark:text-stone-500 font-medium">
             <span>Sample: {scaleVotesCount} predictors</span>
             {hasVoted && <span>Your Stance: {typeof votedOption === "number" ? votedOption : currentValue}{scaleUnit}</span>}
           </div>
         </div>
       ) : isBlindMasked ? (
-        <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-black/40 border border-white/5 text-xs font-mono text-stone-500">
-          <Lock className="w-3.5 h-3.5 text-stone-600" />
+        <div className="flex items-center justify-center gap-2 p-3.5 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/5 text-xs sm:text-sm font-mono text-slate-500 dark:text-stone-500">
+          <Lock className="w-4 h-4 text-slate-400 dark:text-stone-600" />
           <span>Swarm mean distribution masked • Lock your prediction to unveil consensus</span>
         </div>
       ) : null}
@@ -131,9 +133,9 @@ export function Scale({
         disabled={disabled || submitting}
         onClick={handleSubmit}
         className={cn(
-          "w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg",
+          "w-full py-3 px-5 rounded-xl text-sm sm:text-base font-bold transition-all flex items-center justify-center gap-2 shadow-lg",
           hasVoted
-            ? "bg-stone-800 hover:bg-stone-700 text-stone-200 border border-white/10"
+            ? "bg-slate-200 hover:bg-slate-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-slate-800 dark:text-stone-200 border border-slate-300 dark:border-white/10"
             : "bg-emerald-500 hover:bg-emerald-400 text-black shadow-emerald-500/20 active:scale-[0.99]"
         )}
       >
@@ -141,11 +143,11 @@ export function Scale({
           "Recording Prediction..."
         ) : hasVoted ? (
           <>
-            <Check className="w-3.5 h-3.5 text-emerald-400" /> Update Stance ({currentValue}{scaleUnit})
+            <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Update Stance ({currentValue}{scaleUnit})
           </>
         ) : (
           <>
-            <Send className="w-3.5 h-3.5" /> Submit Forecast ({currentValue}{scaleUnit})
+            <Send className="w-4 h-4" /> Submit Forecast ({currentValue}{scaleUnit})
           </>
         )}
       </button>
