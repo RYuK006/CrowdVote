@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { 
   Sparkles, Flame, Search, Filter, LayoutGrid, ListFilter, 
   TrendingUp, BarChart2, ShieldCheck, ArrowRight, RefreshCw 
@@ -30,10 +30,16 @@ export function PollsList() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isFetchingMore, setIsFetchingMore] = useState<boolean>(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const [sortBy, setSortBy] = useState<"trending" | "volume" | "newest">("trending");
 
   const fetchPolls = (cat: string, search: string, pageNum: number, replace: boolean = true) => {
-    setLoading(true);
+    if (replace) {
+      setLoading(true);
+    } else {
+      setIsFetchingMore(true);
+    }
     const params = new URLSearchParams();
     if (cat !== "All") {
       if (cat === "Bounties") {
@@ -58,10 +64,12 @@ export function PollsList() {
           setHasMore(data.length === 24);
         }
         setLoading(false);
+        setIsFetchingMore(false);
       })
       .catch((err) => {
         console.error(err);
         setLoading(false);
+        setIsFetchingMore(false);
       });
   };
 
@@ -69,6 +77,34 @@ export function PollsList() {
     setPage(1);
     fetchPolls(selectedCategory, searchQuery, 1, true);
   }, [selectedCategory, searchQuery]);
+
+  // Infinite scroll observer: automatically loads more polls when reaching bottom
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && hasMore && !loading && !isFetchingMore) {
+          setIsFetchingMore(true);
+          setPage((prevPage) => {
+            const nextPage = prevPage + 1;
+            fetchPolls(selectedCategory, searchQuery, nextPage, false);
+            return nextPage;
+          });
+        }
+      },
+      {
+        root: null,
+        rootMargin: "300px",
+        threshold: 0.01,
+      }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loading, isFetchingMore, selectedCategory, searchQuery]);
 
   useEffect(() => {
     if (!auth.currentUser) return;
@@ -239,21 +275,20 @@ export function PollsList() {
               </div>
             )}
 
-            {/* Load More Markets */}
-            {hasMore && !loading && polls.length > 0 && (
-              <div className="pt-4 text-center">
-                <button
-                  onClick={() => {
-                    const nextPage = page + 1;
-                    setPage(nextPage);
-                    fetchPolls(selectedCategory, searchQuery, nextPage, false);
-                  }}
-                  className="px-6 py-2.5 rounded-xl bg-[#0f1115] hover:bg-[#161920] border border-[#222630] hover:border-emerald-500/40 text-xs font-mono font-bold text-white hover:text-emerald-400 transition-all shadow-md"
-                >
-                  Load More Markets ({polls.length}+ Loaded)
-                </button>
-              </div>
-            )}
+            {/* Infinite Scroll Sentinel */}
+            <div ref={sentinelRef} className="w-full py-8 flex items-center justify-center min-h-[60px]">
+              {isFetchingMore && (
+                <div className="text-xs font-mono text-emerald-400 animate-pulse flex items-center gap-2">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <span>Loading more markets...</span>
+                </div>
+              )}
+              {!hasMore && polls.length > 0 && (
+                <span className="text-[11px] font-mono text-stone-600 tracking-wider">
+                  — All prediction markets loaded ({polls.length}) —
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Right Rail: Forecasters, Bounties, and Protocol Metrics */}
